@@ -1,0 +1,14 @@
+[Unit]
+Description=dde-service-manager
+After=dbus.service
+
+[Service]
+Type=dbus
+BusName=com.deepin.dde.ServiceManager
+ExecStart=/usr/bin/dde-service-manager --system
+StandardOutput=syslog
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
