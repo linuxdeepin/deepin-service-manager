@@ -12,6 +12,7 @@ set(CMAKE_CXX_FLAGS "-g -W -Wall")
 
 add_subdirectory("src/dde-service-manager")
 add_subdirectory("src/plugin/clipboard")
+add_subdirectory("src/plugin/clipboard-manager")
 # FIX 添加tests后在gerrit上编译失败
 # add_subdirectory("tests")
 
