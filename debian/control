@@ -15,6 +15,6 @@ Architecture: any
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
- libkf5waylandclient5 (>=4:5.57.0.9)
+ libkf5waylandclient5
 Description: deepin desktop-environment - service manager frame
  Load system plug-ins for unified management
