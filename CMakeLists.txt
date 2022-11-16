@@ -11,27 +11,25 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_FLAGS "-g -W -Wall")
 
 add_subdirectory("src/dde-service-manager")
-add_subdirectory("src/plugin/clipboard")
-add_subdirectory("src/plugin/clipboard-manager")
 # FIX 添加tests后在gerrit上编译失败
 # add_subdirectory("tests")
 
-install(FILES misc/com.deepin.dde.ServiceManager.conf
-    DESTINATION /etc/dbus-1/system.d/
-)
+# install(FILES misc/com.deepin.dde.ServiceManager.conf
+#     DESTINATION /etc/dbus-1/system.d/
+# )
 
-install(FILES misc/dde-service-manager-system.service
-    DESTINATION /lib/systemd/system/
-)
+# install(FILES misc/dde-service-manager-system.service
+#     DESTINATION /lib/systemd/system/
+# )
 
-install(FILES misc/dde-service-manager-session.service
-    DESTINATION /lib/systemd/user
-)
+# install(FILES misc/dde-service-manager-session.service
+#     DESTINATION /lib/systemd/user
+# )
 
-install(FILES misc/dde-service-manager.desktop
-    DESTINATION /usr/share/applications/
-)
+# install(FILES misc/dde-service-manager.desktop
+#     DESTINATION /usr/share/applications/
+# )
 
-install(FILES misc/dde-service-manager.desktop
-    DESTINATION /etc/xdg/autostart/
-)
+# install(FILES misc/dde-service-manager.desktop
+#     DESTINATION /etc/xdg/autostart/
+# )
