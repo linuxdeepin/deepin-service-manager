@@ -1,0 +1,19 @@
+{
+    "name":"org.deepin.services.manager",
+    "group":"core",
+    "policyVersion":"1.0",
+    "policyStartType":"Resident",
+    "whitelists": [
+        {
+            "name":"w1", 
+            "process":["/usr/bin/aaa", "/usr/bin/bbb", "/usr/bin/python3"]
+        }
+    ],
+    "policy":[
+        {
+            "path":"/org/deepin/services/manager", 
+            "pathhide":false,
+            "permission":false
+        }
+    ]
+}

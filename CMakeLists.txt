@@ -4,34 +4,14 @@ set(VERSION 4.0)
 
 project(dde-service-manager)
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_FLAGS "-g -W -Wall")
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX /usr)
+endif()
 
-add_subdirectory("src/dde-service-manager")
-add_subdirectory("src/plugin/clipboard")
-add_subdirectory("src/plugin/clipboard-manager")
-# FIX 添加tests后在gerrit上编译失败
+add_subdirectory("src")
+# TODO
+# add_subdirectory("misc")
+
+# TODO:tests, 目前的tests是以前的，后续删掉，补充新的test
 # add_subdirectory("tests")
 
-install(FILES misc/com.deepin.dde.ServiceManager.conf
-    DESTINATION /etc/dbus-1/system.d/
-)
-
-install(FILES misc/dde-service-manager-system.service
-    DESTINATION /lib/systemd/system/
-)
-
-install(FILES misc/dde-service-manager-session.service
-    DESTINATION /lib/systemd/user
-)
-
-install(FILES misc/dde-service-manager.desktop
-    DESTINATION /usr/share/applications/
-)
-
-install(FILES misc/dde-service-manager.desktop
-    DESTINATION /etc/xdg/autostart/
-)

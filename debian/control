@@ -5,8 +5,11 @@ Maintainer: Deepin Sysdev <sysdev@deepin.com>
 Build-Depends:  debhelper (>= 11),
  pkg-config,
  cmake,
- libgtest-dev,
- libkf5wayland-dev
+ libdtkcore-dev (>=5.4.14),
+ libdtkcore5-bin,
+ qtbase5-dev,
+ libsystemd-dev,
+ libgtest-dev
 Standards-Version: 4.1.3
 Homepage: https://github.com/linuxdeepin/dde-plugin-loader
 
@@ -14,7 +17,6 @@ Package: dde-service-manager
 Architecture: any
 Depends:
  ${shlibs:Depends},
- ${misc:Depends},
- libkf5waylandclient5
+ ${misc:Depends}
 Description: deepin desktop-environment - service manager frame
  Load system plug-ins for unified management
