@@ -11,7 +11,7 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(Systemd REQUIRED IMPORTED_TARGET libsystemd) # sdbus
 
 # Sources files
-file(GLOB_RECURSE SRCS 
+file(GLOB_RECURSE SRCS
   "*.h"
   "*.cpp"
   "${SRC_BASE_DIR}/service/*.cpp"

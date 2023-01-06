@@ -4,3 +4,4 @@ build/
 obj-x86_64-linux-gnu/
 .debhelper/
 debian/dde-service-manager/
+.cache

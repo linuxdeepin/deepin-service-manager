@@ -3,11 +3,7 @@
 
 #include <QObject>
 
-#include "service/qtdbushook.h"
 #include "service/serviceqtdbus.h"
-
-#include <QtCore/qglobal.h>
-#include <QDebug>
 
 class DDEQDBusServicePrivate : public ServiceQtDBus
 {

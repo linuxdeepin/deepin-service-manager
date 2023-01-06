@@ -2,6 +2,9 @@
 
 #include <QMap>
 #include <QVariant>
+#include <QDebug>
+
+#include "service/qtdbushook.h"
 
 DDEQDBusServicePrivate::DDEQDBusServicePrivate(QObject *parent) : ServiceQtDBus(parent)
 {

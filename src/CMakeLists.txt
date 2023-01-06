@@ -1,6 +1,4 @@
-set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_CXX_FLAGS "-W -Wall -fPIC -fstack-protector-all -z relro -z noexecstack -z now -pie")
 
 set(SRC_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

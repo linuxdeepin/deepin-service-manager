@@ -1,4 +1,4 @@
-#include "policy/policy.h"
+#include "policy.h"
 
 #include <QFile>
 #include <QDebug>

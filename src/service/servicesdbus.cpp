@@ -8,12 +8,13 @@
 
 int sd_bus_message_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
 {
+    (void)ret_error;
     qInfo() << "[Hook-SDDBus]";
     std::string path = std::string(sd_bus_message_get_path(m));
     qInfo() << "[sd-bus hook]called path=" << QString::fromStdString(path);
     qInfo() << "[sd-bus hook]called interface=" << sd_bus_message_get_interface(m);
     qInfo() << "[sd-bus hook]called member=" << sd_bus_message_get_member(m);
-    sd_bus *bus = sd_bus_message_get_bus(m);
+    // sd_bus *bus = sd_bus_message_get_bus(m);
     qInfo() << "[sd-bus hook]called sender=" << sd_bus_message_get_sender(m);
 
     // int sd_bus_get_tid(sd_bus *bus, pid_t *tid);

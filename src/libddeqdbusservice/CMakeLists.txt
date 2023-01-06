@@ -12,8 +12,8 @@ find_package(Qt5 COMPONENTS Core DBus REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(Systemd REQUIRED IMPORTED_TARGET libsystemd) # sdbus
 
-file(GLOB_RECURSE LIB_SRCS 
-  "*.h" 
+file(GLOB_RECURSE LIB_SRCS
+  "*.h"
   "*.cpp"
   "${SRC_BASE_DIR}/service/servicebase.cpp"
   "${SRC_BASE_DIR}/service/servicebase.h"

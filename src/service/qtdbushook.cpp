@@ -1,5 +1,5 @@
-#include "service/qtdbushook.h"
-#include "service/serviceqtdbus.h"
+#include "qtdbushook.h"
+#include "serviceqtdbus.h"
 
 #include <QDebug>
 #include <QDBusMessage>

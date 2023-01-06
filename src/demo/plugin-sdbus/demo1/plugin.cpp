@@ -8,6 +8,7 @@
 
 extern "C" int DSMRegisterObject(const char *name, void *data)
 {
+    (void)name;
     if (!data) {
         return -1;
     }

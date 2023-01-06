@@ -1,4 +1,4 @@
-#include "plugin-config/pluginconfig.h"
+#include "pluginconfig.h"
 
 #include <QSettings>
 #include <QFile>
@@ -81,6 +81,7 @@ bool PluginConfig::check()
 //        lib->deleteLater();
 //        return;
 //    }
+    return true;
 }
 
 void PluginConfig::print()

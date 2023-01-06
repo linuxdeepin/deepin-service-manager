@@ -1,7 +1,7 @@
 #ifndef QTDBUSHOOK_H
 #define QTDBUSHOOK_H
 
-#include "service/servicebase.h"
+#include "servicebase.h"
 
 typedef QMap<QString, ServiceBase*> ServiceObjectMap;
 

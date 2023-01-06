@@ -128,8 +128,10 @@ bool ServiceQtDBus::Register()
         lib->deleteLater();
         return false;
     }
-
     int ret = objFunc(ServiceBase::name().toStdString().c_str(), nullptr); // TODO
+    if (ret) {
+        return false;
+    }
 
     ServiceBase::Register();
     return true;

@@ -1,4 +1,4 @@
-#include "service/servicebase.h"
+#include "servicebase.h"
 
 #include <QDBusConnection>
 #include <QDebug>
@@ -76,9 +76,8 @@ bool ServiceBase::CheckPropertyPermission(QString process, QString path, QString
 
 bool ServiceBase::CheckPathHide(QString path)
 {
-    bool isHide = false;
     if (m_policy == nullptr) {
-        isHide = false;
+        return false;
     }
     return m_policy->CheckPathHide(path);
 }

@@ -2,7 +2,6 @@
 #include "plugin-config/pluginconfig.h"
 #include "service/serviceqtdbus.h"
 #include "service/servicesdbus.h"
-#include "policy/policy.h"
 
 #include <QDebug>
 #include <QDBusMessage>
@@ -80,6 +79,7 @@ bool ServiceManager::loadPlugins(SessionType sessionType, SDKType sdkType, QStri
             addPlugin(srv); // TODO:插件列表和 sdbus和qtbus等统一设计
         }
     }
+    return true;
 }
 
 QString ServiceManager::getPlugins()
