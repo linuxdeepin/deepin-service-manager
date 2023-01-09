@@ -7,8 +7,7 @@
 #include <QDBusConnection>
 
 
-enum SessionType{System, Session, Unknown}; // TODO namespace
-enum SDKType {QT, SD};
+enum class SDKType {QT, SD};
 
 typedef void *(*ServiceObject)(const char *path, const int len);
 typedef int (*DSMRegisterObject)(const char *name, void *data);
@@ -32,6 +31,7 @@ public:
     QStringList paths();
     bool allowSubPath(QString path);
     QString name();
+    QString group() const;
 //    QString interface();
     QString libPath();
 //    QString policyPath();
@@ -42,7 +42,7 @@ signals:
 public Q_SLOTS:
     void test();
 
-    void Init(SessionType sessionType, const QString &configPath);
+    void Init(const QDBusConnection::BusType busType, const QString &configPath);
 //    void InitByData(SessionType sessionType, const QMap<QString, QVariant> &data);
     virtual void InitService();
 
@@ -52,8 +52,8 @@ protected:
 
     Policy *m_policy;
 
-    SessionType m_sessionType;
-    QString m_SDKType; // qtdbus、sdbus
+    QDBusConnection::BusType m_sessionType;
+    SDKType m_SDKType; // qtdbus、sdbus
 };
 
 #endif // SERVICEBASE_H

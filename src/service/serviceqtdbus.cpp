@@ -17,7 +17,7 @@ ServiceQtDBus::ServiceQtDBus(QObject *parent) : ServiceBase(parent)
 QDBusConnection ServiceQtDBus::qDbusConnection()
 {
     if (m_policy->m_name.isEmpty()) { // TODO
-        if (m_sessionType == SessionType::System) {
+        if (m_sessionType == QDBusConnection::SystemBus) {
             // qInfo() << "qDbusConnection::system::default";
             return QDBusConnection::systemBus();
         } else {
@@ -25,7 +25,7 @@ QDBusConnection ServiceQtDBus::qDbusConnection()
             return QDBusConnection::sessionBus();
         }
     } else {
-        if (m_sessionType == SessionType::System) {
+        if (m_sessionType == QDBusConnection::SystemBus) {
             // qInfo() << "qDbusConnection::system::" << m_pluginConfig->m_dbusName;
             return QDBusConnection::connectToBus(QDBusConnection::SystemBus, m_policy->m_name);
         } else {

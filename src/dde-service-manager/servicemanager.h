@@ -1,47 +1,41 @@
 #ifndef SERVICEMANAGER_H
 #define SERVICEMANAGER_H
 
-#include "service/servicebase.h"
-#include "libddeqdbusservice/ddeqdbusservice.h"
-
-#include <QObject>
-#include <QGlobalStatic>
+#include <QDBusConnection>
 #include <QMap>
+#include <QObject>
 
+class ServiceManagerPublic;
+class ServiceManagerPrivate;
+class GroupManager;
+typedef GroupManager _GroupManager;
 
-typedef QMap<QString, ServiceBase*> ServiceObjectMap;  // TODO
-typedef QMap<QString, QStringList> PluginMap;
+struct GroupData {
+    QString ServiceName;
+    _GroupManager *GroupManager;
+};
 
-const QString ServiceManagerDBusName = "org.deepin.services.manager";
-const QString ServiceManagerDBusPath = "/org/deepin/services/manager";
-const QString ServiceManagerDBusIntterface = "org.deepin.services.manager"; // TODO
-const QString ServiceManagerDBusPolicyFile = "other/dde-qt-service/manager.json";
-
-class ServiceManager : public DDEQDBusService
+class ServiceManager : public QObject
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.deepin.services.manager")
 public:
     explicit ServiceManager(QObject *parent = nullptr);
     ~ServiceManager();
 
-    ServiceBase *createService(SessionType sessionType, SDKType sdkType, QString configPath);
+    void init(const QDBusConnection::BusType &type);
 
-    void serverInit(SessionType type);
-
-    bool loadPlugins(SessionType sessionType, SDKType sdkType, QString path);
-
-    QString getPlugins();
-
-    bool addPlugin(ServiceBase *obj);
-
-public slots:
-    QString Version();
-    QString Plugins();
+private slots:
+    void onRegisterGroup(const QString &groupName, const QString &serviceName);
 
 private:
-    PluginMap m_pluginMap;
-    SessionType m_sessionType;
+    void initConnection();
+    void initGroup(const QDBusConnection::BusType &type);
+
+private:
+    ServiceManagerPublic *m_publicService;
+    ServiceManagerPrivate *m_privateService;
+    QMap<QString, GroupData> m_groups;  // groupName serviceName
+    QDBusConnection m_connection;
 };
 
-#endif // SERVICEMANAGER_H
+#endif  // PLUGINMANAGER_H

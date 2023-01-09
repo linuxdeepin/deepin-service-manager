@@ -1,120 +1,137 @@
 #include "servicemanager.h"
-#include "service/serviceqtdbus.h"
-#include "service/servicesdbus.h"
 
+#include <QCoreApplication>
+#include <QDBusError>
 #include <QDebug>
-#include <QDBusMessage>
-#include <QThread>
 #include <QDir>
+#include <QFileInfoList>
+#include <QProcess>
+#include <QDBusInterface>
 
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QJsonDocument>
+#include "groupmanager.h"
+#include "policy/policy.h"
+#include "servicemanagerprivate.h"
+#include "servicemanagerpublic.h"
+#include "utils.h"
 
-// TODO
-static const QStringList CompatiblePluginApiList {
-    "1.0",
-};
-
-ServiceManager::ServiceManager(QObject *parent) : DDEQDBusService(parent)
-  , m_sessionType(SessionType::Unknown)
+ServiceManager::ServiceManager(QObject *parent)
+    : QObject(parent)
+    , m_publicService(new ServiceManagerPublic(this))
+    , m_privateService(new ServiceManagerPrivate(this))
+    , m_connection(QDBusConnection::sessionBus())
 {
+    initConnection();
 }
 
-ServiceManager::~ServiceManager()
+ServiceManager::~ServiceManager() {}
+
+void ServiceManager::init(const QDBusConnection::BusType &type)
 {
-    foreach(auto srv, m_pluginMap.values()) {
-        // TODO
+    m_publicService->init(type);
+    m_privateService->init(type);
+
+    if (type == QDBusConnection::SystemBus)
+        m_connection = QDBusConnection::systemBus();
+
+    if (!m_connection.registerService(ServiceManagerName)) {
+        qWarning() << "[ServiceManager]failed to register dbus service:"
+                   << m_connection.lastError().message();
     }
-    m_pluginMap.clear();
+    if (!m_connection.registerObject(
+            ServiceManagerPath,
+            m_publicService,
+            QDBusConnection::ExportScriptableContents |
+                QDBusConnection::ExportAllProperties)) {
+        qWarning() << "[ServiceManager]failed to register dbus object: "
+                   << m_connection.lastError().message();
+    }
+    if (!m_connection.registerObject(ServiceManagerPrivatePath,
+                                     m_privateService,
+                                     QDBusConnection::ExportAllSlots |
+                                         QDBusConnection::ExportAllSignals)) {
+        qWarning() << "[ServiceManager]failed to register dbus object: "
+                   << m_connection.lastError().message();
+    }
+
+    initGroup(type);
 }
 
-ServiceBase *ServiceManager::createService(SessionType sessionType, SDKType sdkType, QString configPath)
+void ServiceManager::initGroup(const QDBusConnection::BusType &type)
 {
-    ServiceBase *srv = nullptr;
-    if (sdkType == SDKType::QT) {
-        srv = new ServiceQtDBus();
-    } else if (sdkType == SDKType::SD) {
-        srv = new ServiceSDBus();
-    } else {
-        qInfo() << __FUNCTION__ << "error config:" << configPath;
-    }
-    if (srv) {
-        srv->Init(sessionType, configPath);
-        qInfo() << "[ServiceManager]Init plugin finish." << srv->libPath();
-    }
+    QStringList groups;
+    const QString &qtConfigPath = QString("%1/%2/plugin-qt-service")
+                                      .arg(DEEPIN_SERVICE_MANAGER_DIR)
+                                      .arg(typeMap[type]);
+    const QString &sdConfigPath = QString("%1/%2/plugin-sd-service")
+                                      .arg(DEEPIN_SERVICE_MANAGER_DIR)
+                                      .arg(typeMap[type]);
 
-    return srv;
-}
-
-void ServiceManager::serverInit(SessionType type)
-{
-    m_sessionType = type;
-
-    if (m_sessionType == SessionType::Session) {
-        DDEQDBusService::InitPolicy(QDBusConnection::SessionBus, QString(DEEPIN_SERVICE_MANAGER_DIR)+ServiceManagerDBusPolicyFile);
-        loadPlugins(m_sessionType, SDKType::QT, QString(DEEPIN_SERVICE_MANAGER_DIR)+"user/plugin-qt-service");
-        loadPlugins(m_sessionType, SDKType::SD, QString(DEEPIN_SERVICE_MANAGER_DIR)+"user/plugin-sd-service");
-    } else if(m_sessionType == SessionType::System) {
-        DDEQDBusService::InitPolicy(QDBusConnection::SystemBus, QString(DEEPIN_SERVICE_MANAGER_DIR)+ServiceManagerDBusPolicyFile);
-        loadPlugins(m_sessionType, SDKType::QT, QString(DEEPIN_SERVICE_MANAGER_DIR)+"system/plugin-qt-service");
-        loadPlugins(m_sessionType, SDKType::SD, QString(DEEPIN_SERVICE_MANAGER_DIR)+"system/plugin-sd-service");
-    } else {
-        qWarning() << "init plugin failed:unknown type";
-    }
-}
-
-bool ServiceManager::loadPlugins(SessionType sessionType, SDKType sdkType, QString path)
-{
-    qInfo() << "Init Plugins:" << path;
-    QFileInfoList list = QDir(path).entryInfoList();
-    for (auto file : list) {
-        if (!file.isFile() || (file.suffix().compare("json", Qt::CaseInsensitive) != 0)) {
+    QFileInfoList list = QDir(qtConfigPath).entryInfoList();
+    list.append(QDir(sdConfigPath).entryInfoList());
+    for (auto &&file : list) {
+        if (!file.isFile() ||
+            (file.suffix().compare("json", Qt::CaseInsensitive) != 0)) {
             continue;
         }
-
-        ServiceBase *srv = createService(sessionType, sdkType, file.absoluteFilePath());
-        if (srv != nullptr) {
-            addPlugin(srv); // TODO:插件列表和 sdbus和qtbus等统一设计
+        Policy *policy = new Policy(this);
+        policy->ParseConfig(file.absoluteFilePath());
+        if (!groups.contains(policy->m_group) && !policy->m_group.isEmpty()) {
+            groups.append(policy->m_group);
         }
+        policy->deleteLater();
     }
-    return true;
+    qDebug() << "[ServiceManager]groups: " << groups;
+
+    for (auto &&group : groups) {
+#ifdef QT_DEBUG
+        QProcess *process = new QProcess(this);
+        process->start(qApp->applicationFilePath(),
+                       {"-c", typeMap[type] + '.' + group});
+#else
+
+#endif
+    }
 }
 
-QString ServiceManager::getPlugins()
+void ServiceManager::initConnection()
 {
-    // TODO
-    return "";
+    connect(m_privateService,
+            &ServiceManagerPrivate::requestRegisterGroup,
+            this,
+            &ServiceManager::onRegisterGroup);
 }
 
-bool ServiceManager::addPlugin(ServiceBase *obj)
+void ServiceManager::onRegisterGroup(const QString &groupName,
+                                     const QString &serviceName)
 {
-    if (obj->libPath().isEmpty()) {
-        return false;
+    qDebug() << "[ServiceManager]on register group:" << groupName
+             << serviceName;
+    if (m_groups.contains(groupName))
+        return;
+    GroupManager *groupManager = new GroupManager(this);
+    GroupData data;
+    data.ServiceName = serviceName;
+    data.GroupManager = groupManager;
+    m_groups[groupName] = data;
+
+    m_publicService->addGroup(groupName);
+    const QString &groupPath = "/group/" + groupName;
+
+    // register group path
+    if (!m_connection.registerObject(
+            groupPath,
+            groupManager,
+            QDBusConnection::ExportScriptableContents |
+                QDBusConnection::ExportAllProperties)) {
+        qWarning() << "[ServiceManager]failed to register dbus object: "
+                   << m_connection.lastError().message();
     }
-    m_pluginMap[obj->libPath()] = obj->paths();
-    return true;
-}
-//m_pluginMap
-QString ServiceManager::Version()
-{
-    return "1.0";
+    // connect plugin manager, call method
+    m_connection.connect(serviceName,
+                         PluginManagerPath,
+                         PluginManagerInterface,
+                         "PluginAdded",
+                         groupManager,
+                         SLOT(addPlugin(const QString &)));
 }
 
-QString ServiceManager::Plugins()
-{
-    QJsonArray pluginArray;
-    for (auto iter = m_pluginMap.begin(); iter != m_pluginMap.end(); ++iter) {
-        QJsonObject pluginObject;
-        pluginObject.insert("plugin", iter.key());
-        QJsonArray pathArray;
-        for (auto path : iter.value()) {
-            pathArray.append(QJsonValue(path));
-        }
-        pluginObject.insert("path", pathArray);
-        pluginArray.append(pluginObject);
-    }
-    QJsonDocument jsonDoc;
-    jsonDoc.setArray(pluginArray);
-    return QString(jsonDoc.toJson());
-}

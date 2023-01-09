@@ -23,13 +23,13 @@ ServiceBase::~ServiceBase()
 //    m_pluginConfig->loadFile(path);
 //}
 
-void ServiceBase::Init(SessionType sessionType, const QString &configPath)
+void ServiceBase::Init(const QDBusConnection::BusType busType, const QString &configPath)
 {
-    m_sessionType = sessionType;
+    m_sessionType = busType;
 //    InitConfig(configPath);
     m_policy = new Policy(this);
     m_policy->ParseConfig(configPath);
-    m_policy->Print(); // TODO
+    // m_policy->Print(); // TODO
 
     qInfo() << "[Service]Base init." << name();
     InitService();
@@ -120,6 +120,13 @@ QString ServiceBase::name()
     if (m_policy) {
         return m_policy->m_name;
     }
+    return "";
+}
+
+QString ServiceBase::group() const
+{
+    if (m_policy)
+        return m_policy->m_group;
     return "";
 }
 

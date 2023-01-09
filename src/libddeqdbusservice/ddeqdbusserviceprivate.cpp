@@ -13,11 +13,7 @@ DDEQDBusServicePrivate::DDEQDBusServicePrivate(QObject *parent) : ServiceQtDBus(
 
 void DDEQDBusServicePrivate::InitPolicy(QDBusConnection::BusType busType, QString policyFile)
 {
-    if (busType == QDBusConnection::SessionBus) {
-        Init(SessionType::Session, policyFile);
-    } else {
-        Init(SessionType::System, policyFile);
-    }
+    Init(busType, policyFile);
 }
 
 void DDEQDBusServicePrivate::InitService()

@@ -18,13 +18,15 @@ file(GLOB_RECURSE SRCS
   "${SRC_BASE_DIR}/service/*.h"
   "${SRC_BASE_DIR}/policy/*.cpp"
   "${SRC_BASE_DIR}/policy/*.h"
-  "${SRC_BASE_DIR}/plugin-config/*.cpp"
-  "${SRC_BASE_DIR}/plugin-config/*.h"
   "${SRC_BASE_DIR}/libddeqdbusservice/*.cpp"
   "${SRC_BASE_DIR}/libddeqdbusservice/*.h"
 )
 
 add_executable(${BIN_NAME}  ${SRCS})
+
+target_compile_definitions(${BIN_NAME} PRIVATE
+  VERSION="${VERSION}"
+)
 
 target_include_directories(${BIN_NAME} PUBLIC
   Qt5::Core
@@ -43,10 +45,12 @@ install(TARGETS ${BIN_NAME} DESTINATION bin)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     EXECUTE_PROCESS(COMMAND mkdir -p ${CMAKE_BINARY_DIR}/lib/other/dde-qt-service/)
-    EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/manager.json ${CMAKE_BINARY_DIR}/lib/other/dde-qt-service/)
+    EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/manager-private.json ${CMAKE_BINARY_DIR}/lib/other/dde-qt-service/)
+    EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/manager-public.json ${CMAKE_BINARY_DIR}/lib/other/dde-qt-service/)
 else()
     install(TARGETS ${BIN_NAME} DESTINATION bin)
-    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manager.json DESTINATION share/dde-service-manager/other/dde-qt-service/)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manager-private.json DESTINATION share/dde-service-manager/other/dde-qt-service/)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manager-public.json DESTINATION share/dde-service-manager/other/dde-qt-service/)
 endif()
 
 # TODO install
