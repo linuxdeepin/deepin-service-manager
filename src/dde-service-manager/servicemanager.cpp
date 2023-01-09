@@ -1,5 +1,4 @@
 #include "servicemanager.h"
-#include "plugin-config/pluginconfig.h"
 #include "service/serviceqtdbus.h"
 #include "service/servicesdbus.h"
 

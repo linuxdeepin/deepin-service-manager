@@ -15,10 +15,6 @@ ServiceBase::ServiceBase(QObject *parent) : QObject(parent)
 
 ServiceBase::~ServiceBase()
 {
-    if (m_pluginConfig != nullptr) {
-        delete m_pluginConfig;
-        m_pluginConfig = nullptr;
-    }
 }
 
 //bool ServiceBase::InitConfig(QString path)

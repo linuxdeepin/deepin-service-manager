@@ -1,7 +1,6 @@
 #ifndef SERVICEBASE_H
 #define SERVICEBASE_H
 
-#include "plugin-config/pluginconfig.h"
 #include "policy/policy.h"
 
 #include <QObject>
@@ -52,7 +51,6 @@ protected:
     bool m_isRegister;
 
     Policy *m_policy;
-    PluginConfig *m_pluginConfig;
 
     SessionType m_sessionType;
     QString m_SDKType; // qtdbus、sdbus

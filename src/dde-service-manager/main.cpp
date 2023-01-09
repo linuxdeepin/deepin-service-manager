@@ -19,11 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <QCoreApplication>
-#include <QDBusConnection>
 #include <QDebug>
 #include <QCommandLineOption>
 #include <QCommandLineParser>
-#include <QMetaClassInfo>
 #include <QDBusConnection>
 #include <QDBusError>
 
@@ -85,10 +83,8 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
 #ifdef QT_DEBUG
-    qInfo() << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx:" << QString(DEEPIN_SERVICE_MANAGER_DIR)+"ddd";
+    qInfo() << "deepin service manager dir:" << QString(DEEPIN_SERVICE_MANAGER_DIR);
 #endif
-
-    return 0;
 
     ServiceManager *srv = new ServiceManager();
     srv->serverInit(SessionType::Session);
