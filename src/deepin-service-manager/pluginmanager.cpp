@@ -68,16 +68,14 @@ void PluginManager::init(const QDBusConnection::BusType &type,
     }
 
     // load plugin
-    loadPlugins(type,
-                SDKType::QT,
-                QString("%1/%2/plugin-qt-service")
-                    .arg(DEEPIN_SERVICE_MANAGER_DIR)
-                    .arg(typeMap[type]));
-    loadPlugins(type,
-                SDKType::SD,
-                QString("%1/%2/plugin-sd-service")
-                    .arg(DEEPIN_SERVICE_MANAGER_DIR)
-                    .arg(typeMap[type]));
+    loadPlugins(
+        type,
+        SDKType::QT,
+        QString("%1/%2/qt-service").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]));
+    loadPlugins(
+        type,
+        SDKType::SD,
+        QString("%1/%2/sd-service").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]));
 }
 
 bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType,
@@ -99,9 +97,9 @@ bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType,
         if (srv->group() != m_group)
             continue;
         QDBusInterface remote(ServiceManagerName,
-                                 ServiceManagerPrivatePath,
-                                 ServiceManagerInterface,
-                                 m_connection);
+                              ServiceManagerPrivatePath,
+                              ServiceManagerInterface,
+                              m_connection);
         remote.call("RegisterGroup", m_group, m_connection.baseService());
         addPlugin(srv);  // TODO:插件列表和 sdbus和qtbus等统一设计
     }

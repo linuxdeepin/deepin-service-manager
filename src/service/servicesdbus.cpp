@@ -1,4 +1,4 @@
-#include "service/servicesdbus.h"
+#include "servicesdbus.h"
 
 #include <QDebug>
 
@@ -31,7 +31,7 @@ int sd_bus_message_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_
     if (mem == "Hello") {
         return sd_bus_reply_method_return(m, "s", "123");
 //        return -2; // -2: org.freedesktop.DBus.Error.FileNotFound:
-    } else if (mem == "Introspect" && path == "/org/deepin/services/sdbus/demo1") {
+    } else if (mem == "Introspect" && path == "/org/deepin/service/sdbus/demo1") {
         return sd_bus_reply_method_return(m, "s", "");
     }
 
@@ -175,7 +175,7 @@ bool ServiceSDBus::Register()
     if (m_bus == nullptr) {
         return false;
     }
-    QFileInfo fileInfo(QString(DEEPIN_SERVICE_MANAGER_DIR)+ServiceBase::libPath());
+    QFileInfo fileInfo(QString(SERVICE_LIB_DIR)+ServiceBase::libPath());
     if (!QLibrary::isLibrary(fileInfo.absoluteFilePath()))
         return false;
 

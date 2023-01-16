@@ -1,7 +1,5 @@
 
-set(BIN_NAME "dde-service-manager-pluginqt-demo1")
-
-set(Plugin_NAME "dde-service-manager-pluginsdbus-demo1")
+set(Plugin_NAME "plugin-sdbus-demo1")
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(Systemd REQUIRED IMPORTED_TARGET libsystemd)
@@ -23,10 +21,9 @@ target_link_libraries(${Plugin_NAME}
 )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/user/plugin-sd-service/)
-    EXECUTE_PROCESS(COMMAND mkdir -p ${CMAKE_BINARY_DIR}/lib/user/plugin-sd-service/)
-    EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/plugin-sdbus-demo1.json ${CMAKE_BINARY_DIR}/lib/user/plugin-sd-service/)
+    EXECUTE_PROCESS(COMMAND mkdir -p ${CMAKE_BINARY_DIR}/share/user/sd-service/)
+    EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/plugin-sdbus-demo1.json ${CMAKE_BINARY_DIR}/share/user/sd-service/)
 else()
-    # install(TARGETS ${BIN_NAME} DESTINATION share/dde-service-manager/user/plugin-sd-service/)
-    # install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/plugin-sdbus-demo1.json DESTINATION share/dde-service-manager/user/plugin-sd-service/)
+    # install(TARGETS ${Plugin_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR}/deepin-service-manager/)
+    # install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/plugin-sdbus-demo1.json DESTINATION share/deepin-service-manager/user/sd-service/)
 endif()

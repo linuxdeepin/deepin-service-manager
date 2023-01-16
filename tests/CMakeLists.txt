@@ -7,8 +7,8 @@ set(CMAKE_AUTOMOC ON)
 
 # 源文件
 file(GLOB_RECURSE SRCS
-    "../src/dde-service-manager/dbus_manager.h"
-    "../src/dde-service-manager/dbus_manager.cpp"
+    "../src/deepin-service-manager/dbus_manager.h"
+    "../src/deepin-service-manager/dbus_manager.cpp"
     "*.h"
     "*.cpp")
 

@@ -1,7 +1,7 @@
 #ifndef SERVICESDBUS_H
 #define SERVICESDBUS_H
 
-#include "service/servicebase.h"
+#include "servicebase.h"
 #include <systemd/sd-bus.h>
 
 class ServiceSDBus : public ServiceBase

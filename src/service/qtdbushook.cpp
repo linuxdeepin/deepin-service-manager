@@ -80,7 +80,7 @@ void QTDBusSpyHook(const QDBusMessage &msg)
         const QList<QVariant> &args = msg.arguments();
         if (args.size() >= 2) {
             if (!serviceObj->CheckPropertyPermission(getCMD(serviceObj, msg.service()), realPath, args.at(0).toString(), args.at(1).toString())) {
-                QDBusMessage reply = msg.createErrorReply("com.deepin.services.Permission.Deny", "The call is deny");
+                QDBusMessage reply = msg.createErrorReply("com.deepin.service.Permission.Deny", "The call is deny");
                 ServiceQtDBus *srv = qobject_cast<ServiceQtDBus*>(serviceObj);
                 if (srv) {
                     srv->qDbusConnection().send(reply);
@@ -92,7 +92,7 @@ void QTDBusSpyHook(const QDBusMessage &msg)
                && msg.interface() != "org.freedesktop.DBus.Introspectable"
                && msg.interface() != "org.freedesktop.DBus.Peer") {
         if (!serviceObj->CheckMethodPermission(getCMD(serviceObj, msg.service()), realPath, msg.interface(), msg.member())) {
-            QDBusMessage reply = msg.createErrorReply("com.deepin.services.Permission.Deny", "The call is deny2");
+            QDBusMessage reply = msg.createErrorReply("com.deepin.service.Permission.Deny", "The call is deny2");
             ServiceQtDBus *srv = qobject_cast<ServiceQtDBus*>(serviceObj);
             if (srv) {
                 // srv->qDbusConnection().send(reply);
@@ -141,7 +141,7 @@ int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
         const QList<QVariant> &args = msg.arguments();
         if (args.size() >= 2) {
             if (!serviceObj->CheckPropertyPermission(getCMD(serviceObj, msg.service()), realPath, args.at(0).toString(), args.at(1).toString())) {
-                QDBusMessage reply = msg.createErrorReply("com.deepin.services.Permission.Deny", "The call is deny");
+                QDBusMessage reply = msg.createErrorReply("com.deepin.service.Permission.Deny", "The call is deny");
                 ServiceQtDBus *srv = qobject_cast<ServiceQtDBus*>(serviceObj);
                 if (srv) {
                     srv->qDbusConnection().send(reply);
@@ -153,7 +153,7 @@ int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
                && msg.interface() != "org.freedesktop.DBus.Introspectable"
                && msg.interface() != "org.freedesktop.DBus.Peer") {
         if (!serviceObj->CheckMethodPermission(getCMD(serviceObj, msg.service()), realPath, msg.interface(), msg.member())) {
-            QDBusMessage reply = msg.createErrorReply("com.deepin.services.Permission.Deny", "The call is deny2");
+            QDBusMessage reply = msg.createErrorReply("com.deepin.service.Permission.Deny", "The call is deny2");
             ServiceQtDBus *srv = qobject_cast<ServiceQtDBus*>(serviceObj);
             if (srv) {
                 srv->qDbusConnection().send(reply);

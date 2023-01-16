@@ -1,12 +1,12 @@
 #ifndef SERVICE_H
 #define SERVICE_H
 
-#include "ddeqdbusservice.h"
+#include "qdbusservice.h"
 
 #include <QObject>
 #include <QDBusContext>
 
-class Service : public DDEQDBusService,
+class Service : public QDBusService,
                 protected QDBusContext
 {
     Q_OBJECT

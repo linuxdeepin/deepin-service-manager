@@ -3,7 +3,7 @@
 #include <QDebug>
 
 ServiceManagerPrivate::ServiceManagerPrivate(QObject *parent)
-    : DDEQDBusService(parent)
+    : QDBusService(parent)
 {
 }
 
@@ -12,14 +12,14 @@ ServiceManagerPrivate::~ServiceManagerPrivate() {}
 void ServiceManagerPrivate::RegisterGroup(const QString &groupName,
                                           const QString &serviceName)
 {
-    qDebug() << "[ServiceManagerPrivate] register group:" << groupName << serviceName;
+    qDebug() << "[ServiceManagerPrivate] register group:" << groupName
+             << serviceName;
     emit requestRegisterGroup(groupName, serviceName);
 }
 
 void ServiceManagerPrivate::init(const QDBusConnection::BusType &type)
 {
-    DDEQDBusService::InitPolicy(
+    QDBusService::InitPolicy(
         type,
-        QString(DEEPIN_SERVICE_MANAGER_DIR) +
-            "other/dde-qt-service/manager-private.json");
+        QString(SERVICE_CONFIG_DIR) + "other/qt-service/manager-private.json");
 }

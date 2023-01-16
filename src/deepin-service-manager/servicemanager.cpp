@@ -2,11 +2,11 @@
 
 #include <QCoreApplication>
 #include <QDBusError>
+#include <QDBusInterface>
 #include <QDebug>
 #include <QDir>
 #include <QFileInfoList>
 #include <QProcess>
-#include <QDBusInterface>
 
 #include "groupmanager.h"
 #include "policy/policy.h"
@@ -59,12 +59,10 @@ void ServiceManager::init(const QDBusConnection::BusType &type)
 void ServiceManager::initGroup(const QDBusConnection::BusType &type)
 {
     QStringList groups;
-    const QString &qtConfigPath = QString("%1/%2/plugin-qt-service")
-                                      .arg(DEEPIN_SERVICE_MANAGER_DIR)
-                                      .arg(typeMap[type]);
-    const QString &sdConfigPath = QString("%1/%2/plugin-sd-service")
-                                      .arg(DEEPIN_SERVICE_MANAGER_DIR)
-                                      .arg(typeMap[type]);
+    const QString &qtConfigPath =
+        QString("%1/%2/qt-service").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]);
+    const QString &sdConfigPath =
+        QString("%1/%2/sd-service").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]);
 
     QFileInfoList list = QDir(qtConfigPath).entryInfoList();
     list.append(QDir(sdConfigPath).entryInfoList());
@@ -83,13 +81,9 @@ void ServiceManager::initGroup(const QDBusConnection::BusType &type)
     qDebug() << "[ServiceManager]groups: " << groups;
 
     for (auto &&group : groups) {
-#ifdef QT_DEBUG
         QProcess *process = new QProcess(this);
         process->start(qApp->applicationFilePath(),
                        {"-c", typeMap[type] + '.' + group});
-#else
-
-#endif
     }
 }
 
@@ -134,4 +128,3 @@ void ServiceManager::onRegisterGroup(const QString &groupName,
                          groupManager,
                          SLOT(addPlugin(const QString &)));
 }
-

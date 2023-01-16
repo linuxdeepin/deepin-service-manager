@@ -1,6 +1,6 @@
 
 
-set(LIB_NAME "dde-service-manager-dev")
+set(LIB_NAME "qdbus-service")
 
 project(${LIB_NAME})
 
@@ -21,12 +21,10 @@ file(GLOB_RECURSE LIB_SRCS
   "${SRC_BASE_DIR}/service/serviceqtdbus.h"
   "${SRC_BASE_DIR}/service/qtdbushook.cpp"
   "${SRC_BASE_DIR}/service/qtdbushook.h"
-  "${SRC_BASE_DIR}/plugin-config/pluginconfig.cpp"
-  "${SRC_BASE_DIR}/plugin-config/pluginconfig.h"
   "${SRC_BASE_DIR}/policy/policy.cpp"
   "${SRC_BASE_DIR}/policy/policy.h"
 )
-add_library(${LIB_NAME} MODULE
+add_library(${LIB_NAME} SHARED
   ${LIB_SRCS}
 )
 target_include_directories(${LIB_NAME} PUBLIC

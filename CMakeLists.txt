@@ -2,12 +2,13 @@ cmake_minimum_required(VERSION 3.7)
 
 set (VERSION "1.0.0" CACHE STRING "define project version")
 
-project(dde-service-manager)
+project(deepin-service)
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX /usr)
 endif()
 
+include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wextra")
 # GNU 默认
@@ -28,10 +29,11 @@ endif()
 
 # 设置二进制输出目录 方便调试
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 
 add_subdirectory("src")
 # TODO
-# add_subdirectory("misc")
+add_subdirectory("misc")
 
 # TODO:tests, 目前的tests是以前的，后续删掉，补充新的test
 # add_subdirectory("tests")

@@ -1,30 +1,30 @@
 {
-    "name":"org.deepin.services.demo2",
+    "name":"org.deepin.service.demo2",
     "group":"core",
-    "libPath":"user/plugin-qt-service/libdde-service-manager-pluginqt-demo2.so",
+    "libPath":"libplugin-qt-demo2.so",
     "policyVersion":"1.0",
     "policyStartType":"Resident",
 
     "whitelists": [
         {
-            "name":"w1", 
+            "name":"w1",
             "process":["/usr/bin/aaa", "/usr/bin/bbb", "/usr/bin/python3"]
         },
         {
-            "name":"w2", 
+            "name":"w2",
             "process":["/usr/bin/aaa", "/usr/bin/ccc"]
         }
     ],
     "policy":[
         {
-            "path":"/org/deepin/services/demo2", 
+            "path":"/org/deepin/service/demo2",
             "pathhide":true,
             "permission":true,
             "whitelist":"w1",
             "interfaces":[
                 {
-                    "interface":"org.deepin.services.demo2a",
-                    "whitelist":"w2", 
+                    "interface":"org.deepin.service.demo2a",
+                    "whitelist":"w2",
                     "methods":[
                         {
                             "method":"Register",
@@ -45,7 +45,7 @@
             ]
         },
         {
-            "path":"/org/deepin/services/test1", 
+            "path":"/org/deepin/services/test1",
             "pathhide":true,
             "permission":false
         }

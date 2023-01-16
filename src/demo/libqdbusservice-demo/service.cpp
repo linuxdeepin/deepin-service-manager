@@ -2,11 +2,13 @@
 
 #include <QDebug>
 
-Service::Service(QObject *parent) : DDEQDBusService(parent)
+Service::Service(QObject *parent)
+    : QDBusService(parent)
 {
-    DDEQDBusService::InitPolicy(QDBusConnection::SessionBus, QString(DEEPIN_SERVICE_MANAGER_DIR)+"other/dde-qt-service/sdk-demo.json");
+    QDBusService::InitPolicy(
+        QDBusConnection::SessionBus,
+        QString(SERVICE_CONFIG_DIR) + "other/qt-service/sdk-demo.json");
 }
-
 
 QString Service::Hello()
 {
@@ -22,7 +24,8 @@ bool Service::Register(const QString &id, QString &result2)
     qInfo() << "Service::Register called. idd:" << id;
 
     if (id == "error") {
-        sendErrorReply("com.deepin.dbusdemo.RegisterNotSupported", "The method call 'Register()' is not supported");
+        sendErrorReply("com.deepin.dbusdemo.RegisterNotSupported",
+                       "The method call 'Register()' is not supported");
     }
     result2 = "reply2";
     return true;

@@ -22,10 +22,10 @@ int main(int argc, char *argv[])
 
     Service s;
     DemoAdaptor adp(&s);
-    if (!QDBusConnection::sessionBus().registerObject("/org/deepin/services/sdk/demo", &s)) {
+    if (!QDBusConnection::sessionBus().registerObject("/org/deepin/service/sdk/demo", &s)) {
         qWarning() << "failed to register dbus object" << QDBusConnection::sessionBus().lastError().message();
     }
-    if (!QDBusConnection::sessionBus().registerService("org.deepin.services.sdk.demo")) {
+    if (!QDBusConnection::sessionBus().registerService("org.deepin.service.sdk.demo")) {
         qWarning() << "failed to register dbus object" << QDBusConnection::sessionBus().lastError().message();
     }
 

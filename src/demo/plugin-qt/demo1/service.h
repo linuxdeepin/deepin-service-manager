@@ -6,7 +6,7 @@
 class Service : public QObject
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.deepin.services.demo1")
+    Q_CLASSINFO("D-Bus Interface", "org.deepin.service.demo1")
     // 1, Qtdbus会自动导出改类的dbus接口
     // 2，添加了"D-Bus Introspection"后，可以指定需要导出到dbus的接口
     // 3，"D-Bus Introspection"可不添加，默认导出所有

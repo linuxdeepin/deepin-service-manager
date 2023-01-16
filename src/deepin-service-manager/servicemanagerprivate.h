@@ -1,10 +1,10 @@
 #ifndef SERVICEMANAGERPRIVATE_H
 #define SERVICEMANAGERPRIVATE_H
 
-#include "libddeqdbusservice/ddeqdbusservice.h"
+#include "libqdbusservice/qdbusservice.h"
 #include "utils.h"
 
-class ServiceManagerPrivate : public DDEQDBusService
+class ServiceManagerPrivate : public QDBusService
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", ServiceManagerInterface);

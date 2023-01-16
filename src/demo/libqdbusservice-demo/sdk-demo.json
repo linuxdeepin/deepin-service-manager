@@ -1,25 +1,25 @@
 {
-    "name":"org.deepin.services.sdk.demo",
+    "name":"org.deepin.service.sdk.demo",
     "whitelists": [
         {
-            "name":"w1", 
+            "name":"w1",
             "process":["/usr/bin/aaa", "/usr/bin/bbb", "/usr/bin/python3"]
         },
         {
-            "name":"w2", 
+            "name":"w2",
             "process":["/usr/bin/aaa", "/usr/bin/ccc"]
         }
     ],
     "policy":[
         {
-            "path":"/org/deepin/services/sdk/demo", 
+            "path":"/org/deepin/service/sdk/demo",
             "pathhide":false,
             "permission":true,
             "whitelist":"w1",
             "interfaces":[
                 {
-                    "interface":"org.deepin.services.sdk.demo",
-                    "whitelist":"w2", 
+                    "interface":"org.deepin.service.sdk.demo",
+                    "whitelist":"w2",
                     "methods":[
                         {
                             "method":"Register",
@@ -40,7 +40,7 @@
             ]
         },
         {
-            "path":"/org/deepin/services/sdk/test1", 
+            "path":"/org/deepin/services/sdk/test1",
             "pathhide":true,
             "permission":false
         }

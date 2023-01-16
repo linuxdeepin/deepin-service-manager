@@ -1,11 +1,11 @@
 [Unit]
-Description=dde-service-manager
+Description=deepin-service-manager
 After=dbus.service
 
 [Service]
 Type=dbus
-BusName=com.deepin.dde.ServiceManager
-ExecStart=/usr/bin/dde-service-manager --system
+BusName=org.deepin.service.manager
+ExecStart=/usr/bin/deepin-service-manager -c %i
 StandardOutput=syslog
 Restart=always
 RestartSec=3

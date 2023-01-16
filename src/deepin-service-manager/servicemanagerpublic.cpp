@@ -1,9 +1,9 @@
 #include "servicemanagerpublic.h"
 
-#include "libddeqdbusservice/ddeqdbusservice.h"
+#include "libqdbusservice/qdbusservice.h"
 
 ServiceManagerPublic::ServiceManagerPublic(QObject *parent)
-    : DDEQDBusService(parent)
+    : QDBusService(parent)
 {
 }
 
@@ -18,9 +18,9 @@ void ServiceManagerPublic::addGroup(const QString &groupName)
 
 void ServiceManagerPublic::init(const QDBusConnection::BusType &type)
 {
-    DDEQDBusService::InitPolicy(type,
-                                QString(DEEPIN_SERVICE_MANAGER_DIR) +
-                                    "other/dde-qt-service/manager-public.json");
+    QDBusService::InitPolicy(
+        type,
+        QString(SERVICE_CONFIG_DIR) + "other/qt-service/manager-public.json");
 }
 
 QStringList ServiceManagerPublic::groups() const

@@ -1,36 +1,36 @@
 {
-    
-    "name":"org.deepin.services.sdbus.demo1",
+
+    "name":"org.deepin.service.sdbus.demo1",
     "group":"core",
-    "libPath":"user/plugin-sd-service/libdde-service-manager-pluginsdbus-demo1.so",
+    "libPath":"libplugin-sdbus-demo1.so",
     "policyVersion":"1.0",
     "policyStartType":"Resident",
 
     "whitelists": [
         {
-            "name":"w1", 
+            "name":"w1",
             "process":["/usr/bin/aaa", "/usr/bin/bbb"]
         },
         {
-            "name":"w2", 
+            "name":"w2",
             "process":["/usr/bin/aaa", "/usr/bin/ccc", "/usr/bin/python3"]
         },
         {
-            "name":"all", 
+            "name":"all",
             "description":"No configuration is required, which means no restrictions"
         }
     ],
     "policy":[
         {
-            "path":"/org/deepin/services/sdbus/demo1", 
+            "path":"/org/deepin/service/sdbus/demo1",
             "pathhide":true,
             "permission":true,
             "subpath":true,
             "whitelist":"w1",
             "interfaces":[
                 {
-                    "interface":"org.deepin.services.sdbus.demo1",
-                    "whitelist":"w1", 
+                    "interface":"org.deepin.service.sdbus.demo1",
+                    "whitelist":"w1",
                     "methods":[
                         {
                             "method":"Multiply",
@@ -47,7 +47,7 @@
             ]
         },
         {
-            "path":"/org/deepin/services/sdbus/test1", 
+            "path":"/org/deepin/services/sdbus/test1",
             "pathhide":true,
             "permission":false
         }

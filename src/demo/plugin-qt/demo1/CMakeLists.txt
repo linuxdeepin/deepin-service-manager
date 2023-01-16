@@ -1,8 +1,9 @@
 
-set(BIN_NAME "dde-service-manager-pluginqt-demo1")
+set(BIN_NAME "plugin-qt-demo1")
 
 project(${BIN_NAME})
 
+include(GNUInstallDirs)
 file(GLOB_RECURSE SRCS "*.h" "*.cpp")
 
 find_package(Qt5 COMPONENTS Core DBus REQUIRED)
@@ -22,10 +23,9 @@ target_link_libraries(${BIN_NAME} PRIVATE
 )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/user/plugin-qt-service/)
-    EXECUTE_PROCESS(COMMAND mkdir -p ${CMAKE_BINARY_DIR}/lib/user/plugin-qt-service/)
-    EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo1.json ${CMAKE_BINARY_DIR}/lib/user/plugin-qt-service/)
+    EXECUTE_PROCESS(COMMAND mkdir -p ${CMAKE_BINARY_DIR}/share/user/qt-service/)
+    EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo1.json ${CMAKE_BINARY_DIR}/share/user/qt-service/)
 else()
-    # install(TARGETS ${BIN_NAME} DESTINATION share/dde-service-manager/user/plugin-qt-service/)
-    # install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo1.json DESTINATION share/dde-service-manager/user/plugin-qt-service/)
+    # install(TARGETS ${BIN_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR}/deepin-service-manager/)
+    # install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo1.json DESTINATION share/deepin-service-manager/user/qt-service/)
 endif()

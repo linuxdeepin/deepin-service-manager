@@ -1,7 +1,7 @@
 #ifndef SERVICEQTDBUS_H
 #define SERVICEQTDBUS_H
 
-#include "service/servicebase.h"
+#include "servicebase.h"
 
 class ServiceQtDBus : public ServiceBase
 {

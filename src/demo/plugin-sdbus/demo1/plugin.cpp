@@ -15,8 +15,8 @@ extern "C" int DSMRegisterObject(const char *name, void *data)
     sd_bus *bus = (sd_bus *)data;
     sd_bus_slot *slot = NULL;
     if (sd_bus_add_object_vtable(bus, &slot,
-                                    "/org/deepin/services/sdbus/demo1",
-                                    "org.deepin.services.sdbus.demo1",
+                                    "/org/deepin/service/sdbus/demo1",
+                                    "org.deepin.service.sdbus.demo1",
                                     calculator_vtable,
                                     NULL) < 0) {
         return -1;

@@ -1,5 +1,5 @@
-#include "service/serviceqtdbus.h"
-#include "service/qtdbushook.h"
+#include "serviceqtdbus.h"
+#include "qtdbushook.h"
 
 #include <QDebug>
 #include <QThread>
@@ -114,7 +114,7 @@ bool ServiceQtDBus::Register()
 {
     qInfo() << "[ServiceQtDBus]service register:" << ServiceBase::libPath();
 
-    QFileInfo fileInfo(QString(DEEPIN_SERVICE_MANAGER_DIR)+ServiceBase::libPath());
+    QFileInfo fileInfo(QString(SERVICE_LIB_DIR)+ServiceBase::libPath());
     if (!QLibrary::isLibrary(fileInfo.absoluteFilePath()))
         return false;
 

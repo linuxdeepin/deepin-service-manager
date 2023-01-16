@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     }
 
 #ifdef QT_DEBUG
-    qDebug() << "deepin service manager dir:" << QString(DEEPIN_SERVICE_MANAGER_DIR);
+    qDebug() << "deepin service config dir:" << QString(SERVICE_CONFIG_DIR);
 #endif
 
     QMap<QString, QDBusConnection::BusType> busTypeMap;

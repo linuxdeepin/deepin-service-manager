@@ -1,12 +1,13 @@
 #ifndef SERVICEMANAGERPUBLIC_H
 #define SERVICEMANAGERPUBLIC_H
 
-#include "libddeqdbusservice/ddeqdbusservice.h"
+#include "libqdbusservice/qdbusservice.h"
+#include "utils.h"
 
-class ServiceManagerPublic : public DDEQDBusService
+class ServiceManagerPublic : public QDBusService
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.deepin.service.manager1");
+    Q_CLASSINFO("D-Bus Interface", ServiceManagerInterface);
     Q_PROPERTY(QStringList Groups READ groups);
     Q_PROPERTY(QString Version READ version);
 

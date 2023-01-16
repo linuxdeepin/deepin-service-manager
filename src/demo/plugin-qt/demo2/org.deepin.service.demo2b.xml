@@ -1,4 +1,4 @@
-<interface name="org.deepin.services.demo2b">
+<interface name="org.deepin.service.demo2b">
 <method name="Hello">
     <arg direction="out" type="s"/>
 </method>
