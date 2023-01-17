@@ -1,32 +1,25 @@
 #include "servicebase.h"
 
 #include <QDBusConnection>
-#include <QDebug>
 #include <QDBusMessage>
+#include <QDebug>
 #include <QThread>
 
+#include "policy/policy.h"
 
-ServiceBase::ServiceBase(QObject *parent) : QObject(parent)
+ServiceBase::ServiceBase(QObject *parent)
+    : QObject(parent)
     , m_isRegister(false)
     , m_policy(nullptr)
 {
-
 }
 
-ServiceBase::~ServiceBase()
-{
-}
+ServiceBase::~ServiceBase() {}
 
-//bool ServiceBase::InitConfig(QString path)
-//{
-//    m_pluginConfig = new PluginConfig();
-//    m_pluginConfig->loadFile(path);
-//}
-
-void ServiceBase::Init(const QDBusConnection::BusType busType, const QString &configPath)
+void ServiceBase::Init(const QDBusConnection::BusType &busType,
+                       const QString &configPath)
 {
     m_sessionType = busType;
-//    InitConfig(configPath);
     m_policy = new Policy(this);
     m_policy->ParseConfig(configPath);
     // m_policy->Print(); // TODO
@@ -35,26 +28,17 @@ void ServiceBase::Init(const QDBusConnection::BusType busType, const QString &co
     InitService();
 }
 
-//void ServiceBase::InitByData(SessionType sessionType, const QMap<QString, QVariant> &data)
-//{
-//    m_sessionType = sessionType;
-//    m_pluginConfig = new PluginConfig();
-//    m_pluginConfig->loadData(data);
+void ServiceBase::InitService() {}
 
-//    InitService();
-//}
-
-void ServiceBase::InitService()
-{
-
-}
-
-bool ServiceBase::IsRegister()
+bool ServiceBase::IsRegister() const
 {
     return m_isRegister;
 }
 
-bool ServiceBase::CheckMethodPermission(QString process, QString path, QString interface, QString method)
+bool ServiceBase::CheckMethodPermission(const QString &process,
+                                        const QString &path,
+                                        const QString &interface,
+                                        const QString &method) const
 {
     if (m_policy == nullptr) {
         return false;
@@ -62,15 +46,19 @@ bool ServiceBase::CheckMethodPermission(QString process, QString path, QString i
     return m_policy->CheckMethodPermission(process, path, interface, method);
 }
 
-bool ServiceBase::CheckPropertyPermission(QString process, QString path, QString interface, QString property)
+bool ServiceBase::CheckPropertyPermission(const QString &process,
+                                          const QString &path,
+                                          const QString &interface,
+                                          const QString &property) const
 {
     if (m_policy == nullptr) {
         return false;
     }
-    return m_policy->CheckPropertyPermission(process, path, interface, property);
+    return m_policy->CheckPropertyPermission(
+        process, path, interface, property);
 }
 
-bool ServiceBase::CheckPathHide(QString path)
+bool ServiceBase::CheckPathHide(const QString &path) const
 {
     if (m_policy == nullptr) {
         return false;
@@ -90,18 +78,15 @@ Qt::HANDLE ServiceBase::threadID()
     return QThread::currentThreadId();
 }
 
-QStringList ServiceBase::paths()
+QStringList ServiceBase::paths() const
 {
-//    if (m_pluginConfig) {
-//        return m_pluginConfig->m_dbusPath;
-//    }
     if (m_policy) {
         return m_policy->m_mapSubPath.keys();
     }
     return QStringList();
 }
 
-bool ServiceBase::allowSubPath(QString path)
+bool ServiceBase::allowSubPath(const QString &path) const
 {
     if (m_policy) {
         auto iter = m_policy->m_mapSubPath.find(path);
@@ -112,11 +97,8 @@ bool ServiceBase::allowSubPath(QString path)
     return false;
 }
 
-QString ServiceBase::name()
+QString ServiceBase::name() const
 {
-//    if (m_pluginConfig) {
-//        return m_pluginConfig->m_dbusName;
-//    }
     if (m_policy) {
         return m_policy->m_name;
     }
@@ -130,46 +112,20 @@ QString ServiceBase::group() const
     return "";
 }
 
-//QString ServiceBase::interface()
-//{
-//    if (m_pluginConfig) {
-//        return m_pluginConfig->m_dbusInterface;
-//    }
-//    return "";
-//}
-
-QString ServiceBase::libPath()
+QString ServiceBase::libPath() const
 {
-//    if (m_pluginConfig) {
-//        return m_pluginConfig->m_libPath;
-//    }
     if (m_policy) {
         return m_policy->m_libPath;
     }
     return "";
 }
 
-//QString ServiceBase::policyPath()
-//{
-//    if (m_pluginConfig) {
-//        return m_pluginConfig->m_policyPath;
-//    }
-//    return "";
-//}
-
-bool ServiceBase::isResident()
+bool ServiceBase::isResident() const
 {
-//    if (m_pluginConfig && m_pluginConfig->m_startType == "Resident") {
-//        return true;
-//    }
     if (m_policy && m_policy->m_policyStartType == "Resident") {
         return true;
     }
     return false;
 }
 
-void ServiceBase::test()
-{
-
-}
-
+void ServiceBase::test() {}

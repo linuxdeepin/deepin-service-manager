@@ -1,13 +1,11 @@
 #ifndef SERVICEBASE_H
 #define SERVICEBASE_H
 
-#include "policy/policy.h"
-
-#include <QObject>
 #include <QDBusConnection>
+#include <QObject>
 
-
-enum class SDKType {QT, SD};
+class Policy;
+enum class SDKType { QT, SD };
 
 typedef void *(*ServiceObject)(const char *path, const int len);
 typedef int (*DSMRegisterObject)(const char *name, void *data);
@@ -19,41 +17,42 @@ public:
     explicit ServiceBase(QObject *parent = nullptr);
     virtual ~ServiceBase();
 
-//    bool InitConfig(QString path);
-
-    bool IsRegister();
-    bool CheckMethodPermission(QString process, QString path, QString interface, QString method);
-    bool CheckPropertyPermission(QString process, QString path, QString interface, QString property);
-    bool CheckPathHide(QString path);
+    bool IsRegister() const;
+    bool CheckMethodPermission(const QString &process,
+                               const QString &path,
+                               const QString &interface,
+                               const QString &method) const;
+    bool CheckPropertyPermission(const QString &process,
+                                 const QString &path,
+                                 const QString &interface,
+                                 const QString &property) const;
+    bool CheckPathHide(const QString &path) const;
     virtual bool Register();
 
     Qt::HANDLE threadID();
-    QStringList paths();
-    bool allowSubPath(QString path);
-    QString name();
+    QStringList paths() const;
+    bool allowSubPath(const QString &path) const;
+    QString name() const;
     QString group() const;
-//    QString interface();
-    QString libPath();
-//    QString policyPath();
-    bool isResident();
+    QString libPath() const;
+    bool isResident() const;
 
 signals:
 
 public Q_SLOTS:
     void test();
 
-    void Init(const QDBusConnection::BusType busType, const QString &configPath);
-//    void InitByData(SessionType sessionType, const QMap<QString, QVariant> &data);
+    void Init(const QDBusConnection::BusType &busType,
+              const QString &configPath);
     virtual void InitService();
 
 protected:
-
     bool m_isRegister;
 
     Policy *m_policy;
 
     QDBusConnection::BusType m_sessionType;
-    SDKType m_SDKType; // qtdbus、sdbus
+    SDKType m_SDKType;  // qtdbus、sdbus
 };
 
-#endif // SERVICEBASE_H
+#endif  // SERVICEBASE_H

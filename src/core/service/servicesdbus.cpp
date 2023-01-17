@@ -1,10 +1,11 @@
 #include "servicesdbus.h"
 
 #include <QDebug>
-
 #include <QFileInfo>
 #include <QLibrary>
 #include <QThread>
+
+#include <systemd/sd-bus.h>
 
 int sd_bus_message_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
 {

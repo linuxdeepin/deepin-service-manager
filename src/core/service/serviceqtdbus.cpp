@@ -1,5 +1,4 @@
 #include "serviceqtdbus.h"
-#include "qtdbushook.h"
 
 #include <QDebug>
 #include <QThread>
@@ -8,6 +7,8 @@
 #include <QMetaClassInfo>
 #include <QDBusAbstractAdaptor>
 
+#include "qtdbushook.h"
+#include "policy/policy.h"
 
 ServiceQtDBus::ServiceQtDBus(QObject *parent) : ServiceBase(parent)
 {

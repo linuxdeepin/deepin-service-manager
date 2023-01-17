@@ -2,7 +2,8 @@
 #define SERVICESDBUS_H
 
 #include "servicebase.h"
-#include <systemd/sd-bus.h>
+
+struct sd_bus;
 
 class ServiceSDBus : public ServiceBase
 {

@@ -43,12 +43,10 @@ install(TARGETS ${BIN_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     EXECUTE_PROCESS(COMMAND mkdir -p ${CMAKE_BINARY_DIR}/share/other/qt-service/)
-    EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/manager-private.json ${CMAKE_BINARY_DIR}/share/other/qt-service/)
-    EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/manager-public.json ${CMAKE_BINARY_DIR}/share/other/qt-service/)
+    EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/manager.json ${CMAKE_BINARY_DIR}/share/other/qt-service/)
 else()
     install(TARGETS ${BIN_NAME} DESTINATION bin)
-    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manager-private.json DESTINATION share/deepin-service-manager/other/qt-service/)
-    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manager-public.json DESTINATION share/deepin-service-manager/other/qt-service/)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manager.json DESTINATION share/deepin-service-manager/other/qt-service/)
 endif()
 
 # TODO install
