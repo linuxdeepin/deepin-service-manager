@@ -7,17 +7,10 @@ project(${BIN_NAME})
 
 find_package(Qt5 COMPONENTS Core DBus REQUIRED)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(Systemd REQUIRED IMPORTED_TARGET libsystemd) # sdbus
-
 # Sources files
 file(GLOB_RECURSE SRCS
   "*.h"
   "*.cpp"
-  "${SRC_BASE_DIR}/service/*.cpp"
-  "${SRC_BASE_DIR}/service/*.h"
-  "${SRC_BASE_DIR}/policy/*.cpp"
-  "${SRC_BASE_DIR}/policy/*.h"
   "${SRC_BASE_DIR}/libqdbusservice/*.cpp"
   "${SRC_BASE_DIR}/libqdbusservice/*.h"
 )
@@ -28,20 +21,25 @@ target_compile_definitions(${BIN_NAME} PRIVATE
   VERSION="${VERSION}"
 )
 
+target_link_directories(${BIN_NAME} PRIVATE
+  ${CMAKE_BINARY_DIR}/core/
+)
+
 target_include_directories(${BIN_NAME} PUBLIC
   Qt5::Core
   Qt5::DBus
   PkgConfig::Systemd # sdbus
   ${SRC_BASE_DIR}
+  ${SRC_BASE_DIR}/core
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE
   Qt5::Core
   Qt5::DBus
-  PkgConfig::Systemd # sdbus
+  core-service
 )
 
-install(TARGETS ${BIN_NAME} DESTINATION bin)
+install(TARGETS ${BIN_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     EXECUTE_PROCESS(COMMAND mkdir -p ${CMAKE_BINARY_DIR}/share/other/qt-service/)

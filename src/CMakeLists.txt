@@ -10,6 +10,7 @@ else()
     ADD_DEFINITIONS(-DSERVICE_LIB_DIR="${CMAKE_INSTALL_LIBDIR}/deepin-service-manager")
 endif()
 
+add_subdirectory("core")
 add_subdirectory("deepin-service-manager")
 add_subdirectory("libqdbusservice")
 
