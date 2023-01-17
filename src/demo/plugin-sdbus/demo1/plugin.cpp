@@ -1,11 +1,6 @@
 
 #include "service.h"
 
-// extern "C" void *ServiceObject(const char *path, const int len)
-// {
-//     return (void*)calculator_vtable;
-// }
-
 extern "C" int DSMRegisterObject(const char *name, void *data)
 {
     (void)name;

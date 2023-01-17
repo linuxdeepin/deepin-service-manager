@@ -2,11 +2,6 @@
 #include "service.h"
 #include <QDBusConnection>
 
-// extern "C" Q_DECL_EXPORT void *ServiceObject(const char *path, const int len)
-// {
-//     return new Service();
-// }
-
 extern "C" int DSMRegisterObject(const char *name, void *data)
 {
     (void)data;
