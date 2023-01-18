@@ -1,9 +1,8 @@
 #ifndef POLICY_H
 #define POLICY_H
 
-#include <QObject>
 #include <QMap>
-#include <QHash> // TODO
+#include <QObject>
 
 // TODO :namespace
 
@@ -16,7 +15,7 @@ typedef QMap<QString, PolicyWhitelist> QMapWhitelists;
 typedef QMap<QString, bool> QMapPathHide;
 // subpath, default:false
 typedef QMap<QString, bool> QMapSubPath;
-//typedef QMap<QString, bool> QMapProcess;
+// typedef QMap<QString, bool> QMapProcess;
 struct PolicyMethod {
     QString method;
     bool needPermission;
@@ -45,10 +44,7 @@ struct PolicyPath {
 };
 typedef QMap<QString, PolicyPath> QMapPath;
 
-enum CallDestType {
-    Method,
-    Property
-};
+enum CallDestType { Method, Property };
 
 class Policy : public QObject
 {
@@ -58,23 +54,23 @@ public:
 
     void ParseConfig(const QString &path);
 
+    bool CheckPathHide(const QString &path);
+    bool CheckMethodPermission(const QString &process,
+                               const QString &path,
+                               const QString &interface,
+                               const QString &method);
+    bool CheckPropertyPermission(const QString &process,
+                                 const QString &path,
+                                 const QString &interface,
+                                 const QString &property);
+    bool CheckPermission(const QString &process,
+                         const QString &path,
+                         const QString &interface,
+                         const QString &dest,
+                         const CallDestType &type);
 
-    bool CheckPathHide(QString path);
-    bool CheckMethodPermission(QString process, QString path, QString interface, QString method);
-    bool CheckPropertyPermission(QString process, QString path, QString interface, QString property);
-    bool CheckPermission(QString process, QString path, QString interface, QString dest, CallDestType type);
-
-//    void Check(); // TODO
-
-
+    //    void Check(); // TODO
     void Print();
-
-    void Test();
-
-signals:
-
-public slots:
-
 
 private:
     bool readJsonFile(QJsonDocument &outDoc, const QString &fileName);
@@ -82,13 +78,21 @@ private:
     bool parsePolicy(const QJsonObject &obj);
     bool parsePolicyPath(const QJsonObject &obj);
     bool parsePolicyInterface(const QJsonObject &obj, PolicyPath &policyPath);
-    bool parsePolicyMethod(const QJsonObject &obj, PolicyInterface &policyInterface);
-    bool parsePolicyProperties(const QJsonObject &obj, PolicyInterface &policyInterface);
+    bool parsePolicyMethod(const QJsonObject &obj,
+                           PolicyInterface &policyInterface);
+    bool parsePolicyProperties(const QJsonObject &obj,
+                               PolicyInterface &policyInterface);
 
-    bool jsonGetString(const QJsonObject &obj, const QString &key, QString &value, QString defaultValue = "");
-    bool jsonGetBool(const QJsonObject &obj, const QString &key, bool &value, bool defaultValue = false);
+    bool jsonGetString(const QJsonObject &obj,
+                       const QString &key,
+                       QString &value,
+                       QString defaultValue = "");
+    bool jsonGetBool(const QJsonObject &obj,
+                     const QString &key,
+                     bool &value,
+                     bool defaultValue = false);
 
-public: // TODO
+public:  // TODO
     // 数据定义
     // 插入速度要求不高，查询速度要求很高，因此解析json的结果会通过冗余、预处理来提高查询速度，即以查询的速度角度来定义结构
     // 配置文件和此处数据没有一一对应，解析文件时，需要为此处数据服务，填充相关数据
@@ -104,7 +108,7 @@ public: // TODO
     QMapSubPath m_mapSubPath;
     QMapPath m_mapPath;
 
-public:// TODO
+public:  // TODO
     QString m_name;
     QString m_group;
     QString m_libPath;
@@ -112,4 +116,4 @@ public:// TODO
     QString m_policyStartType;
 };
 
-#endif // POLICY_H
+#endif  // POLICY_H
