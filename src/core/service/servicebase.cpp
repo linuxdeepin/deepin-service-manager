@@ -24,7 +24,7 @@ void ServiceBase::Init(const QDBusConnection::BusType &busType,
     m_policy->ParseConfig(configPath);
     // m_policy->Print(); // TODO
 
-    qInfo() << "[ServiceBase]Base init." << name();
+    qInfo() << "[ServiceBase]Base init. name: " << name();
     InitService();
 }
 

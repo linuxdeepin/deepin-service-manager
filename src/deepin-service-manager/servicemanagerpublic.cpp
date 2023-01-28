@@ -20,7 +20,7 @@ void ServiceManagerPublic::init(const QDBusConnection::BusType &type)
 {
     QDBusService::InitPolicy(
         type,
-        QString(SERVICE_CONFIG_DIR) + "other/qt-service/manager-public.json");
+        QString(SERVICE_CONFIG_DIR) + "other/qt-service/manager.json");
 }
 
 QStringList ServiceManagerPublic::groups() const
