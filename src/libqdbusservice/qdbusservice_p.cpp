@@ -20,10 +20,6 @@ void QDBusServicePrivate::InitPolicy(QDBusConnection::BusType busType,
 
 void QDBusServicePrivate::InitService()
 {
-    qInfo() << "[DDEQDBusServicePrivate]init service:" << name();
+    qInfo() << "[QDBusServicePrivate]init service:" << name();
     QTDbusHook::instance()->setServiceObject(this);
-
-    //    m_policy = new Policy(this);
-    //    m_policy->ParseConfig(policyPath());
-    //    m_policy->Print(); // TODO
 }

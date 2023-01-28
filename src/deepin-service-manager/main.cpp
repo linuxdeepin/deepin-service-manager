@@ -23,8 +23,6 @@
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #include <QCoreApplication>
-#include <QDBusConnection>
-#include <QDBusError>
 #include <QDebug>
 
 #include "pluginmanager.h"
@@ -44,7 +42,7 @@ int main(int argc, char *argv[])
     parser.process(a);
 
     if (!parser.isSet(controlOption)) {
-        qWarning() << "must set dbus type!";
+        qWarning() << "[main]must set dbus type!";
         return -1;
     }
 
@@ -54,13 +52,11 @@ int main(int argc, char *argv[])
     const bool hasGroup = controlValues.count() == 2;
 
     if (!(typeValue == "system" || typeValue == "user")) {
-        qWarning() << "dbus type must be 'system' or 'user'!";
+        qWarning() << "[main]dbus type must be 'system' or 'user'!";
         return -1;
     }
 
-#ifdef QT_DEBUG
-    qDebug() << "deepin service config dir:" << QString(SERVICE_CONFIG_DIR);
-#endif
+    qDebug() << "[main]deepin service config dir:" << QString(SERVICE_CONFIG_DIR);
 
     QMap<QString, QDBusConnection::BusType> busTypeMap;
     busTypeMap["system"] = QDBusConnection::SystemBus;

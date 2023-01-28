@@ -24,7 +24,7 @@ void ServiceBase::Init(const QDBusConnection::BusType &busType,
     m_policy->ParseConfig(configPath);
     // m_policy->Print(); // TODO
 
-    qInfo() << "[Service]Base init." << name();
+    qInfo() << "[ServiceBase]Base init." << name();
     InitService();
 }
 
@@ -68,7 +68,7 @@ bool ServiceBase::CheckPathHide(const QString &path) const
 
 bool ServiceBase::Register()
 {
-    qInfo() << "[Service]Base register";
+    qInfo() << "[ServiceBase]Base register";
     m_isRegister = true;
     return true;
 }

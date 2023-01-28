@@ -19,18 +19,14 @@ QDBusConnection ServiceQtDBus::qDbusConnection()
 {
     if (m_policy->m_name.isEmpty()) { // TODO
         if (m_sessionType == QDBusConnection::SystemBus) {
-            // qInfo() << "qDbusConnection::system::default";
             return QDBusConnection::systemBus();
         } else {
-            // qInfo() << "qDbusConnection::session::default";
             return QDBusConnection::sessionBus();
         }
     } else {
         if (m_sessionType == QDBusConnection::SystemBus) {
-            // qInfo() << "qDbusConnection::system::" << m_pluginConfig->m_dbusName;
             return QDBusConnection::connectToBus(QDBusConnection::SystemBus, m_policy->m_name);
         } else {
-            // qInfo() << "qDbusConnection::session::" << m_pluginConfig->m_dbusName;
             return QDBusConnection::connectToBus(QDBusConnection::SessionBus, m_policy->m_name);
         }
     }
@@ -44,7 +40,6 @@ void ServiceQtDBus::InitService()
     moveToThread(th);
     QObject::connect(th, SIGNAL(started()), this, SLOT(InitThread()));
     th->start();
-    // InitThread();
 }
 
 void ServiceQtDBus::InitThread()
@@ -123,7 +118,7 @@ bool ServiceQtDBus::Register()
     QLibrary *lib = new QLibrary(fileInfo.absoluteFilePath());
     DSMRegisterObject objFunc = DSMRegisterObject(lib->resolve("DSMRegisterObject"));
     if (!objFunc) {
-        qWarning() << "failed to resolve the `DSMRegisterObject` method: "<< fileInfo.fileName() ;
+        qWarning() << "[ServiceQtDBus]failed to resolve the `DSMRegisterObject` method: "<< fileInfo.fileName() ;
         if (lib->isLoaded())
             lib->unload();
         lib->deleteLater();
