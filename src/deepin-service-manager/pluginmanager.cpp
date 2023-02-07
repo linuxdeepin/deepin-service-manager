@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QThread>
 
+#include "graph.h"
 #include "policy/policy.h"
 #include "service/serviceqtdbus.h"
 #include "service/servicesdbus.h"
@@ -82,7 +83,9 @@ bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType,
         }
         policys.append(policy);
     }
-    for (auto policy : policys) {
+    // sort policy
+    const QList<Policy *> &sortedPolicys = sortPolicy(policys);
+    for (auto policy : sortedPolicys) {
         ServiceBase *srv = createService(sessionType, policy);
         if (srv == nullptr)
             continue;
@@ -105,6 +108,38 @@ bool PluginManager::addPlugin(ServiceBase *obj)
     m_pluginMap[obj->policy->name] = obj;
     emit PluginAdded(obj->policy->name);
     return true;
+}
+
+QList<Policy *> PluginManager::sortPolicy(const QList<Policy *> &policys)
+{
+    // 使用拓扑排序，先确定依赖关系
+    auto containsDependency = [policys](const QString &name) -> Policy * {
+        for (auto &&policy : policys) {
+            if (policy->name == name)
+                return policy;
+        }
+        return nullptr;
+    };
+    QList<QPair<Policy *, Policy *>> edges;
+    for (auto &&policy : policys) {
+        for (auto &&dependency : policy->dependencies) {
+            if (Policy *dependencyPolicy = containsDependency(dependency)) {
+                edges.append(
+                    QPair<Policy *, Policy *>{policy, dependencyPolicy});
+            } else {
+                qWarning() << QString(
+                                  "[PluginManager]Service:%1 cannot found "
+                                  "dependency:%2, will not load!")
+                                  .arg(policy->name)
+                                  .arg(dependency);
+            }
+        }
+    }
+    // 拓扑排序
+    QScopedPointer<Graph<Policy *>> graph(new Graph<Policy *>(policys, edges));
+    QList<Policy *> result;
+    graph->topologicalSort(result);
+    return result;
 }
 
 QStringList PluginManager::plugins() const

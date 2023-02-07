@@ -14,6 +14,8 @@
 #include "servicemanagerpublic.h"
 #include "utils.h"
 
+static const QStringList GroupSiral{"core", "dde", "app"};
+
 ServiceManager::ServiceManager(QObject *parent)
     : QObject(parent)
     , m_publicService(new ServiceManagerPublic(this))
@@ -75,6 +77,15 @@ void ServiceManager::initGroup(const QDBusConnection::BusType &type)
         }
     }
     policy->deleteLater();
+    // sort groups
+    std::sort(groups.begin(),
+              groups.end(),
+              [](const QString &group1, const QString &group2) -> bool {
+                  if (!GroupSiral.contains(group1))
+                      return false;
+                  return GroupSiral.indexOf(group1) <
+                         GroupSiral.indexOf(group2);
+              });
     qDebug() << "[ServiceManager]groups: " << groups;
     for (auto &&group : groups) {
 #ifdef QT_DEBUG

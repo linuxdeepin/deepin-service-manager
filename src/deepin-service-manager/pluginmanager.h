@@ -31,6 +31,7 @@ private:
     bool loadPlugins(const QDBusConnection::BusType &sessionType,
                      const QString &path);
     bool addPlugin(ServiceBase *obj);
+    QList<Policy *> sortPolicy(const QList<Policy *> &policys);
 
     QStringList plugins() const;
 
