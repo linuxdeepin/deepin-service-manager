@@ -31,3 +31,12 @@ install(FILES deepin-service-manager@.service
 
 install_symlink(deepin-service-manager@.service multi-user.target.wants system)
 install_user_symlink(deepin-service-manager@.service default.target.wants user)
+
+set(LIB_NAME "deepin-qdbus-service")
+
+# config pkgconfig file
+configure_file(${LIB_NAME}.pc.in ${LIB_NAME}.pc @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${LIB_NAME}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+# config cmake file
+configure_file(${LIB_NAME}Config.cmake.in ${LIB_NAME}Config.cmake @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${LIB_NAME}Config.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${LIB_NAME})
