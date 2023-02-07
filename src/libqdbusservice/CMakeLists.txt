@@ -1,6 +1,4 @@
-
-
-set(LIB_NAME "qdbus-service")
+set(LIB_NAME "deepin-qdbus-service")
 
 project(${LIB_NAME})
 
@@ -34,4 +32,5 @@ target_link_libraries(${LIB_NAME} PRIVATE
 )
 ADD_DEFINITIONS(-DEXPORT_LIBRARY)
 
-# TODO install
+install(TARGETS ${LIB_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(FILES qdbusservice.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${LIB_NAME})

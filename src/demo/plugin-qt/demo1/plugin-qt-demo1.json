@@ -1,5 +1,7 @@
 {
     "name": "org.deepin.service.demo1",
     "libPath": "libplugin-qt-demo1.so",
-    "group": "core"
+    "group": "core",
+    "policyStartType": "Resident",
+    "pluginType": "qt"
 }

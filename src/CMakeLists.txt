@@ -7,7 +7,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     ADD_DEFINITIONS(-DSERVICE_LIB_DIR="${CMAKE_BINARY_DIR}/lib/")
 else()
     ADD_DEFINITIONS(-DSERVICE_CONFIG_DIR="${CMAKE_INSTALL_PREFIX}/share/deepin-service-manager/")
-    ADD_DEFINITIONS(-DSERVICE_LIB_DIR="${CMAKE_INSTALL_LIBDIR}/deepin-service-manager")
+    ADD_DEFINITIONS(-DSERVICE_LIB_DIR="${CMAKE_INSTALL_FULL_LIBDIR}/deepin-service-manager/")
 endif()
 
 add_subdirectory("core")

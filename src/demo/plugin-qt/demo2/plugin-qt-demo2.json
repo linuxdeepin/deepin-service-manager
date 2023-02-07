@@ -4,6 +4,7 @@
     "libPath": "libplugin-qt-demo2.so",
     "policyVersion": "1.0",
     "policyStartType": "Resident",
+    "pluginType": "qt",
     "whitelists": [
         {
             "name": "w1",

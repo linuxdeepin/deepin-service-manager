@@ -40,10 +40,10 @@ target_link_libraries(${BIN_NAME} PRIVATE
   Qt5::Core
   Qt5::DBus
   Qt5::Widgets
-  qdbus-service
+  deepin-qdbus-service
 )
 
-add_dependencies(${BIN_NAME} "qdbus-service")
+add_dependencies(${BIN_NAME} "deepin-qdbus-service")
 set_target_properties(${BIN_NAME} PROPERTIES INSTALL_RPATH "${CMAKE_BINARY_DIR}/src/libqdbusservice/")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")

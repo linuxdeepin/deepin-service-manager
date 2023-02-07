@@ -1,15 +1,17 @@
 #include <QtCore/qglobal.h>
-#include <QDebug>
 #include <QDBusConnection>
+#include <QDebug>
 
-#include "service.h"
 #include "demo2aadaptor.h"
+#include "service.h"
 
 extern "C" int DSMRegisterObject(const char *name, void *data)
 {
     (void)data;
     Service *srv = new Service();
     new Demo2aAdaptor(srv);
-    QDBusConnection::connectToBus(QDBusConnection::SessionBus, QString(name)).registerObject("/org/deepin/services/demo2", srv, QDBusConnection::ExportAdaptors);
+    QDBusConnection::connectToBus(QDBusConnection::SessionBus, QString(name))
+        .registerObject(
+            "/org/deepin/service/demo2", srv, QDBusConnection::ExportAdaptors);
     return 0;
 }

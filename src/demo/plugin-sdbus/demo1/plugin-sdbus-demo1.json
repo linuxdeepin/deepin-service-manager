@@ -4,6 +4,7 @@
     "libPath": "libplugin-sdbus-demo1.so",
     "policyVersion": "1.0",
     "policyStartType": "Resident",
+    "pluginType": "sd",
     "whitelists": [
         {
             "name": "w1",
@@ -28,7 +29,7 @@
     "policy": [
         {
             "path": "/org/deepin/service/sdbus/demo1",
-            "pathhide": true,
+            "pathhide": false,
             "permission": true,
             "subpath": true,
             "whitelist": "w1",

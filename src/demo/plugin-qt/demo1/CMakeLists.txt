@@ -26,6 +26,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     EXECUTE_PROCESS(COMMAND mkdir -p ${CMAKE_BINARY_DIR}/share/user/)
     EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo1.json ${CMAKE_BINARY_DIR}/share/user/)
 else()
-    # install(TARGETS ${BIN_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR}/deepin-service-manager/)
-    # install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo1.json DESTINATION share/deepin-service-manager/user/)
+    install(TARGETS ${BIN_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR}/deepin-service-manager/)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo1.json DESTINATION share/deepin-service-manager/system/)
 endif()
+
+install(FILES org.deepin.service.demo1.conf
+    DESTINATION share/dbus-1/system.d/
+)

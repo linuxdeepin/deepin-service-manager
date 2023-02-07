@@ -205,7 +205,7 @@ void Policy::parseConfig(const QString &path)
     jsonGetStringList(rootObj, "dependencies", dependencies);
     // get SDKType
     QString sdkTypeString;
-    jsonGetString(rootObj, "SDKType", sdkTypeString, "qt");
+    jsonGetString(rootObj, "pluginType", sdkTypeString, "qt");
     if (sdkTypeString == "qt")
         sdkType = SDKType::QT;
     if (sdkTypeString == "sd")
