@@ -12,15 +12,13 @@ public:
     ServiceSDBus(QObject *parent = nullptr);
     virtual ~ServiceSDBus();
 
-    virtual bool Register();
+    virtual bool registerService() override;
 
-public Q_SLOTS:
-    virtual void InitService();
-
-    void InitThread();
+protected:
+    virtual void initThread() override;
 
 private:
     sd_bus *m_bus;
 };
 
-#endif // SERVICESDBUS_H
+#endif  // SERVICESDBUS_H

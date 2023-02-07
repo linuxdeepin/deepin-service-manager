@@ -6,14 +6,10 @@
 #include <QDir>
 #include <QThread>
 
+#include "policy/policy.h"
 #include "service/serviceqtdbus.h"
 #include "service/servicesdbus.h"
 #include "utils.h"
-
-// TODO
-static const QStringList CompatiblePluginApiList{
-    "1.0",
-};
 
 PluginManager::PluginManager(QObject *parent)
     : QObject(parent)
@@ -31,21 +27,16 @@ PluginManager::~PluginManager()
 }
 
 ServiceBase *PluginManager::createService(
-    const QDBusConnection::BusType &sessionType,
-    const SDKType &sdkType,
-    const QString &configPath)
+    const QDBusConnection::BusType &sessionType, Policy *policy)
 {
     ServiceBase *srv = nullptr;
-    if (sdkType == SDKType::QT) {
+    if (policy->sdkType == SDKType::QT)
         srv = new ServiceQtDBus();
-    } else if (sdkType == SDKType::SD) {
+    if (policy->sdkType == SDKType::SD)
         srv = new ServiceSDBus();
-    } else {
-        qWarning() << "[PluginManager]error config:" << configPath;
-    }
     if (srv) {
-        srv->Init(sessionType, configPath);
-        qInfo() << "[PluginManager]Init plugin finish." << srv->libPath();
+        srv->init(sessionType, policy);
+        qInfo() << "[PluginManager]Init plugin finish." << srv->policy->libPath;
     }
 
     return srv;
@@ -68,33 +59,32 @@ void PluginManager::init(const QDBusConnection::BusType &type,
     }
 
     // load plugin
-    loadPlugins(
-        type,
-        SDKType::QT,
-        QString("%1/%2/qt-service").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]));
-    loadPlugins(
-        type,
-        SDKType::SD,
-        QString("%1/%2/sd-service").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]));
+    loadPlugins(type,
+                QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]));
 }
 
 bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType,
-                                const SDKType &sdkType,
                                 const QString &path)
 {
     qInfo() << "[PluginManager]Init Plugins:" << path;
+    QList<Policy *> policys;
     QFileInfoList list = QDir(path).entryInfoList();
     for (auto file : list) {
         if (!file.isFile() ||
             (file.suffix().compare("json", Qt::CaseInsensitive) != 0)) {
             continue;
         }
-
-        ServiceBase *srv =
-            createService(sessionType, sdkType, file.absoluteFilePath());
-        if (srv == nullptr)
+        Policy *policy = new Policy(this);
+        policy->parseConfig(file.absoluteFilePath());
+        if (policy->group != m_group) {
+            policy->deleteLater();
             continue;
-        if (srv->group() != m_group)
+        }
+        policys.append(policy);
+    }
+    for (auto policy : policys) {
+        ServiceBase *srv = createService(sessionType, policy);
+        if (srv == nullptr)
             continue;
         QDBusInterface remote(ServiceManagerName,
                               ServiceManagerPrivatePath,
@@ -109,11 +99,11 @@ bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType,
 
 bool PluginManager::addPlugin(ServiceBase *obj)
 {
-    if (obj->libPath().isEmpty()) {
+    if (obj->policy->libPath.isEmpty()) {
         return false;
     }
-    m_pluginMap[obj->name()] = obj;
-    emit PluginAdded(obj->name());
+    m_pluginMap[obj->policy->name] = obj;
+    emit PluginAdded(obj->policy->name);
     return true;
 }
 

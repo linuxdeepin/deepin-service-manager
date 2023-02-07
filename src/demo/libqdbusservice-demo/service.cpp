@@ -7,7 +7,7 @@ Service::Service(QObject *parent)
 {
     QDBusService::InitPolicy(
         QDBusConnection::SessionBus,
-        QString(SERVICE_CONFIG_DIR) + "other/qt-service/sdk-demo.json");
+        QString(SERVICE_CONFIG_DIR) + "other/sdk-demo.json");
 }
 
 QString Service::Hello()

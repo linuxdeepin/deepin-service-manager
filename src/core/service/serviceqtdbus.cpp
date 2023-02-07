@@ -1,23 +1,24 @@
 #include "serviceqtdbus.h"
 
-#include <QDebug>
-#include <QThread>
-#include <QLibrary>
-#include <QFileInfo>
-#include <QMetaClassInfo>
 #include <QDBusAbstractAdaptor>
+#include <QDebug>
+#include <QFileInfo>
+#include <QLibrary>
+#include <QMetaClassInfo>
+#include <QThread>
 
-#include "qtdbushook.h"
 #include "policy/policy.h"
+#include "qtdbushook.h"
 
-ServiceQtDBus::ServiceQtDBus(QObject *parent) : ServiceBase(parent)
+ServiceQtDBus::ServiceQtDBus(QObject *parent)
+    : ServiceBase(parent)
 {
     m_SDKType = SDKType::QT;
 }
 
 QDBusConnection ServiceQtDBus::qDbusConnection()
 {
-    if (m_policy->m_name.isEmpty()) { // TODO
+    if (policy->name.isEmpty()) {
         if (m_sessionType == QDBusConnection::SystemBus) {
             return QDBusConnection::systemBus();
         } else {
@@ -25,44 +26,35 @@ QDBusConnection ServiceQtDBus::qDbusConnection()
         }
     } else {
         if (m_sessionType == QDBusConnection::SystemBus) {
-            return QDBusConnection::connectToBus(QDBusConnection::SystemBus, m_policy->m_name);
+            return QDBusConnection::connectToBus(QDBusConnection::SystemBus,
+                                                 policy->name);
         } else {
-            return QDBusConnection::connectToBus(QDBusConnection::SessionBus, m_policy->m_name);
+            return QDBusConnection::connectToBus(QDBusConnection::SessionBus,
+                                                 policy->name);
         }
     }
 }
 
-void ServiceQtDBus::InitService()
+void ServiceQtDBus::initThread()
 {
-    qInfo() << "[ServiceQtDBus]init service:" << libPath() << ", InitService-ThreadID:" << QThread::currentThreadId();
-
-    QThread *th = new QThread();
-    moveToThread(th);
-    QObject::connect(th, SIGNAL(started()), this, SLOT(InitThread()));
-    th->start();
-}
-
-void ServiceQtDBus::InitThread()
-{
-    qInfo() << "[ServiceQtDBus]init service" << ServiceBase::paths() << ", InitThread-ThreadID:" << QThread::currentThreadId();
-    qDbusConnection().registerService(ServiceBase::name());
-    qDbusConnection().registerObject(QStringLiteral("/PrivateDeclaration"), this); // TODO:this
+    qInfo() << "[ServiceQtDBus]init service" << policy->paths()
+            << ", InitThread-ThreadID:" << QThread::currentThreadId();
+    qDbusConnection().registerService(policy->name);
+    qDbusConnection().registerObject(QStringLiteral("/PrivateDeclaration"),
+                                     this);  // TODO:this
 
     // TODO:无权限、隐藏、按需启动需求的service，不应该注册，避免触发hook，提高效率
     QTDbusHook::instance()->setServiceObject(this);
 
-//    m_policy = new Policy(this);
-//    m_policy->ParseConfig(policyPath());
-//    m_policy->Print(); // TODO
-
-    if (isResident()) {
-        Register();
+    if (policy->isResident()) {
+        registerService();
     }
+    ServiceBase::initThread();
 }
 
-//bool ServiceQtDBus::Register(const QString &path, const QString &interface)
+// bool ServiceQtDBus::Register(const QString &path, const QString &interface)
 //{
-//    qInfo() << "ServiceManager::Register::" << path;
+//     qInfo() << "ServiceManager::Register::" << path;
 
 //    QFileInfo fileInfo(ServiceBase::libPath());
 //    if (!QLibrary::isLibrary(fileInfo.absoluteFilePath()))
@@ -72,26 +64,28 @@ void ServiceQtDBus::InitThread()
 //    QLibrary *lib = new QLibrary(fileInfo.absoluteFilePath());
 //    ServiceObject objFunc = ServiceObject(lib->resolve("ServiceObject"));
 //    if (!objFunc) {
-//        qWarning() << "failed to resolve the `ServiceObject` method: "<< fileInfo.fileName() ;
-//        if (lib->isLoaded())
+//        qWarning() << "failed to resolve the `ServiceObject` method: "<<
+//        fileInfo.fileName() ; if (lib->isLoaded())
 //            lib->unload();
 //        lib->deleteLater();
 //        return false;
 //    }
 
-//    void *obj = objFunc(ServiceBase::path().toStdString().c_str(), int(ServiceBase::path().toStdString().length()));
+//    void *obj = objFunc(ServiceBase::path().toStdString().c_str(),
+//    int(ServiceBase::path().toStdString().length()));
 
 //    QObject *qobj = static_cast<QObject*>(obj); // TODO 异常处理
 //    if (!qobj) {
 //        return false;
 //    }
-//    QDBusConnection::RegisterOptions opts = QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllProperties;
+//    QDBusConnection::RegisterOptions opts = QDBusConnection::ExportAllSlots |
+//    QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllProperties;
 //    const QObjectList &children = qobj->children();
 //    QObjectList::ConstIterator it = children.constBegin();
 //    QObjectList::ConstIterator end = children.constEnd();
 //    for ( ; it != end; ++it) {
-//        QDBusAbstractAdaptor *adaptor = qobject_cast<QDBusAbstractAdaptor*>(*it);
-//        if (adaptor) {
+//        QDBusAbstractAdaptor *adaptor =
+//        qobject_cast<QDBusAbstractAdaptor*>(*it); if (adaptor) {
 //            opts = QDBusConnection::ExportAdaptors;
 //            break;
 //        }
@@ -99,36 +93,41 @@ void ServiceQtDBus::InitThread()
 ////    Service *s = new Service();
 ////    new dbusdemoAdaptor(s);
 //    int idx = qobj->metaObject()->indexOfClassInfo("D-Bus Interface");
-//    qInfo() << "D-Bus Interface" << QString::fromUtf8(qobj->metaObject()->classInfo(idx).value());
-//    qDbusConnection().registerObject(ServiceBase::path(), qobj, opts); // TODO path
+//    qInfo() << "D-Bus Interface" <<
+//    QString::fromUtf8(qobj->metaObject()->classInfo(idx).value());
+//    qDbusConnection().registerObject(ServiceBase::path(), qobj, opts); // TODO
+//    path
 
 //    ServiceBase::Register("", "");
 //    return true;
 //}
 
-bool ServiceQtDBus::Register()
+bool ServiceQtDBus::registerService()
 {
-    qInfo() << "[ServiceQtDBus]service register:" << ServiceBase::libPath();
+    qInfo() << "[ServiceQtDBus]service register:" << policy->libPath;
 
-    QFileInfo fileInfo(QString(SERVICE_LIB_DIR)+ServiceBase::libPath());
+    QFileInfo fileInfo(QString(SERVICE_LIB_DIR) + policy->libPath);
     if (!QLibrary::isLibrary(fileInfo.absoluteFilePath()))
         return false;
 
     // TODO: 释放lib、dbusobject、ServiceBase、unregisterObject等
     QLibrary *lib = new QLibrary(fileInfo.absoluteFilePath());
-    DSMRegisterObject objFunc = DSMRegisterObject(lib->resolve("DSMRegisterObject"));
+    DSMRegisterObject objFunc =
+        DSMRegisterObject(lib->resolve("DSMRegisterObject"));
     if (!objFunc) {
-        qWarning() << "[ServiceQtDBus]failed to resolve the `DSMRegisterObject` method: "<< fileInfo.fileName() ;
+        qWarning() << "[ServiceQtDBus]failed to resolve the "
+                      "`DSMRegisterObject` method: "
+                   << fileInfo.fileName();
         if (lib->isLoaded())
             lib->unload();
         lib->deleteLater();
         return false;
     }
-    int ret = objFunc(ServiceBase::name().toStdString().c_str(), nullptr); // TODO
+    int ret = objFunc(policy->name.toStdString().c_str(), nullptr);  // TODO
     if (ret) {
         return false;
     }
 
-    ServiceBase::Register();
+    ServiceBase::registerService();
     return true;
 }

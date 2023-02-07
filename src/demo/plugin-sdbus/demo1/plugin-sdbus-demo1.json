@@ -1,55 +1,60 @@
 {
-
-    "name":"org.deepin.service.sdbus.demo1",
-    "group":"core",
-    "libPath":"libplugin-sdbus-demo1.so",
-    "policyVersion":"1.0",
-    "policyStartType":"Resident",
-
+    "name": "org.deepin.service.sdbus.demo1",
+    "group": "adt",
+    "libPath": "libplugin-sdbus-demo1.so",
+    "policyVersion": "1.0",
+    "policyStartType": "Resident",
     "whitelists": [
         {
-            "name":"w1",
-            "process":["/usr/bin/aaa", "/usr/bin/bbb"]
+            "name": "w1",
+            "process": [
+                "/usr/bin/aaa",
+                "/usr/bin/bbb"
+            ]
         },
         {
-            "name":"w2",
-            "process":["/usr/bin/aaa", "/usr/bin/ccc", "/usr/bin/python3"]
+            "name": "w2",
+            "process": [
+                "/usr/bin/aaa",
+                "/usr/bin/ccc",
+                "/usr/bin/python3"
+            ]
         },
         {
-            "name":"all",
-            "description":"No configuration is required, which means no restrictions"
+            "name": "all",
+            "description": "No configuration is required, which means no restrictions"
         }
     ],
-    "policy":[
+    "policy": [
         {
-            "path":"/org/deepin/service/sdbus/demo1",
-            "pathhide":true,
-            "permission":true,
-            "subpath":true,
-            "whitelist":"w1",
-            "interfaces":[
+            "path": "/org/deepin/service/sdbus/demo1",
+            "pathhide": true,
+            "permission": true,
+            "subpath": true,
+            "whitelist": "w1",
+            "interfaces": [
                 {
-                    "interface":"org.deepin.service.sdbus.demo1",
-                    "whitelist":"w1",
-                    "methods":[
+                    "interface": "org.deepin.service.sdbus.demo1",
+                    "whitelist": "w1",
+                    "methods": [
                         {
-                            "method":"Multiply",
-                            "whitelist":"w2"
+                            "method": "Multiply",
+                            "whitelist": "w2"
                         }
                     ],
-                    "properties":[
+                    "properties": [
                         {
-                            "property":"Age",
-                            "permission":false
+                            "property": "Age",
+                            "permission": false
                         }
                     ]
                 }
             ]
         },
         {
-            "path":"/org/deepin/services/sdbus/test1",
-            "pathhide":true,
-            "permission":false
+            "path": "/org/deepin/services/sdbus/test1",
+            "pathhide": true,
+            "permission": false
         }
     ]
 }

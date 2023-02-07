@@ -20,6 +20,5 @@ void ServiceManagerPrivate::RegisterGroup(const QString &groupName,
 void ServiceManagerPrivate::init(const QDBusConnection::BusType &type)
 {
     QDBusService::InitPolicy(
-        type,
-        QString(SERVICE_CONFIG_DIR) + "other/qt-service/manager.json");
+        type, QString(SERVICE_CONFIG_DIR) + "other/manager.json");
 }

@@ -11,11 +11,10 @@ public:
 
     QDBusConnection qDbusConnection();
 
-    virtual bool Register();
+    virtual bool registerService() override;
 
-public Q_SLOTS:
-    virtual void InitService();
-    virtual void InitThread();
+protected:
+    virtual void initThread() override;
 };
 
-#endif // SERVICEQTDBUS_H
+#endif  // SERVICEQTDBUS_H

@@ -4,8 +4,7 @@
 #include <QMap>
 #include <QObject>
 
-// TODO :namespace
-
+enum class SDKType { QT, SD };
 struct PolicyWhitelist {
     QString name;
     QStringList process;
@@ -52,25 +51,28 @@ class Policy : public QObject
 public:
     explicit Policy(QObject *parent = nullptr);
 
-    void ParseConfig(const QString &path);
+    void parseConfig(const QString &path);
 
-    bool CheckPathHide(const QString &path);
-    bool CheckMethodPermission(const QString &process,
+    bool checkPathHide(const QString &path);
+    bool checkMethodPermission(const QString &process,
                                const QString &path,
                                const QString &interface,
                                const QString &method);
-    bool CheckPropertyPermission(const QString &process,
+    bool checkPropertyPermission(const QString &process,
                                  const QString &path,
                                  const QString &interface,
                                  const QString &property);
-    bool CheckPermission(const QString &process,
+    bool checkPermission(const QString &process,
                          const QString &path,
                          const QString &interface,
                          const QString &dest,
                          const CallDestType &type);
+    QStringList paths() const;
+    bool allowSubPath(const QString &path) const;
+    bool isResident() const;
 
     //    void Check(); // TODO
-    void Print();
+    void print();
 
 private:
     bool readJsonFile(QJsonDocument &outDoc, const QString &fileName);
@@ -87,12 +89,16 @@ private:
                        const QString &key,
                        QString &value,
                        QString defaultValue = "");
+    bool jsonGetStringList(const QJsonObject &obj,
+                           const QString &key,
+                           QStringList &value,
+                           QStringList defaultValue = {});
     bool jsonGetBool(const QJsonObject &obj,
                      const QString &key,
                      bool &value,
                      bool defaultValue = false);
 
-public:  // TODO
+public:
     // 数据定义
     // 插入速度要求不高，查询速度要求很高，因此解析json的结果会通过冗余、预处理来提高查询速度，即以查询的速度角度来定义结构
     // 配置文件和此处数据没有一一对应，解析文件时，需要为此处数据服务，填充相关数据
@@ -103,17 +109,19 @@ public:  // TODO
     // 权限INTERFACE - In:process、path、interface，Out：bool
     // 权限METHOD - In:process、path、interface、method，Out：bool
     // 权限PROPERTIES - In:process、path、interface，Out：bool
-    QMapWhitelists m_mapWhitelist;
-    QMapPathHide m_mapPathHide;
-    QMapSubPath m_mapSubPath;
-    QMapPath m_mapPath;
+    QMapWhitelists mapWhitelist;
+    QMapPathHide mapPathHide;
+    QMapSubPath mapSubPath;
+    QMapPath mapPath;
 
-public:  // TODO
-    QString m_name;
-    QString m_group;
-    QString m_libPath;
-    QString m_policyVersion;
-    QString m_policyStartType;
+public:
+    QString name;
+    QString group;
+    QString libPath;
+    QString policyVersion;
+    QString policyStartType;
+    QStringList dependencies;
+    SDKType sdkType;
 };
 
 #endif  // POLICY_H

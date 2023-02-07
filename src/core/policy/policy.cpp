@@ -11,34 +11,34 @@ Policy::Policy(QObject *parent)
 {
 }
 
-bool Policy::CheckPathHide(const QString &path)
+bool Policy::checkPathHide(const QString &path)
 {
-    QMapPathHide::iterator iter = m_mapPathHide.find(path);
-    if (iter == m_mapPathHide.end()) {
+    QMapPathHide::iterator iter = mapPathHide.find(path);
+    if (iter == mapPathHide.end()) {
         return false;
     }
     return iter.value();
 }
 
-bool Policy::CheckMethodPermission(const QString &process,
+bool Policy::checkMethodPermission(const QString &process,
                                    const QString &path,
                                    const QString &interface,
                                    const QString &method)
 {
-    return CheckPermission(
+    return checkPermission(
         process, path, interface, method, CallDestType::Method);
 }
 
-bool Policy::CheckPropertyPermission(const QString &process,
+bool Policy::checkPropertyPermission(const QString &process,
                                      const QString &path,
                                      const QString &interface,
                                      const QString &property)
 {
-    return CheckPermission(
+    return checkPermission(
         process, path, interface, property, CallDestType::Property);
 }
 
-bool Policy::CheckPermission(const QString &process,
+bool Policy::checkPermission(const QString &process,
                              const QString &path,
                              const QString &interface,
                              const QString &dest,
@@ -48,8 +48,8 @@ bool Policy::CheckPermission(const QString &process,
             << QString("process=%1, path=%2, interface=%3, dest=%4")
                    .arg(process, path, interface, dest);
     // 时间复杂度跟权限配置复杂度正相关，简单的配置就会校验很快
-    QMapPath::const_iterator iterPath = m_mapPath.find(path);
-    if (iterPath == m_mapPath.end()) {
+    QMapPath::const_iterator iterPath = mapPath.find(path);
+    if (iterPath == mapPath.end()) {
         // 默认不校验，即有权限
         return true;
     }
@@ -107,26 +107,45 @@ bool Policy::CheckPermission(const QString &process,
     return false;
 }
 
-void Policy::Print()
+QStringList Policy::paths() const
+{
+    return mapSubPath.keys();
+}
+
+bool Policy::allowSubPath(const QString &path) const
+{
+    auto iter = mapSubPath.find(path);
+    if (iter != mapSubPath.end()) {
+        return iter.value();
+    }
+    return false;
+}
+
+bool Policy::isResident() const
+{
+    return policyStartType == "Resident";
+}
+
+void Policy::print()
 {
     qInfo() << "-------------------------------------";
     qInfo() << "DBUS POLICY CONFIG";
-    qInfo() << "- name:" << m_name;
+    qInfo() << "- name:" << name;
     qInfo() << "- path hide";
-    for (QMapPathHide::iterator iter = m_mapPathHide.begin();
-         iter != m_mapPathHide.end();
+    for (QMapPathHide::iterator iter = mapPathHide.begin();
+         iter != mapPathHide.end();
          iter++) {
         qInfo() << "-- path hide:" << iter.key() << iter.value();
     }
     qInfo() << "- whitelist";
-    for (QMapWhitelists::iterator iter = m_mapWhitelist.begin();
-         iter != m_mapWhitelist.end();
+    for (QMapWhitelists::iterator iter = mapWhitelist.begin();
+         iter != mapWhitelist.end();
          iter++) {
         qInfo() << "-- whitelist:" << iter.key() << iter.value().name
                 << iter.value().process;
     }
     qInfo() << "- policy";
-    for (QMapPath::iterator iter = m_mapPath.begin(); iter != m_mapPath.end();
+    for (QMapPath::iterator iter = mapPath.begin(); iter != mapPath.end();
          iter++) {
         qInfo() << "-- path:" << iter.key() << iter.value().path;
         qInfo() << "-- permission:" << iter.value().needPermission;
@@ -165,7 +184,7 @@ void Policy::Print()
     qInfo() << "-------------------------------------";
 }
 
-void Policy::ParseConfig(const QString &path)
+void Policy::parseConfig(const QString &path)
 {
     qInfo() << "[Policy]parse config:" << path;
     if (path.isEmpty()) {
@@ -178,12 +197,21 @@ void Policy::ParseConfig(const QString &path)
         return;
     }
     QJsonObject rootObj = jsonDoc.object();
-    jsonGetString(rootObj, "name", m_name);
-    jsonGetString(rootObj, "group", m_group);
-    jsonGetString(rootObj, "libPath", m_libPath, "core");
-    jsonGetString(rootObj, "policyVersion", m_policyVersion);
-    jsonGetString(rootObj, "policyStartType", m_policyStartType);
-    if (m_name.isEmpty()) {
+    jsonGetString(rootObj, "name", name);
+    jsonGetString(rootObj, "group", group);
+    jsonGetString(rootObj, "libPath", libPath, "core");
+    jsonGetString(rootObj, "policyVersion", policyVersion);
+    jsonGetString(rootObj, "policyStartType", policyStartType);
+    jsonGetStringList(rootObj, "dependencies", dependencies);
+    // get SDKType
+    QString sdkTypeString;
+    jsonGetString(rootObj, "SDKType", sdkTypeString, "qt");
+    if (sdkTypeString == "qt")
+        sdkType = SDKType::QT;
+    if (sdkTypeString == "sd")
+        sdkType = SDKType::SD;
+
+    if (name.isEmpty()) {
         qWarning() << "[Policy]json error, name is empty";
         return;
     }
@@ -223,7 +251,7 @@ bool Policy::readJsonFile(QJsonDocument &outDoc, const QString &fileName)
 // typedef QMap<QString, PolicyWhitelist> QMapWhitelists;
 bool Policy::parseWhitelist(const QJsonObject &obj)
 {
-    m_mapWhitelist.clear();
+    mapWhitelist.clear();
     if (!obj.contains("whitelists")) {
         // 为空，不是出错
         return true;
@@ -257,7 +285,7 @@ bool Policy::parseWhitelist(const QJsonObject &obj)
                     whitelist.process.append(processes.at(j).toString());
                 }
             }
-            m_mapWhitelist.insert(name, whitelist);
+            mapWhitelist.insert(name, whitelist);
         }
     }
 
@@ -266,8 +294,8 @@ bool Policy::parseWhitelist(const QJsonObject &obj)
 
 bool Policy::parsePolicy(const QJsonObject &obj)
 {
-    m_mapPathHide.clear();
-    m_mapPath.clear();
+    mapPathHide.clear();
+    mapPath.clear();
     if (!obj.contains("policy")) {
         // 为空，不是出错
         return true;
@@ -300,11 +328,11 @@ bool Policy::parsePolicyPath(const QJsonObject &obj)
 
     bool pathHide;
     jsonGetBool(obj, "pathhide", pathHide, false);
-    m_mapPathHide.insert(path, pathHide);
+    mapPathHide.insert(path, pathHide);
 
     bool subpath;
     jsonGetBool(obj, "subpath", subpath, false);
-    m_mapSubPath.insert(path, pathHide);
+    mapSubPath.insert(path, pathHide);
 
     PolicyPath policyPath;
     policyPath.path = path;
@@ -313,8 +341,8 @@ bool Policy::parsePolicyPath(const QJsonObject &obj)
     jsonGetString(obj, "whitelist", whitelist);
     if (!whitelist.isEmpty()) {
         QMapWhitelists::const_iterator iterWhitelist =
-            m_mapWhitelist.find(whitelist);
-        if (iterWhitelist != m_mapWhitelist.end() &&
+            mapWhitelist.find(whitelist);
+        if (iterWhitelist != mapWhitelist.end() &&
             iterWhitelist.value().name == whitelist) {
             policyPath.processes = iterWhitelist.value().process;
         }
@@ -337,7 +365,7 @@ bool Policy::parsePolicyPath(const QJsonObject &obj)
         }
     }
 
-    m_mapPath.insert(path, policyPath);
+    mapPath.insert(path, policyPath);
 
     return true;
 }
@@ -363,8 +391,8 @@ bool Policy::parsePolicyInterface(const QJsonObject &obj,
     jsonGetString(obj, "whitelist", whitelist);
     if (!whitelist.isEmpty()) {
         QMapWhitelists::const_iterator iterWhitelist =
-            m_mapWhitelist.find(whitelist);
-        if (iterWhitelist != m_mapWhitelist.end() &&
+            mapWhitelist.find(whitelist);
+        if (iterWhitelist != mapWhitelist.end() &&
             iterWhitelist.value().name == whitelist) {
             policyInterface.processes = iterWhitelist.value().process;
         }  // esle 错误的whitelist认为是空值
@@ -432,8 +460,8 @@ bool Policy::parsePolicyMethod(const QJsonObject &obj,
     jsonGetString(obj, "whitelist", whitelist);
     if (!whitelist.isEmpty()) {
         QMapWhitelists::const_iterator iterWhitelist =
-            m_mapWhitelist.find(whitelist);
-        if (iterWhitelist != m_mapWhitelist.end() &&
+            mapWhitelist.find(whitelist);
+        if (iterWhitelist != mapWhitelist.end() &&
             iterWhitelist.value().name == whitelist) {
             policyMethod.processes = iterWhitelist.value().process;
         }
@@ -466,8 +494,8 @@ bool Policy::parsePolicyProperties(const QJsonObject &obj,
     jsonGetString(obj, "whitelist", whitelist);
     if (!whitelist.isEmpty()) {
         QMapWhitelists::const_iterator iterWhitelist =
-            m_mapWhitelist.find(whitelist);
-        if (iterWhitelist != m_mapWhitelist.end() &&
+            mapWhitelist.find(whitelist);
+        if (iterWhitelist != mapWhitelist.end() &&
             iterWhitelist.value().name == whitelist) {
             policyproperty.processes = iterWhitelist.value().process;
         }
@@ -485,7 +513,7 @@ bool Policy::jsonGetString(const QJsonObject &obj,
                            QString defaultValue)
 {
     if (obj.contains(key)) {
-        QJsonValue v = obj.value(key);
+        const QJsonValue &v = obj.value(key);
         if (v.isString()) {
             value = v.toString();
             return true;
@@ -495,13 +523,36 @@ bool Policy::jsonGetString(const QJsonObject &obj,
     return false;
 }
 
+bool Policy::jsonGetStringList(const QJsonObject &obj,
+                               const QString &key,
+                               QStringList &value,
+                               QStringList defaultValue)
+{
+    value = defaultValue;
+    if (!obj.contains(key))
+        return false;
+    const QJsonValue &v = obj.value(key);
+    if (v.isString()) {
+        value.append(v.toString());
+        return true;
+    }
+    if (v.isArray()) {
+        const QJsonArray &array = v.toArray();
+        for (auto &&a : array) {
+            if (a.isString())
+                value.append(a.toString());
+        }
+    }
+    return true;
+}
+
 bool Policy::jsonGetBool(const QJsonObject &obj,
                          const QString &key,
                          bool &value,
                          bool defaultValue)
 {
     if (obj.contains(key)) {
-        QJsonValue v = obj.value(key);
+        const QJsonValue &v = obj.value(key);
         if (v.isBool()) {
             value = v.toBool();
             return true;

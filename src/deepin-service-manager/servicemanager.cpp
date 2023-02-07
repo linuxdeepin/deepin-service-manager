@@ -59,27 +59,23 @@ void ServiceManager::init(const QDBusConnection::BusType &type)
 void ServiceManager::initGroup(const QDBusConnection::BusType &type)
 {
     QStringList groups;
-    const QString &qtConfigPath =
-        QString("%1/%2/qt-service").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]);
-    const QString &sdConfigPath =
-        QString("%1/%2/sd-service").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]);
+    const QString &configPath =
+        QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]);
 
-    QFileInfoList list = QDir(qtConfigPath).entryInfoList();
-    list.append(QDir(sdConfigPath).entryInfoList());
+    QFileInfoList list = QDir(configPath).entryInfoList();
+    Policy *policy = new Policy(this);
     for (auto &&file : list) {
         if (!file.isFile() ||
             (file.suffix().compare("json", Qt::CaseInsensitive) != 0)) {
             continue;
         }
-        Policy *policy = new Policy(this);
-        policy->ParseConfig(file.absoluteFilePath());
-        if (!groups.contains(policy->m_group) && !policy->m_group.isEmpty()) {
-            groups.append(policy->m_group);
+        policy->parseConfig(file.absoluteFilePath());
+        if (!groups.contains(policy->group) && !policy->group.isEmpty()) {
+            groups.append(policy->group);
         }
-        policy->deleteLater();
     }
+    policy->deleteLater();
     qDebug() << "[ServiceManager]groups: " << groups;
-
     for (auto &&group : groups) {
 #ifdef QT_DEBUG
         QProcess *process = new QProcess(this);

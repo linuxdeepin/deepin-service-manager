@@ -33,9 +33,9 @@ target_link_libraries(${BIN_NAME} PRIVATE
 
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    EXECUTE_PROCESS(COMMAND mkdir -p ${CMAKE_BINARY_DIR}/share/user/qt-service/)
-    EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo2.json ${CMAKE_BINARY_DIR}/share/user/qt-service/)
+    EXECUTE_PROCESS(COMMAND mkdir -p ${CMAKE_BINARY_DIR}/share/user/)
+    EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo2.json ${CMAKE_BINARY_DIR}/share/user/)
 else()
     # install(TARGETS ${BIN_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR}/deepin-service-manager/)
-    # install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo2.json DESTINATION share/deepin-service-manager/user/qt-service/)
+    # install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo2.json DESTINATION share/deepin-service-manager/user/)
 endif()

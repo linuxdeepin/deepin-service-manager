@@ -1,3 +1,5 @@
 {
-    "libPath":"libplugin-qt-demo1.so"
+    "name": "org.deepin.service.demo1",
+    "libPath": "libplugin-qt-demo1.so",
+    "group": "core"
 }
