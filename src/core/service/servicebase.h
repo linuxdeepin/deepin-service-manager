@@ -7,7 +7,7 @@
 #include <policy/policy.h>
 
 typedef void *(*ServiceObject)(const char *path, const int len);
-typedef int (*DSMRegisterObject)(const char *name, void *data);
+typedef int (*DSMRegister)(const char *name, void *data);
 
 class ServiceBase : public QObject
 {

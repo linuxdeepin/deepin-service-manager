@@ -175,10 +175,9 @@ bool ServiceSDBus::registerService()
 
     // TODO: 释放lib、dbusobject、ServiceBase、unregisterObject等
     QLibrary *lib = new QLibrary(fileInfo.absoluteFilePath());
-    DSMRegisterObject objFunc =
-        DSMRegisterObject(lib->resolve("DSMRegisterObject"));
+    DSMRegister objFunc = DSMRegister(lib->resolve("DSMRegister"));
     if (!objFunc) {
-        qWarning() << "[ServiceSDBus]failed to resolve the `DSMRegisterObject` "
+        qWarning() << "[ServiceSDBus]failed to resolve the `DSMRegister` "
                       "method: "
                    << fileInfo.fileName();
         if (lib->isLoaded())
