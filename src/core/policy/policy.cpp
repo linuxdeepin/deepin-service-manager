@@ -203,6 +203,7 @@ void Policy::parseConfig(const QString &path)
     jsonGetString(rootObj, "policyVersion", policyVersion);
     jsonGetString(rootObj, "policyStartType", policyStartType);
     jsonGetStringList(rootObj, "dependencies", dependencies);
+    jsonGetInt(rootObj, "startDelay", startDelay);
     // get SDKType
     QString sdkTypeString;
     jsonGetString(rootObj, "pluginType", sdkTypeString, "qt");
@@ -555,6 +556,22 @@ bool Policy::jsonGetBool(const QJsonObject &obj,
         const QJsonValue &v = obj.value(key);
         if (v.isBool()) {
             value = v.toBool();
+            return true;
+        }
+    }
+    value = defaultValue;
+    return false;
+}
+
+bool Policy::jsonGetInt(const QJsonObject &obj,
+                        const QString &key,
+                        int &value,
+                        int defaultValue)
+{
+    if (obj.contains(key)) {
+        const QJsonValue &v = obj.value(key);
+        if (v.isDouble()) {
+            value = v.toInt();
             return true;
         }
     }

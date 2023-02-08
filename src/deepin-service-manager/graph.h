@@ -25,10 +25,10 @@ private:  // 内部类
         friend class Graph;
     };
 
-private:                 // 私有成员
-    int mVexNum;         // 图的顶点的数目
-    int mEdgNum;         // 图的边的数目
-    QList<VNode> mVexs;  // 图的顶点数组
+private:                  // 私有成员
+    int m_vexNum;         // 图的顶点的数目
+    int m_edgNum;         // 图的边的数目
+    QList<VNode> m_vexs;  // 图的顶点数组
 
 public:
     // 创建邻接表对应的图(自己输入)
@@ -60,18 +60,18 @@ Graph<T>::Graph(const QList<T> &vexs, const QList<QPair<T, T>> &edges)
     ENode *node1;
 
     // 初始化"顶点数"和"边数"
-    mVexNum = vexs.count();
-    mEdgNum = edges.count();
+    m_vexNum = vexs.count();
+    m_edgNum = edges.count();
     // 初始化"邻接表"的顶点
     for (auto &&vex : vexs) {
         VNode node;
         node.data = vex;
         node.firstEdge = nullptr;
-        mVexs.append(node);
+        m_vexs.append(node);
     }
 
     // 初始化"邻接表"的边
-    for (i = 0; i < mEdgNum; i++) {
+    for (i = 0; i < m_edgNum; i++) {
         // 读取边的起始顶点和结束顶点
         c1 = edges[i].first;
         c2 = edges[i].second;
@@ -82,10 +82,10 @@ Graph<T>::Graph(const QList<T> &vexs, const QList<QPair<T, T>> &edges)
         node1 = new ENode();
         node1->ivex = p2;
         // 将node1链接到"p1所在链表的末尾"
-        if (mVexs[p1].firstEdge == nullptr)
-            mVexs[p1].firstEdge = node1;
+        if (m_vexs[p1].firstEdge == nullptr)
+            m_vexs[p1].firstEdge = node1;
         else
-            linkLast(mVexs[p1].firstEdge, node1);
+            linkLast(m_vexs[p1].firstEdge, node1);
     }
 }
 
@@ -94,11 +94,11 @@ Graph<T>::~Graph()
 {
     ENode *node;
 
-    for (int i = 0; i < mEdgNum; i++) {
-        node = mVexs[i].firstEdge;
-        while (node != nullptr) {
+    for (int i = 0; i < m_edgNum; i++) {
+        node = m_vexs[i].firstEdge;
+        if (node != nullptr) {
             delete node;
-            node = node->nextEdge;
+            node = nullptr;
         }
     }
 }
@@ -122,8 +122,8 @@ template <class T>
 int Graph<T>::getPosition(T ch)
 {
     int i;
-    for (i = 0; i < mVexNum; i++)
-        if (mVexs[i].data == ch)
+    for (i = 0; i < m_vexNum; i++)
+        if (m_vexs[i].data == ch)
             return i;
     return -1;
 }
@@ -141,20 +141,20 @@ int Graph<T>::topologicalSort(QList<T> &out)
 {
     int i, j;
     int index = 0;
-    int head = 0;        // 辅助队列的头
-    int rear = 0;        // 辅助队列的尾
-    int queue[mVexNum];  // 辅组队列
-    int ins[mVexNum];    // 入度数组
-    T tops[mVexNum];  // 拓扑排序结果数组，记录每个节点的排序后的序号。
+    int head = 0;         // 辅助队列的头
+    int rear = 0;         // 辅助队列的尾
+    int queue[m_vexNum];  // 辅组队列
+    int ins[m_vexNum];    // 入度数组
+    T tops[m_vexNum];  // 拓扑排序结果数组，记录每个节点的排序后的序号。
     ENode *node;
 
-    memset(ins, 0, mVexNum * sizeof(int));
-    memset(queue, 0, mVexNum * sizeof(int));
-    memset(tops, 0, mVexNum * sizeof(T));
+    memset(ins, 0, m_vexNum * sizeof(int));
+    memset(queue, 0, m_vexNum * sizeof(int));
+    memset(tops, 0, m_vexNum * sizeof(T));
 
     // 统计每个顶点的入度数
-    for (i = 0; i < mVexNum; i++) {
-        node = mVexs[i].firstEdge;
+    for (i = 0; i < m_vexNum; i++) {
+        node = m_vexs[i].firstEdge;
         while (node != NULL) {
             ins[node->ivex]++;
             node = node->nextEdge;
@@ -162,15 +162,15 @@ int Graph<T>::topologicalSort(QList<T> &out)
     }
 
     // 将所有入度为0的顶点入队列
-    for (i = 0; i < mVexNum; i++)
+    for (i = 0; i < m_vexNum; i++)
         if (ins[i] == 0)
             queue[rear++] = i;  // 入队列
 
     while (head != rear)  // 队列非空
     {
         j = queue[head++];  // 出队列。j是顶点的序号
-        tops[index++] = mVexs[j].data;  // 将该顶点添加到tops中，tops是排序结果
-        node = mVexs[j].firstEdge;  // 获取以该顶点为起点的出边队列
+        tops[index++] = m_vexs[j].data;  // 将该顶点添加到tops中，tops是排序结果
+        node = m_vexs[j].firstEdge;  // 获取以该顶点为起点的出边队列
 
         // 将与"node"关联的节点的入度减1；
         // 若减1之后，该节点的入度为0；则将该节点添加到队列中。
@@ -185,13 +185,13 @@ int Graph<T>::topologicalSort(QList<T> &out)
         }
     }
 
-    if (index != mVexNum) {
+    if (index != m_vexNum) {
         qWarning() << "Graph has a cycle";
         return 1;
     }
 
     // 打印拓扑排序结果
-    for (i = 0; i < mVexNum; i++) out.append(tops[i]);
+    for (i = 0; i < m_vexNum; i++) out.append(tops[i]);
 
     return 0;
 }

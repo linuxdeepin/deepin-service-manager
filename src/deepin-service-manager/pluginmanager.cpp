@@ -1,10 +1,12 @@
 #include "pluginmanager.h"
+#include <qeventloop.h>
 
 #include <QDBusInterface>
 #include <QDBusMessage>
 #include <QDebug>
 #include <QDir>
 #include <QThread>
+#include <QTimer>
 
 #include "graph.h"
 #include "policy/policy.h"
@@ -86,15 +88,26 @@ bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType,
     // sort policy
     const QList<Policy *> &sortedPolicys = sortPolicy(policys);
     for (auto policy : sortedPolicys) {
-        ServiceBase *srv = createService(sessionType, policy);
-        if (srv == nullptr)
-            continue;
-        QDBusInterface remote(ServiceManagerName,
-                              ServiceManagerPrivatePath,
-                              ServiceManagerInterface,
-                              m_connection);
-        remote.call("RegisterGroup", m_group, m_connection.baseService());
-        addPlugin(srv);  // TODO:插件列表和 sdbus和qtbus等统一设计
+        // start delay
+        const int delay = policy->startDelay * 1000;
+        QEventLoop *loop = new QEventLoop(this);
+        QTimer::singleShot(delay, this, [this, sessionType, policy, loop] {
+            ServiceBase *srv = createService(sessionType, policy);
+            if (srv == nullptr) {
+                loop->quit();
+                return;
+            }
+            if (addPlugin(srv)) {
+                QDBusInterface remote(ServiceManagerName,
+                                      ServiceManagerPrivatePath,
+                                      ServiceManagerInterface,
+                                      m_connection);
+                remote.call(
+                    "RegisterGroup", m_group, m_connection.baseService());
+            }
+            loop->quit();
+        });
+        loop->exec();
     }
     qDebug() << "[PluginManager]plugin map: " << m_pluginMap;
     return true;
@@ -110,7 +123,7 @@ bool PluginManager::addPlugin(ServiceBase *obj)
     return true;
 }
 
-QList<Policy *> PluginManager::sortPolicy(const QList<Policy *> &policys)
+QList<Policy *> PluginManager::sortPolicy(QList<Policy *> policys)
 {
     // 使用拓扑排序，先确定依赖关系
     auto containsDependency = [policys](const QString &name) -> Policy * {
@@ -125,11 +138,11 @@ QList<Policy *> PluginManager::sortPolicy(const QList<Policy *> &policys)
         for (auto &&dependency : policy->dependencies) {
             if (Policy *dependencyPolicy = containsDependency(dependency)) {
                 edges.append(
-                    QPair<Policy *, Policy *>{policy, dependencyPolicy});
+                    QPair<Policy *, Policy *>{dependencyPolicy, policy});
             } else {
                 qWarning() << QString(
                                   "[PluginManager]Service:%1 cannot found "
-                                  "dependency:%2, will not load!")
+                                  "dependency:%2!")
                                   .arg(policy->name)
                                   .arg(dependency);
             }
@@ -139,6 +152,9 @@ QList<Policy *> PluginManager::sortPolicy(const QList<Policy *> &policys)
     QScopedPointer<Graph<Policy *>> graph(new Graph<Policy *>(policys, edges));
     QList<Policy *> result;
     graph->topologicalSort(result);
+    for (auto policy : result) {
+        qDebug() << "[PluginManager]sort result name:" << policy->name;
+    }
     return result;
 }
 

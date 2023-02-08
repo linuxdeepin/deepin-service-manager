@@ -97,6 +97,10 @@ private:
                      const QString &key,
                      bool &value,
                      bool defaultValue = false);
+    bool jsonGetInt(const QJsonObject &obj,
+                    const QString &key,
+                    int &value,
+                    int defaultValue = 0);
 
 public:
     // 数据定义
@@ -122,6 +126,7 @@ public:
     QString policyStartType;
     QStringList dependencies;
     SDKType sdkType;
+    int startDelay;
 };
 
 #endif  // POLICY_H

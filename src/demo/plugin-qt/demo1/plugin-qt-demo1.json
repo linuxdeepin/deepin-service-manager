@@ -3,5 +3,6 @@
     "libPath": "libplugin-qt-demo1.so",
     "group": "core",
     "policyStartType": "Resident",
-    "pluginType": "qt"
+    "pluginType": "qt",
+    "startDelay": 20
 }
