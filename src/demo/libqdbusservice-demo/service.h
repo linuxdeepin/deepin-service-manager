@@ -3,11 +3,10 @@
 
 #include "qdbusservice.h"
 
-#include <QObject>
 #include <QDBusContext>
+#include <QObject>
 
-class Service : public QDBusService,
-                protected QDBusContext
+class Service : public QDBusService, protected QDBusContext
 {
     Q_OBJECT
 public:

@@ -1,11 +1,11 @@
 #include "servicebase.h"
 
+#include "policy/policy.h"
+
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QDebug>
 #include <QThread>
-
-#include "policy/policy.h"
 
 ServiceBase::ServiceBase(QObject *parent)
     : QObject(parent)
@@ -14,7 +14,7 @@ ServiceBase::ServiceBase(QObject *parent)
 {
 }
 
-ServiceBase::~ServiceBase() {}
+ServiceBase::~ServiceBase() { }
 
 void ServiceBase::init(const QDBusConnection::BusType &busType, Policy *p)
 {
@@ -39,7 +39,7 @@ void ServiceBase::initService()
     th->start();
 }
 
-void ServiceBase::initThread() {}
+void ServiceBase::initThread() { }
 
 bool ServiceBase::isRegister() const
 {

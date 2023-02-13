@@ -1,5 +1,11 @@
 #include "servicemanager.h"
 
+#include "groupmanager.h"
+#include "policy/policy.h"
+#include "servicemanagerprivate.h"
+#include "servicemanagerpublic.h"
+#include "utils.h"
+
 #include <QCoreApplication>
 #include <QDBusError>
 #include <QDBusInterface>
@@ -8,13 +14,7 @@
 #include <QFileInfoList>
 #include <QProcess>
 
-#include "groupmanager.h"
-#include "policy/policy.h"
-#include "servicemanagerprivate.h"
-#include "servicemanagerpublic.h"
-#include "utils.h"
-
-static const QStringList GroupSiral{"core", "dde", "app"};
+static const QStringList GroupSiral{ "core", "dde", "app" };
 
 ServiceManager::ServiceManager(QObject *parent)
     : QObject(parent)
@@ -25,7 +25,7 @@ ServiceManager::ServiceManager(QObject *parent)
     initConnection();
 }
 
-ServiceManager::~ServiceManager() {}
+ServiceManager::~ServiceManager() { }
 
 void ServiceManager::init(const QDBusConnection::BusType &type)
 {
@@ -39,18 +39,17 @@ void ServiceManager::init(const QDBusConnection::BusType &type)
         qWarning() << "[ServiceManager]failed to register dbus service:"
                    << m_connection.lastError().message();
     }
-    if (!m_connection.registerObject(
-            ServiceManagerPath,
-            m_publicService,
-            QDBusConnection::ExportScriptableContents |
-                QDBusConnection::ExportAllProperties)) {
+    if (!m_connection.registerObject(ServiceManagerPath,
+                                     m_publicService,
+                                     QDBusConnection::ExportScriptableContents
+                                             | QDBusConnection::ExportAllProperties)) {
         qWarning() << "[ServiceManager]failed to register dbus object: "
                    << m_connection.lastError().message();
     }
     if (!m_connection.registerObject(ServiceManagerPrivatePath,
                                      m_privateService,
-                                     QDBusConnection::ExportAllSlots |
-                                         QDBusConnection::ExportAllSignals)) {
+                                     QDBusConnection::ExportAllSlots
+                                             | QDBusConnection::ExportAllSignals)) {
         qWarning() << "[ServiceManager]failed to register dbus object: "
                    << m_connection.lastError().message();
     }
@@ -61,14 +60,12 @@ void ServiceManager::init(const QDBusConnection::BusType &type)
 void ServiceManager::initGroup(const QDBusConnection::BusType &type)
 {
     QStringList groups;
-    const QString &configPath =
-        QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]);
+    const QString &configPath = QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]);
 
     QFileInfoList list = QDir(configPath).entryInfoList();
     Policy *policy = new Policy(this);
     for (auto &&file : list) {
-        if (!file.isFile() ||
-            (file.suffix().compare("json", Qt::CaseInsensitive) != 0)) {
+        if (!file.isFile() || (file.suffix().compare("json", Qt::CaseInsensitive) != 0)) {
             continue;
         }
         policy->parseConfig(file.absoluteFilePath());
@@ -83,26 +80,23 @@ void ServiceManager::initGroup(const QDBusConnection::BusType &type)
               [](const QString &group1, const QString &group2) -> bool {
                   if (!GroupSiral.contains(group1))
                       return false;
-                  return GroupSiral.indexOf(group1) <
-                         GroupSiral.indexOf(group2);
+                  return GroupSiral.indexOf(group1) < GroupSiral.indexOf(group2);
               });
     qDebug() << "[ServiceManager]groups: " << groups;
     for (auto &&group : groups) {
         if (!QString("Debug").compare(BUILD_TYPE)) {
             QProcess *process = new QProcess(this);
-            process->start(qApp->applicationFilePath(),
-                           {"-c", typeMap[type] + '.' + group});
+            process->start(qApp->applicationFilePath(), { "-c", typeMap[type] + '.' + group });
 
         } else {
             QDBusInterface remote("org.freedesktop.systemd1",
                                   "/org/freedesktop/systemd1",
                                   "org.freedesktop.systemd1.Manager",
                                   m_connection);
-            remote.call("StartUnit",
-                        QString("deepin-service-manager@%1.%2.service")
-                            .arg(typeMap[type])
-                            .arg(group),
-                        "fail");
+            remote.call(
+                    "StartUnit",
+                    QString("deepin-service-manager@%1.%2.service").arg(typeMap[type]).arg(group),
+                    "fail");
         }
     }
 }
@@ -115,11 +109,9 @@ void ServiceManager::initConnection()
             &ServiceManager::onRegisterGroup);
 }
 
-void ServiceManager::onRegisterGroup(const QString &groupName,
-                                     const QString &serviceName)
+void ServiceManager::onRegisterGroup(const QString &groupName, const QString &serviceName)
 {
-    qDebug() << "[ServiceManager]on register group:" << groupName
-             << serviceName;
+    qDebug() << "[ServiceManager]on register group:" << groupName << serviceName;
     if (m_groups.contains(groupName))
         return;
     GroupManager *groupManager = new GroupManager(this);
@@ -132,11 +124,10 @@ void ServiceManager::onRegisterGroup(const QString &groupName,
     const QString &groupPath = "/group/" + groupName;
 
     // register group path
-    if (!m_connection.registerObject(
-            groupPath,
-            groupManager,
-            QDBusConnection::ExportScriptableContents |
-                QDBusConnection::ExportAllProperties)) {
+    if (!m_connection.registerObject(groupPath,
+                                     groupManager,
+                                     QDBusConnection::ExportScriptableContents
+                                             | QDBusConnection::ExportAllProperties)) {
         qWarning() << "[ServiceManager]failed to register dbus object: "
                    << m_connection.lastError().message();
     }

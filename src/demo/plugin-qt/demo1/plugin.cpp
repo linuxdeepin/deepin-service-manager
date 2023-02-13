@@ -1,6 +1,7 @@
 
-#include <QDBusConnection>
 #include "service.h"
+
+#include <QDBusConnection>
 
 static Service *service = nullptr;
 
@@ -8,12 +9,11 @@ extern "C" int DSMRegister(const char *name, void *data)
 {
     (void)data;
     service = new Service();
-    QDBusConnection::RegisterOptions opts =
-        QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals |
-        QDBusConnection::ExportAllProperties;
+    QDBusConnection::RegisterOptions opts = QDBusConnection::ExportAllSlots
+            | QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllProperties;
 
     QDBusConnection::connectToBus(QDBusConnection::SystemBus, QString(name))
-        .registerObject("/org/deepin/services/demo1", service, opts);
+            .registerObject("/org/deepin/services/demo1", service, opts);
     return 0;
 }
 

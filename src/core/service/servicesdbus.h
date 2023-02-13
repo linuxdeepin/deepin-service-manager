@@ -21,4 +21,4 @@ private:
     sd_bus *m_bus;
 };
 
-#endif  // SERVICESDBUS_H
+#endif // SERVICESDBUS_H

@@ -18,6 +18,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "pluginmanager.h"
+#include "servicemanager.h"
+
 #include <qmap.h>
 
 #include <QCommandLineOption>
@@ -25,15 +28,13 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-#include "pluginmanager.h"
-#include "servicemanager.h"
-
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     a.setApplicationVersion(VERSION);
 
-    QCommandLineOption controlOption({{"c", "control"}, "Format: <dbus type>.<group name>\neg:user.core", "control"});
+    QCommandLineOption controlOption(
+            { { "c", "control" }, "Format: <dbus type>.<group name>\neg:user.core", "control" });
     QCommandLineParser parser;
     parser.setApplicationDescription("deepin service manager");
     parser.addHelpOption();

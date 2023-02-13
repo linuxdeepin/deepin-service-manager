@@ -7,18 +7,15 @@ ServiceManagerPrivate::ServiceManagerPrivate(QObject *parent)
 {
 }
 
-ServiceManagerPrivate::~ServiceManagerPrivate() {}
+ServiceManagerPrivate::~ServiceManagerPrivate() { }
 
-void ServiceManagerPrivate::RegisterGroup(const QString &groupName,
-                                          const QString &serviceName)
+void ServiceManagerPrivate::RegisterGroup(const QString &groupName, const QString &serviceName)
 {
-    qDebug() << "[ServiceManagerPrivate] register group:" << groupName
-             << serviceName;
+    qDebug() << "[ServiceManagerPrivate] register group:" << groupName << serviceName;
     emit requestRegisterGroup(groupName, serviceName);
 }
 
 void ServiceManagerPrivate::init(const QDBusConnection::BusType &type)
 {
-    QDBusService::InitPolicy(
-        type, QString(SERVICE_CONFIG_DIR) + "other/manager.json");
+    QDBusService::InitPolicy(type, QString(SERVICE_CONFIG_DIR) + "other/manager.json");
 }

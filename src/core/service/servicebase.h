@@ -1,10 +1,10 @@
 #ifndef SERVICEBASE_H
 #define SERVICEBASE_H
 
+#include <policy/policy.h>
+
 #include <QDBusConnection>
 #include <QObject>
-
-#include <policy/policy.h>
 
 typedef void *(*ServiceObject)(const char *path, const int len);
 typedef int (*DSMRegister)(const char *name, void *data);
@@ -33,7 +33,7 @@ protected:
     bool m_isRegister;
 
     QDBusConnection::BusType m_sessionType;
-    SDKType m_SDKType;  // qtdbus、sdbus
+    SDKType m_SDKType; // qtdbus、sdbus
 };
 
-#endif  // SERVICEBASE_H
+#endif // SERVICEBASE_H

@@ -25,8 +25,7 @@ bool Policy::checkMethodPermission(const QString &process,
                                    const QString &interface,
                                    const QString &method)
 {
-    return checkPermission(
-        process, path, interface, method, CallDestType::Method);
+    return checkPermission(process, path, interface, method, CallDestType::Method);
 }
 
 bool Policy::checkPropertyPermission(const QString &process,
@@ -34,8 +33,7 @@ bool Policy::checkPropertyPermission(const QString &process,
                                      const QString &interface,
                                      const QString &property)
 {
-    return checkPermission(
-        process, path, interface, property, CallDestType::Property);
+    return checkPermission(process, path, interface, property, CallDestType::Property);
 }
 
 bool Policy::checkPermission(const QString &process,
@@ -46,7 +44,7 @@ bool Policy::checkPermission(const QString &process,
 {
     qInfo() << "[Policy]CheckPermission:"
             << QString("process=%1, path=%2, interface=%3, dest=%4")
-                   .arg(process, path, interface, dest);
+                       .arg(process, path, interface, dest);
     // 时间复杂度跟权限配置复杂度正相关，简单的配置就会校验很快
     QMapPath::const_iterator iterPath = mapPath.find(path);
     if (iterPath == mapPath.end()) {
@@ -56,8 +54,7 @@ bool Policy::checkPermission(const QString &process,
 
     // PATH权限
     const PolicyPath &policyPath = iterPath.value();
-    QMapInterface::const_iterator iterInterface =
-        policyPath.interfaces.find(interface);
+    QMapInterface::const_iterator iterInterface = policyPath.interfaces.find(interface);
     if (iterInterface == policyPath.interfaces.end()) {
         // 没有配置interface权限，则用path权限
         if (!policyPath.needPermission) {
@@ -69,8 +66,7 @@ bool Policy::checkPermission(const QString &process,
     if (type == CallDestType::Method) {
         // INTERFACE权限
         const PolicyInterface &policyInterface = iterInterface.value();
-        QMapMethod::const_iterator iterMethod =
-            policyInterface.methods.find(dest);
+        QMapMethod::const_iterator iterMethod = policyInterface.methods.find(dest);
         if (iterMethod == policyInterface.methods.end()) {
             if (!policyInterface.needPermission) {
                 return true;
@@ -87,8 +83,7 @@ bool Policy::checkPermission(const QString &process,
     } else if (type == CallDestType::Property) {
         // INTERFACE权限
         const PolicyInterface &policyInterface = iterInterface.value();
-        QMapProperty::const_iterator iterProp =
-            policyInterface.properties.find(dest);
+        QMapProperty::const_iterator iterProp = policyInterface.properties.find(dest);
         if (iterProp == policyInterface.properties.end()) {
             if (!policyInterface.needPermission) {
                 return true;
@@ -132,51 +127,36 @@ void Policy::print()
     qInfo() << "DBUS POLICY CONFIG";
     qInfo() << "- name:" << name;
     qInfo() << "- path hide";
-    for (QMapPathHide::iterator iter = mapPathHide.begin();
-         iter != mapPathHide.end();
-         iter++) {
+    for (QMapPathHide::iterator iter = mapPathHide.begin(); iter != mapPathHide.end(); iter++) {
         qInfo() << "-- path hide:" << iter.key() << iter.value();
     }
     qInfo() << "- whitelist";
-    for (QMapWhitelists::iterator iter = mapWhitelist.begin();
-         iter != mapWhitelist.end();
-         iter++) {
-        qInfo() << "-- whitelist:" << iter.key() << iter.value().name
-                << iter.value().process;
+    for (QMapWhitelists::iterator iter = mapWhitelist.begin(); iter != mapWhitelist.end(); iter++) {
+        qInfo() << "-- whitelist:" << iter.key() << iter.value().name << iter.value().process;
     }
     qInfo() << "- policy";
-    for (QMapPath::iterator iter = mapPath.begin(); iter != mapPath.end();
-         iter++) {
+    for (QMapPath::iterator iter = mapPath.begin(); iter != mapPath.end(); iter++) {
         qInfo() << "-- path:" << iter.key() << iter.value().path;
         qInfo() << "-- permission:" << iter.value().needPermission;
         qInfo() << "-- whitelist:" << iter.value().processes;
-        for (QMapInterface::iterator iterInterface =
-                 iter.value().interfaces.begin();
+        for (QMapInterface::iterator iterInterface = iter.value().interfaces.begin();
              iterInterface != iter.value().interfaces.end();
              iterInterface++) {
-            qInfo() << "---- interface:" << iterInterface.key()
-                    << iterInterface.value().interface;
-            qInfo() << "---- permission:"
-                    << iterInterface.value().needPermission;
+            qInfo() << "---- interface:" << iterInterface.key() << iterInterface.value().interface;
+            qInfo() << "---- permission:" << iterInterface.value().needPermission;
             qInfo() << "---- whitelist:" << iterInterface.value().processes;
-            for (QMapMethod::iterator iterMethod =
-                     iterInterface.value().methods.begin();
+            for (QMapMethod::iterator iterMethod = iterInterface.value().methods.begin();
                  iterMethod != iterInterface.value().methods.end();
                  iterMethod++) {
-                qInfo() << "------ method:" << iterMethod.key()
-                        << iterMethod.value().method;
-                qInfo() << "------ permission:"
-                        << iterMethod.value().needPermission;
+                qInfo() << "------ method:" << iterMethod.key() << iterMethod.value().method;
+                qInfo() << "------ permission:" << iterMethod.value().needPermission;
                 qInfo() << "------ whitelist:" << iterMethod.value().processes;
             }
-            for (QMapProperty::iterator iterProp =
-                     iterInterface.value().properties.begin();
+            for (QMapProperty::iterator iterProp = iterInterface.value().properties.begin();
                  iterProp != iterInterface.value().properties.end();
                  iterProp++) {
-                qInfo() << "------ property:" << iterProp.key()
-                        << iterProp.value().property;
-                qInfo() << "------ permission:"
-                        << iterProp.value().needPermission;
+                qInfo() << "------ property:" << iterProp.key() << iterProp.value().property;
+                qInfo() << "------ permission:" << iterProp.value().needPermission;
                 qInfo() << "------ whitelist:" << iterProp.value().processes;
             }
         }
@@ -341,10 +321,8 @@ bool Policy::parsePolicyPath(const QJsonObject &obj)
     QString whitelist;
     jsonGetString(obj, "whitelist", whitelist);
     if (!whitelist.isEmpty()) {
-        QMapWhitelists::const_iterator iterWhitelist =
-            mapWhitelist.find(whitelist);
-        if (iterWhitelist != mapWhitelist.end() &&
-            iterWhitelist.value().name == whitelist) {
+        QMapWhitelists::const_iterator iterWhitelist = mapWhitelist.find(whitelist);
+        if (iterWhitelist != mapWhitelist.end() && iterWhitelist.value().name == whitelist) {
             policyPath.processes = iterWhitelist.value().process;
         }
     }
@@ -356,8 +334,7 @@ bool Policy::parsePolicyPath(const QJsonObject &obj)
             for (int i = 0; i < interfaceList.size(); ++i) {
                 QJsonValue interface = interfaceList.at(i);
                 if (interface.isObject()) {
-                    bool ret =
-                        parsePolicyInterface(interface.toObject(), policyPath);
+                    bool ret = parsePolicyInterface(interface.toObject(), policyPath);
                     if (!ret) {
                         return false;
                     }
@@ -371,8 +348,7 @@ bool Policy::parsePolicyPath(const QJsonObject &obj)
     return true;
 }
 
-bool Policy::parsePolicyInterface(const QJsonObject &obj,
-                                  PolicyPath &policyPath)
+bool Policy::parsePolicyInterface(const QJsonObject &obj, PolicyPath &policyPath)
 {
     QString interface;
     jsonGetString(obj, "interface", interface);
@@ -384,19 +360,14 @@ bool Policy::parsePolicyInterface(const QJsonObject &obj,
     PolicyInterface policyInterface;
     policyInterface.interface = interface;
     // interface没有指定permission，则使用上级path的permission
-    jsonGetBool(obj,
-                "permission",
-                policyInterface.needPermission,
-                policyPath.needPermission);
+    jsonGetBool(obj, "permission", policyInterface.needPermission, policyPath.needPermission);
     QString whitelist;
     jsonGetString(obj, "whitelist", whitelist);
     if (!whitelist.isEmpty()) {
-        QMapWhitelists::const_iterator iterWhitelist =
-            mapWhitelist.find(whitelist);
-        if (iterWhitelist != mapWhitelist.end() &&
-            iterWhitelist.value().name == whitelist) {
+        QMapWhitelists::const_iterator iterWhitelist = mapWhitelist.find(whitelist);
+        if (iterWhitelist != mapWhitelist.end() && iterWhitelist.value().name == whitelist) {
             policyInterface.processes = iterWhitelist.value().process;
-        }  // esle 错误的whitelist认为是空值
+        } // esle 错误的whitelist认为是空值
     } else {
         // interface没有指定whitelist，则使用上级path的whitelist
         policyInterface.processes = policyPath.processes;
@@ -409,8 +380,7 @@ bool Policy::parsePolicyInterface(const QJsonObject &obj,
             for (int i = 0; i < methodList.size(); ++i) {
                 QJsonValue method = methodList.at(i);
                 if (method.isObject()) {
-                    bool ret =
-                        parsePolicyMethod(method.toObject(), policyInterface);
+                    bool ret = parsePolicyMethod(method.toObject(), policyInterface);
                     if (!ret) {
                         return false;
                     }
@@ -426,8 +396,7 @@ bool Policy::parsePolicyInterface(const QJsonObject &obj,
             for (int i = 0; i < propertiesList.size(); ++i) {
                 QJsonValue property = propertiesList.at(i);
                 if (property.isObject()) {
-                    bool ret = parsePolicyProperties(property.toObject(),
-                                                     policyInterface);
+                    bool ret = parsePolicyProperties(property.toObject(), policyInterface);
                     if (!ret) {
                         return false;
                     }
@@ -440,8 +409,7 @@ bool Policy::parsePolicyInterface(const QJsonObject &obj,
     return true;
 }
 
-bool Policy::parsePolicyMethod(const QJsonObject &obj,
-                               PolicyInterface &policyInterface)
+bool Policy::parsePolicyMethod(const QJsonObject &obj, PolicyInterface &policyInterface)
 {
     QString method;
     jsonGetString(obj, "method", method);
@@ -453,17 +421,12 @@ bool Policy::parsePolicyMethod(const QJsonObject &obj,
     PolicyMethod policyMethod;
     policyMethod.method = method;
     // method没有指定permission，则使用上级interface的permission
-    jsonGetBool(obj,
-                "permission",
-                policyMethod.needPermission,
-                policyInterface.needPermission);
+    jsonGetBool(obj, "permission", policyMethod.needPermission, policyInterface.needPermission);
     QString whitelist;
     jsonGetString(obj, "whitelist", whitelist);
     if (!whitelist.isEmpty()) {
-        QMapWhitelists::const_iterator iterWhitelist =
-            mapWhitelist.find(whitelist);
-        if (iterWhitelist != mapWhitelist.end() &&
-            iterWhitelist.value().name == whitelist) {
+        QMapWhitelists::const_iterator iterWhitelist = mapWhitelist.find(whitelist);
+        if (iterWhitelist != mapWhitelist.end() && iterWhitelist.value().name == whitelist) {
             policyMethod.processes = iterWhitelist.value().process;
         }
     } else {
@@ -475,8 +438,7 @@ bool Policy::parsePolicyMethod(const QJsonObject &obj,
     return true;
 }
 
-bool Policy::parsePolicyProperties(const QJsonObject &obj,
-                                   PolicyInterface &policyInterface)
+bool Policy::parsePolicyProperties(const QJsonObject &obj, PolicyInterface &policyInterface)
 {
     QString property;
     jsonGetString(obj, "property", property);
@@ -487,17 +449,12 @@ bool Policy::parsePolicyProperties(const QJsonObject &obj,
 
     PolicyProperty policyproperty;
     policyproperty.property = property;
-    jsonGetBool(obj,
-                "permission",
-                policyproperty.needPermission,
-                policyInterface.needPermission);
+    jsonGetBool(obj, "permission", policyproperty.needPermission, policyInterface.needPermission);
     QString whitelist;
     jsonGetString(obj, "whitelist", whitelist);
     if (!whitelist.isEmpty()) {
-        QMapWhitelists::const_iterator iterWhitelist =
-            mapWhitelist.find(whitelist);
-        if (iterWhitelist != mapWhitelist.end() &&
-            iterWhitelist.value().name == whitelist) {
+        QMapWhitelists::const_iterator iterWhitelist = mapWhitelist.find(whitelist);
+        if (iterWhitelist != mapWhitelist.end() && iterWhitelist.value().name == whitelist) {
             policyproperty.processes = iterWhitelist.value().process;
         }
     } else {
@@ -547,10 +504,7 @@ bool Policy::jsonGetStringList(const QJsonObject &obj,
     return true;
 }
 
-bool Policy::jsonGetBool(const QJsonObject &obj,
-                         const QString &key,
-                         bool &value,
-                         bool defaultValue)
+bool Policy::jsonGetBool(const QJsonObject &obj, const QString &key, bool &value, bool defaultValue)
 {
     if (obj.contains(key)) {
         const QJsonValue &v = obj.value(key);
@@ -563,10 +517,7 @@ bool Policy::jsonGetBool(const QJsonObject &obj,
     return false;
 }
 
-bool Policy::jsonGetInt(const QJsonObject &obj,
-                        const QString &key,
-                        int &value,
-                        int defaultValue)
+bool Policy::jsonGetInt(const QJsonObject &obj, const QString &key, int &value, int defaultValue)
 {
     if (obj.contains(key)) {
         const QJsonValue &v = obj.value(key);

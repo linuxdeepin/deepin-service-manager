@@ -14,7 +14,8 @@ extern "C" int DSMRegister(const char *name, void *data)
                                  "/org/deepin/service/sdbus/demo1",
                                  "org.deepin.service.sdbus.demo1",
                                  calculator_vtable,
-                                 NULL) < 0) {
+                                 NULL)
+        < 0) {
         return -1;
     }
     return 0;

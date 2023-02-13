@@ -20,4 +20,3 @@ void GroupManager::removePlugin(const QString &pluginName)
     if (m_plugins.contains(pluginName))
         m_plugins.removeOne(pluginName);
 }
-

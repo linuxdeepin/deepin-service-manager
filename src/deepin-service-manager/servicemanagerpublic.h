@@ -26,4 +26,4 @@ private:
     QStringList m_groups;
 };
 
-#endif  // PLUGINMANAGERPUBLIC_H
+#endif // PLUGINMANAGERPUBLIC_H

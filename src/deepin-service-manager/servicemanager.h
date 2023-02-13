@@ -10,7 +10,8 @@ class ServiceManagerPrivate;
 class GroupManager;
 typedef GroupManager _GroupManager;
 
-struct GroupData {
+struct GroupData
+{
     QString ServiceName;
     _GroupManager *GroupManager;
 };
@@ -34,8 +35,8 @@ private:
 private:
     ServiceManagerPublic *m_publicService;
     ServiceManagerPrivate *m_privateService;
-    QMap<QString, GroupData> m_groups;  // groupName serviceName
+    QMap<QString, GroupData> m_groups; // groupName serviceName
     QDBusConnection m_connection;
 };
 
-#endif  // PLUGINMANAGER_H
+#endif // PLUGINMANAGER_H

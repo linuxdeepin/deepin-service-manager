@@ -1,16 +1,18 @@
 #include "service.h"
+
 #include <iostream>
 #include <string>
 
-int method_hello(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
+int method_hello(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
+{
     (void)userdata;
     (void)ret_error;
     const char *string = "World";
     return sd_bus_reply_method_return(m, "s", string);
 }
 
-
-int method_multiply(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
+int method_multiply(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
+{
     (void)userdata;
     (void)ret_error;
     int64_t x, y;
@@ -27,7 +29,8 @@ int method_multiply(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) 
     return sd_bus_reply_method_return(m, "x", x * y);
 }
 
-int method_divide(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
+int method_divide(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
+{
     (void)userdata;
     std::cout << "method_divide called." << std::endl;
     int64_t x, y;
@@ -42,10 +45,11 @@ int method_divide(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
 
     /* Return an error on division by zero */
     if (y == 0) {
-        sd_bus_error_set_const(ret_error, "org.deepin.demo.sdbus.test.error.DivisionByZero", "Sorry, can't allow division by zero.");
+        sd_bus_error_set_const(ret_error,
+                               "org.deepin.demo.sdbus.test.error.DivisionByZero",
+                               "Sorry, can't allow division by zero.");
         return -EINVAL;
     }
 
     return sd_bus_reply_method_return(m, "x", x / y);
 }
-

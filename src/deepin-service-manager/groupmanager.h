@@ -23,4 +23,4 @@ private:
     QStringList m_plugins;
 };
 
-#endif  // GROUPMANAGER_H
+#endif // GROUPMANAGER_H

@@ -1,12 +1,12 @@
+#include "demoadaptor.h"
+#include "service.h"
+
 #include <QApplication>
+#include <QDBusConnection>
 #include <QDebug>
-#include <QWidget>
 #include <QTextEdit>
 #include <QVBoxLayout>
-#include <QDBusConnection>
-
-#include "service.h"
-#include "demoadaptor.h"
+#include <QWidget>
 
 int main(int argc, char *argv[])
 {
@@ -23,10 +23,12 @@ int main(int argc, char *argv[])
     Service s;
     DemoAdaptor adp(&s);
     if (!QDBusConnection::sessionBus().registerObject("/org/deepin/service/sdk/demo", &s)) {
-        qWarning() << "failed to register dbus object" << QDBusConnection::sessionBus().lastError().message();
+        qWarning() << "failed to register dbus object"
+                   << QDBusConnection::sessionBus().lastError().message();
     }
     if (!QDBusConnection::sessionBus().registerService("org.deepin.service.sdk.demo")) {
-        qWarning() << "failed to register dbus object" << QDBusConnection::sessionBus().lastError().message();
+        qWarning() << "failed to register dbus object"
+                   << QDBusConnection::sessionBus().lastError().message();
     }
 
     QObject::connect(&s, &Service::dbusLog, textEdit, &QTextEdit::append);

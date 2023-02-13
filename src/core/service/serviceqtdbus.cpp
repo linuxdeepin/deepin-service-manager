@@ -1,14 +1,14 @@
 #include "serviceqtdbus.h"
 
+#include "policy/policy.h"
+#include "qtdbushook.h"
+
 #include <QDBusAbstractAdaptor>
 #include <QDebug>
 #include <QFileInfo>
 #include <QLibrary>
 #include <QMetaClassInfo>
 #include <QThread>
-
-#include "policy/policy.h"
-#include "qtdbushook.h"
 
 ServiceQtDBus::ServiceQtDBus(QObject *parent)
     : ServiceBase(parent)
@@ -26,11 +26,9 @@ QDBusConnection ServiceQtDBus::qDbusConnection()
         }
     } else {
         if (m_sessionType == QDBusConnection::SystemBus) {
-            return QDBusConnection::connectToBus(QDBusConnection::SystemBus,
-                                                 policy->name);
+            return QDBusConnection::connectToBus(QDBusConnection::SystemBus, policy->name);
         } else {
-            return QDBusConnection::connectToBus(QDBusConnection::SessionBus,
-                                                 policy->name);
+            return QDBusConnection::connectToBus(QDBusConnection::SessionBus, policy->name);
         }
     }
 }
@@ -41,7 +39,7 @@ void ServiceQtDBus::initThread()
             << ", InitThread-ThreadID:" << QThread::currentThreadId();
     qDbusConnection().registerService(policy->name);
     qDbusConnection().registerObject(QStringLiteral("/PrivateDeclaration"),
-                                     this);  // TODO:this
+                                     this); // TODO:this
 
     // TODO:无权限、隐藏、按需启动需求的service，不应该注册，避免触发hook，提高效率
     QTDbusHook::instance()->setServiceObject(this);
@@ -122,7 +120,7 @@ bool ServiceQtDBus::registerService()
         lib->deleteLater();
         return false;
     }
-    int ret = objFunc(policy->name.toStdString().c_str(), nullptr);  // TODO
+    int ret = objFunc(policy->name.toStdString().c_str(), nullptr); // TODO
     if (ret) {
         return false;
     }

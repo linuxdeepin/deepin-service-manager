@@ -5,42 +5,57 @@
 #include <QObject>
 
 enum class SDKType { QT, SD };
-struct PolicyWhitelist {
+
+struct PolicyWhitelist
+{
     QString name;
     QStringList process;
 };
+
 typedef QMap<QString, PolicyWhitelist> QMapWhitelists;
 // hide, default:false
 typedef QMap<QString, bool> QMapPathHide;
 // subpath, default:false
 typedef QMap<QString, bool> QMapSubPath;
+
 // typedef QMap<QString, bool> QMapProcess;
-struct PolicyMethod {
+struct PolicyMethod
+{
     QString method;
     bool needPermission;
     QStringList processes;
 };
+
 typedef QMap<QString, PolicyMethod> QMapMethod;
-struct PolicyProperty {
+
+struct PolicyProperty
+{
     QString property;
     bool needPermission;
     QStringList processes;
 };
+
 typedef QMap<QString, PolicyProperty> QMapProperty;
-struct PolicyInterface {
+
+struct PolicyInterface
+{
     QString interface;
     bool needPermission;
     QStringList processes;
     QMapMethod methods;
     QMapProperty properties;
 };
+
 typedef QMap<QString, PolicyInterface> QMapInterface;
-struct PolicyPath {
+
+struct PolicyPath
+{
     QString path;
     bool needPermission;
     QStringList processes;
     QMapInterface interfaces;
 };
+
 typedef QMap<QString, PolicyPath> QMapPath;
 
 enum CallDestType { Method, Property };
@@ -80,10 +95,8 @@ private:
     bool parsePolicy(const QJsonObject &obj);
     bool parsePolicyPath(const QJsonObject &obj);
     bool parsePolicyInterface(const QJsonObject &obj, PolicyPath &policyPath);
-    bool parsePolicyMethod(const QJsonObject &obj,
-                           PolicyInterface &policyInterface);
-    bool parsePolicyProperties(const QJsonObject &obj,
-                               PolicyInterface &policyInterface);
+    bool parsePolicyMethod(const QJsonObject &obj, PolicyInterface &policyInterface);
+    bool parsePolicyProperties(const QJsonObject &obj, PolicyInterface &policyInterface);
 
     bool jsonGetString(const QJsonObject &obj,
                        const QString &key,
@@ -93,14 +106,9 @@ private:
                            const QString &key,
                            QStringList &value,
                            QStringList defaultValue = {});
-    bool jsonGetBool(const QJsonObject &obj,
-                     const QString &key,
-                     bool &value,
-                     bool defaultValue = false);
-    bool jsonGetInt(const QJsonObject &obj,
-                    const QString &key,
-                    int &value,
-                    int defaultValue = 0);
+    bool
+    jsonGetBool(const QJsonObject &obj, const QString &key, bool &value, bool defaultValue = false);
+    bool jsonGetInt(const QJsonObject &obj, const QString &key, int &value, int defaultValue = 0);
 
 public:
     // 数据定义
@@ -129,4 +137,4 @@ public:
     int startDelay;
 };
 
-#endif  // POLICY_H
+#endif // POLICY_H

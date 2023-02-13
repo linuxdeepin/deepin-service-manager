@@ -1,9 +1,9 @@
 #ifndef QDBUSSERVICE_P_H
 #define QDBUSSERVICE_P_H
 
-#include <QObject>
-
 #include "service/serviceqtdbus.h"
+
+#include <QObject>
 
 class QDBusServicePrivate : public ServiceQtDBus
 {
@@ -17,4 +17,4 @@ public Q_SLOTS:
     virtual void InitService();
 };
 
-#endif  // QDBUSSERVICEPRIVATE_H
+#endif // QDBUSSERVICEPRIVATE_H

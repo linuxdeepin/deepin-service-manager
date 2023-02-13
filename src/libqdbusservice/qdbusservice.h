@@ -5,12 +5,13 @@
 #include <QObject>
 
 #if defined(EXPORT_LIBRARY)
-#define EXPORT_PLUGIN_LIBRARY Q_DECL_EXPORT  // TODO
+#  define EXPORT_PLUGIN_LIBRARY Q_DECL_EXPORT // TODO
 #else
-#define EXPORT_PLUGIN_LIBRARY Q_DECL_IMPORT
+#  define EXPORT_PLUGIN_LIBRARY Q_DECL_IMPORT
 #endif
 
 class QDBusServicePrivate;
+
 class EXPORT_PLUGIN_LIBRARY QDBusService : public QObject
 {
     Q_OBJECT
@@ -22,4 +23,4 @@ public:
     void InitPolicy(QDBusConnection::BusType busType, QString policyFile);
 };
 
-#endif  // QDBUSSERVICE_H
+#endif // QDBUSSERVICE_H

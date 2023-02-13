@@ -1,4 +1,11 @@
 #include "pluginmanager.h"
+
+#include "graph.h"
+#include "policy/policy.h"
+#include "service/serviceqtdbus.h"
+#include "service/servicesdbus.h"
+#include "utils.h"
+
 #include <qeventloop.h>
 
 #include <QDBusInterface>
@@ -7,12 +14,6 @@
 #include <QDir>
 #include <QThread>
 #include <QTimer>
-
-#include "graph.h"
-#include "policy/policy.h"
-#include "service/serviceqtdbus.h"
-#include "service/servicesdbus.h"
-#include "utils.h"
 
 PluginManager::PluginManager(QObject *parent)
     : QObject(parent)
@@ -29,8 +30,8 @@ PluginManager::~PluginManager()
     m_pluginMap.clear();
 }
 
-ServiceBase *PluginManager::createService(
-    const QDBusConnection::BusType &sessionType, Policy *policy)
+ServiceBase *PluginManager::createService(const QDBusConnection::BusType &sessionType,
+                                          Policy *policy)
 {
     ServiceBase *srv = nullptr;
     if (policy->sdkType == SDKType::QT)
@@ -45,36 +46,31 @@ ServiceBase *PluginManager::createService(
     return srv;
 }
 
-void PluginManager::init(const QDBusConnection::BusType &type,
-                         const QString &group)
+void PluginManager::init(const QDBusConnection::BusType &type, const QString &group)
 {
     m_group = group;
     // Register service and call pluginmanager
     if (type == QDBusConnection::SystemBus)
         m_connection = QDBusConnection::systemBus();
-    if (!m_connection.registerObject(
-            PluginManagerPath,
-            this,
-            QDBusConnection::ExportScriptableContents |
-                QDBusConnection::ExportAllProperties)) {
+    if (!m_connection.registerObject(PluginManagerPath,
+                                     this,
+                                     QDBusConnection::ExportScriptableContents
+                                             | QDBusConnection::ExportAllProperties)) {
         qWarning() << "[PluginManager]failed to register dbus object: "
                    << m_connection.lastError().message();
     }
 
     // load plugin
-    loadPlugins(type,
-                QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]));
+    loadPlugins(type, QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]));
 }
 
-bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType,
-                                const QString &path)
+bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType, const QString &path)
 {
     qInfo() << "[PluginManager]Init Plugins:" << path;
     QList<Policy *> policys;
     QFileInfoList list = QDir(path).entryInfoList();
     for (auto file : list) {
-        if (!file.isFile() ||
-            (file.suffix().compare("json", Qt::CaseInsensitive) != 0)) {
+        if (!file.isFile() || (file.suffix().compare("json", Qt::CaseInsensitive) != 0)) {
             continue;
         }
         Policy *policy = new Policy(this);
@@ -102,8 +98,7 @@ bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType,
                                       ServiceManagerPrivatePath,
                                       ServiceManagerInterface,
                                       m_connection);
-                remote.call(
-                    "RegisterGroup", m_group, m_connection.baseService());
+                remote.call("RegisterGroup", m_group, m_connection.baseService());
             }
             loop->quit();
         });
@@ -137,14 +132,12 @@ QList<Policy *> PluginManager::sortPolicy(QList<Policy *> policys)
     for (auto &&policy : policys) {
         for (auto &&dependency : policy->dependencies) {
             if (Policy *dependencyPolicy = containsDependency(dependency)) {
-                edges.append(
-                    QPair<Policy *, Policy *>{dependencyPolicy, policy});
+                edges.append(QPair<Policy *, Policy *>{ dependencyPolicy, policy });
             } else {
-                qWarning() << QString(
-                                  "[PluginManager]Service:%1 cannot found "
-                                  "dependency:%2!")
-                                  .arg(policy->name)
-                                  .arg(dependency);
+                qWarning() << QString("[PluginManager]Service:%1 cannot found "
+                                      "dependency:%2!")
+                                      .arg(policy->name)
+                                      .arg(dependency);
             }
         }
     }

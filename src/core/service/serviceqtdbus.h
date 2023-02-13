@@ -17,4 +17,4 @@ protected:
     virtual void initThread() override;
 };
 
-#endif  // SERVICEQTDBUS_H
+#endif // SERVICEQTDBUS_H

@@ -1,5 +1,6 @@
 #include "server1.h"
 #include "server2.h"
+
 #include <QDBusMessage>
 
 #ifdef NEW_QT
@@ -27,11 +28,12 @@ void MyHook(const QDBusMessage &msg)
     // 1, The service1 will check, and if the check fails, the call to SetData() will not be allowed
     // 2, The service2 does not check.
 
-    if (msg.member() == "SetData" 
-        && msg.interface() == "org.services.demo" 
+    if (msg.member() == "SetData" && msg.interface() == "org.services.demo"
         && msg.path() == "/org/services/demo"
 #ifdef NEW_QT
-        && baseService == QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo1").baseService()
+        && baseService
+                == QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo1")
+                           .baseService()
 #endif
         // BUG2:In the hook, it is impossible to judge whether the call is service1 or service2
         && !isAllow(msg.service())) {
@@ -43,7 +45,7 @@ void MyHook(const QDBusMessage &msg)
 #ifdef NEW_QT
         return -1;
 #else
-        return ;
+        return;
 #endif
     }
 
@@ -64,22 +66,32 @@ int main(int argc, char *argv[])
 #else
     qDBusAddSpyHook(MyHook);
 #endif
-    
+
     Service1 service1;
-    if (!QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo1").registerObject("/org/services/demo", &service1, QDBusConnection::ExportAllSlots)) {
+    if (!QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo1")
+                 .registerObject("/org/services/demo",
+                                 &service1,
+                                 QDBusConnection::ExportAllSlots)) {
         return -1;
     }
-    if (!QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo1").registerService("org.services.demo1")) {
+    if (!QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo1")
+                 .registerService("org.services.demo1")) {
         return -1;
     }
     Service2 service2;
-    if (!QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo2").registerObject("/org/services/demo", &service2, QDBusConnection::ExportAllSlots)) {
+    if (!QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo2")
+                 .registerObject("/org/services/demo",
+                                 &service2,
+                                 QDBusConnection::ExportAllSlots)) {
         return -1;
     }
-    if (!QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo2").registerService("org.services.demo2")) {
+    if (!QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo2")
+                 .registerService("org.services.demo2")) {
         return -1;
     }
-    qInfo() << QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo1").baseService();
-    qInfo() << QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo2").baseService();
+    qInfo() << QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo1")
+                       .baseService();
+    qInfo() << QDBusConnection::connectToBus(QDBusConnection::SessionBus, "org.services.demo2")
+                       .baseService();
     return a.exec();
 }

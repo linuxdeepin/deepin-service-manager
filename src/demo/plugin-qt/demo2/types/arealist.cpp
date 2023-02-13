@@ -9,6 +9,7 @@ void registerAreaListMetaType()
     qRegisterMetaType<AreaList>("AreaList");
     qDBusRegisterMetaType<AreaList>();
 }
+
 QDBusArgument &operator<<(QDBusArgument &arg, const MonitRect &rect)
 {
     arg.beginStructure();

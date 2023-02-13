@@ -19,19 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QObject>
-#include <QDebug>
-#include <QApplication>
-#include <QPaintEvent>
-#include <QTest>
-#include <QSignalSpy>
-
 #include <gtest/gtest.h>
 
 #include "dbus_manager.h"
 
+#include <QApplication>
+#include <QDebug>
+#include <QObject>
+#include <QPaintEvent>
+#include <QSignalSpy>
+#include <QTest>
+
 // 项目当前的插件数量
-#define CUR_PLUGIN_COUNT    2
+#define CUR_PLUGIN_COUNT 2
 
 class Test_DBusManager : public ::testing::Test
 {

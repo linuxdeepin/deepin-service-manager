@@ -3,7 +3,8 @@
 
 // <实现一个复杂类型的dbus类型>
 // 1，定义一个QDBusMetaType类型
-// 1.1, 定义一个自定义类型, include <QDBusMetaType>, 使用Q_DECLARE_METATYPE、qRegisterMetaType、qDBusRegisterMetaType
+// 1.1, 定义一个自定义类型, include <QDBusMetaType>,
+// 使用Q_DECLARE_METATYPE、qRegisterMetaType、qDBusRegisterMetaType
 // 1.2，当类型为列表，如本例AreaList，需要重载operator<<和operator>>
 // 2, xml的<method>中需要用<annotation name="org.qtproject.QtDBus.QtTypeName.In1" value=<type>/>
 // 2.1, 参数AreaList，
@@ -15,18 +16,27 @@
 
 #include <QDBusMetaType>
 
-struct MonitRect {
+struct MonitRect
+{
     int x1;
     int y1;
     int x2;
     int y2;
 
-    MonitRect(){}
-    MonitRect(int p1, int p2, int p3, int p4) : x1(p1), y1(p2), x2(p3), y2(p4) {}
+    MonitRect() { }
+
+    MonitRect(int p1, int p2, int p3, int p4)
+        : x1(p1)
+        , y1(p2)
+        , x2(p3)
+        , y2(p4)
+    {
+    }
 
     friend QDBusArgument &operator<<(QDBusArgument &argument, const MonitRect &info);
     friend const QDBusArgument &operator>>(const QDBusArgument &argument, MonitRect &info);
 };
+
 typedef QList<MonitRect> AreaList;
 Q_DECLARE_METATYPE(MonitRect)
 Q_DECLARE_METATYPE(AreaList)

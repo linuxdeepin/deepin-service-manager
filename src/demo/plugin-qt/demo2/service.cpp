@@ -1,13 +1,13 @@
 #include "service.h"
 
-#include <QTimer>
 #include <QDebug>
 #include <QMetaMethod>
 #include <QThread>
+#include <QTimer>
 
 Service::Service(QObject *parent)
     : QObject(parent)
-//    , m_currentSessionPath(QDBusObjectPath("/tt"))
+    //    , m_currentSessionPath(QDBusObjectPath("/tt"))
     , m_age(11)
 //    , m_msg("ss&22") // error
 {
@@ -16,16 +16,16 @@ Service::Service(QObject *parent)
     timer->setInterval(5000);
     timer->setSingleShot(false);
     connect(timer, &QTimer::timeout, this, &Service::Tick);
-//    timer->start();
+    //    timer->start();
 
     registerAreaListMetaType();
 }
 
-
 QString Service::Hello()
 {
-//    QThread::sleep(10);
-    qInfo() << "Service::Hello called." << "ThreadID:" << QThread::currentThreadId();
+    //    QThread::sleep(10);
+    qInfo() << "Service::Hello called."
+            << "ThreadID:" << QThread::currentThreadId();
 
     emit Tick();
     return "World";
@@ -50,7 +50,8 @@ bool Service::Register(const QString &id, QString &result2)
         // 自定义错误类型
         // 1, 自定义类型第一个参数是name，格式需要以"."分割的字符串，比如"org.aaa"合法，"aaa"不合法
         // 2, 参考dbus官方错误类型, errorname都是"${dbusname}.${自定义错误名称}"的命名
-        sendErrorReply("com.deepin.dbusdemo.RegisterNotSupported", "The method call 'Register()' is not supported");
+        sendErrorReply("com.deepin.dbusdemo.RegisterNotSupported",
+                       "The method call 'Register()' is not supported");
     }
     result2 = "reply2";
     return true;
@@ -66,29 +67,29 @@ bool Service::SetArea(const QString &id, const AreaList area)
     return true;
 }
 
-//bool Service::locked()
+// bool Service::locked()
 //{
-//    qInfo() << "Service::locked";
-//    return m_locked;
-//}
+//     qInfo() << "Service::locked";
+//     return m_locked;
+// }
 
-//void Service::setLocked(bool value)
+// void Service::setLocked(bool value)
 //{
-//    qInfo() << "Service::setLocked value:" << value;
-//    m_locked = value;
-//}
+//     qInfo() << "Service::setLocked value:" << value;
+//     m_locked = value;
+// }
 
-//QDBusObjectPath Service::currentSessionPath()
+// QDBusObjectPath Service::currentSessionPath()
 //{
-//    qInfo() << "Service::currentSessionPath";
-//    return m_currentSessionPath;
-//}
+//     qInfo() << "Service::currentSessionPath";
+//     return m_currentSessionPath;
+// }
 
-//void Service::setCurrentSessionPath(QDBusObjectPath value)
+// void Service::setCurrentSessionPath(QDBusObjectPath value)
 //{
-//    qInfo() << "Service::setCurrentSessionPath value:" << value.path();
-//    m_currentSessionPath = value;
-//}
+//     qInfo() << "Service::setCurrentSessionPath value:" << value.path();
+//     m_currentSessionPath = value;
+// }
 
 quint32 Service::Age()
 {
@@ -100,7 +101,7 @@ void Service::SetAge(quint32 value)
 {
     qInfo() << "Service::setAge value:" << value;
     m_age = value;
-//    emit AgeChanged(m_age); // 这里发送也会生效，但是建议到adaptor中实现emit
+    //    emit AgeChanged(m_age); // 这里发送也会生效，但是建议到adaptor中实现emit
 }
 
 QString Service::Msg()
@@ -114,9 +115,10 @@ void Service::SetMsg(QString value)
     qInfo() << "Service::SetMsg value:" << value;
     m_msg = value;
 }
+
 void Service::connectNotify(const QMetaMethod &signal)
 {
     qInfo() << "signal.methodType():" << signal.methodType();
     qInfo() << "signal.methodSignature():" << signal.methodSignature();
-//    QObject::connectNotify(signal);
+    //    QObject::connectNotify(signal);
 }

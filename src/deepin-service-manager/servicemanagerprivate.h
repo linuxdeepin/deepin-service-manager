@@ -19,8 +19,7 @@ public slots:
     void RegisterGroup(const QString &groupName, const QString &serviceName);
 
 signals:
-    void requestRegisterGroup(const QString &groupName,
-                              const QString &serviceName);
+    void requestRegisterGroup(const QString &groupName, const QString &serviceName);
 };
 
-#endif  // PLUGINMANAGERPRIVATE_H
+#endif // PLUGINMANAGERPRIVATE_H

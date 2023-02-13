@@ -5,30 +5,30 @@
 #include <QList>
 
 // 邻接表
-template <class T>
+template<class T>
 class Graph
 {
-private:  // 内部类
+private: // 内部类
     // 邻接表中表对应的链表的顶点
     class ENode
     {
-        int ivex;         // 该边所指向的顶点的位置
-        ENode *nextEdge;  // 指向下一条弧的指针
+        int ivex;        // 该边所指向的顶点的位置
+        ENode *nextEdge; // 指向下一条弧的指针
         friend class Graph;
     };
 
     // 邻接表中表的顶点
     class VNode
     {
-        T data;            // 顶点信息
-        ENode *firstEdge;  // 指向第一条依附该顶点的弧
+        T data;           // 顶点信息
+        ENode *firstEdge; // 指向第一条依附该顶点的弧
         friend class Graph;
     };
 
-private:                  // 私有成员
-    int m_vexNum;         // 图的顶点的数目
-    int m_edgNum;         // 图的边的数目
-    QList<VNode> m_vexs;  // 图的顶点数组
+private:                 // 私有成员
+    int m_vexNum;        // 图的顶点的数目
+    int m_edgNum;        // 图的边的数目
+    QList<VNode> m_vexs; // 图的顶点数组
 
 public:
     // 创建邻接表对应的图(自己输入)
@@ -47,12 +47,12 @@ private:
     void linkLast(ENode *list, ENode *node);
 };
 
-template <class T>
+template<class T>
 Graph<T>::Graph()
 {
 }
 
-template <class T>
+template<class T>
 Graph<T>::Graph(const QList<T> &vexs, const QList<QPair<T, T>> &edges)
 {
     T c1, c2;
@@ -89,7 +89,7 @@ Graph<T>::Graph(const QList<T> &vexs, const QList<QPair<T, T>> &edges)
     }
 }
 
-template <class T>
+template<class T>
 Graph<T>::~Graph()
 {
     ENode *node;
@@ -106,19 +106,20 @@ Graph<T>::~Graph()
 /*
  * 将node节点链接到list的最后
  */
-template <class T>
+template<class T>
 void Graph<T>::linkLast(ENode *list, ENode *node)
 {
     ENode *p = list;
 
-    while (p->nextEdge) p = p->nextEdge;
+    while (p->nextEdge)
+        p = p->nextEdge;
     p->nextEdge = node;
 }
 
 /*
  * 返回指定数据的位置
  */
-template <class T>
+template<class T>
 int Graph<T>::getPosition(T ch)
 {
     int i;
@@ -136,16 +137,16 @@ int Graph<T>::getPosition(T ch)
  *      0 -- 成功排序，并输入结果
  *      1 -- 失败(该有向图是有环的)
  */
-template <class T>
+template<class T>
 int Graph<T>::topologicalSort(QList<T> &out)
 {
     int i, j;
     int index = 0;
-    int head = 0;         // 辅助队列的头
-    int rear = 0;         // 辅助队列的尾
-    int queue[m_vexNum];  // 辅组队列
-    int ins[m_vexNum];    // 入度数组
-    T tops[m_vexNum];  // 拓扑排序结果数组，记录每个节点的排序后的序号。
+    int head = 0;        // 辅助队列的头
+    int rear = 0;        // 辅助队列的尾
+    int queue[m_vexNum]; // 辅组队列
+    int ins[m_vexNum];   // 入度数组
+    T tops[m_vexNum];    // 拓扑排序结果数组，记录每个节点的排序后的序号。
     ENode *node;
 
     memset(ins, 0, m_vexNum * sizeof(int));
@@ -164,13 +165,13 @@ int Graph<T>::topologicalSort(QList<T> &out)
     // 将所有入度为0的顶点入队列
     for (i = 0; i < m_vexNum; i++)
         if (ins[i] == 0)
-            queue[rear++] = i;  // 入队列
+            queue[rear++] = i; // 入队列
 
-    while (head != rear)  // 队列非空
+    while (head != rear) // 队列非空
     {
-        j = queue[head++];  // 出队列。j是顶点的序号
-        tops[index++] = m_vexs[j].data;  // 将该顶点添加到tops中，tops是排序结果
-        node = m_vexs[j].firstEdge;  // 获取以该顶点为起点的出边队列
+        j = queue[head++];              // 出队列。j是顶点的序号
+        tops[index++] = m_vexs[j].data; // 将该顶点添加到tops中，tops是排序结果
+        node = m_vexs[j].firstEdge;     // 获取以该顶点为起点的出边队列
 
         // 将与"node"关联的节点的入度减1；
         // 若减1之后，该节点的入度为0；则将该节点添加到队列中。
@@ -179,7 +180,7 @@ int Graph<T>::topologicalSort(QList<T> &out)
             ins[node->ivex]--;
             // 若节点的入度为0，则将其"入队列"
             if (ins[node->ivex] == 0)
-                queue[rear++] = node->ivex;  // 入队列
+                queue[rear++] = node->ivex; // 入队列
 
             node = node->nextEdge;
         }
@@ -191,7 +192,8 @@ int Graph<T>::topologicalSort(QList<T> &out)
     }
 
     // 打印拓扑排序结果
-    for (i = 0; i < m_vexNum; i++) out.append(tops[i]);
+    for (i = 0; i < m_vexNum; i++)
+        out.append(tops[i]);
 
     return 0;
 }
@@ -222,4 +224,4 @@ int Graph<T>::topologicalSort(QList<T> &out)
 /*     return 0; */
 /* } */
 
-#endif  // GRAPH_H
+#endif // GRAPH_H

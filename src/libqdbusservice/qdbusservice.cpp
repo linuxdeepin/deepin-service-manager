@@ -8,8 +8,7 @@ QDBusService::QDBusService(QObject *parent)
 {
 }
 
-void QDBusService::InitPolicy(QDBusConnection::BusType busType,
-                              QString policyFile)
+void QDBusService::InitPolicy(QDBusConnection::BusType busType, QString policyFile)
 {
     Q_D(QDBusService);
     d->InitPolicy(busType, policyFile);
