@@ -93,12 +93,13 @@ bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType, con
                 loop->quit();
                 return;
             }
-            if (addPlugin(srv)) {
+            if (!policy->libPath.isEmpty()) {
                 QDBusInterface remote(ServiceManagerName,
                                       ServiceManagerPrivatePath,
                                       ServiceManagerInterface,
                                       m_connection);
                 remote.call("RegisterGroup", m_group, m_connection.baseService());
+                addPlugin(srv);
             }
             loop->quit();
         });
@@ -108,14 +109,10 @@ bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType, con
     return true;
 }
 
-bool PluginManager::addPlugin(ServiceBase *obj)
+void PluginManager::addPlugin(ServiceBase *obj)
 {
-    if (obj->policy->libPath.isEmpty()) {
-        return false;
-    }
     m_pluginMap[obj->policy->name] = obj;
     emit PluginAdded(obj->policy->name);
-    return true;
 }
 
 QList<Policy *> PluginManager::sortPolicy(QList<Policy *> policys)

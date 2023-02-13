@@ -29,7 +29,7 @@ signals:
 private:
     ServiceBase *createService(const QDBusConnection::BusType &sessionType, Policy *policy);
     bool loadPlugins(const QDBusConnection::BusType &sessionType, const QString &path);
-    bool addPlugin(ServiceBase *obj);
+    void addPlugin(ServiceBase *obj);
     QList<Policy *> sortPolicy(QList<Policy *> policys);
 
     QStringList plugins() const;
