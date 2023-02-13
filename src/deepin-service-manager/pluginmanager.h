@@ -18,7 +18,7 @@ class PluginManager : public QObject
     Q_PROPERTY(QStringList Plugins READ plugins);
 
 public:
-    explicit PluginManager(QObject *parent = nullptr);
+    explicit PluginManager(const QDBusConnection &connection, QObject *parent = nullptr);
     ~PluginManager();
 
     void init(const QDBusConnection::BusType &type, const QString &group);

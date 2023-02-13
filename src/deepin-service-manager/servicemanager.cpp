@@ -16,11 +16,11 @@
 
 static const QStringList GroupSiral{ "core", "dde", "app" };
 
-ServiceManager::ServiceManager(QObject *parent)
+ServiceManager::ServiceManager(const QDBusConnection &connection, QObject *parent)
     : QObject(parent)
     , m_publicService(new ServiceManagerPublic(this))
     , m_privateService(new ServiceManagerPrivate(this))
-    , m_connection(QDBusConnection::sessionBus())
+    , m_connection(connection)
 {
     initConnection();
 }
@@ -31,9 +31,6 @@ void ServiceManager::init(const QDBusConnection::BusType &type)
 {
     m_publicService->init(type);
     m_privateService->init(type);
-
-    if (type == QDBusConnection::SystemBus)
-        m_connection = QDBusConnection::systemBus();
 
     if (!m_connection.registerService(ServiceManagerName)) {
         qWarning() << "[ServiceManager]failed to register dbus service:"

@@ -15,9 +15,9 @@
 #include <QThread>
 #include <QTimer>
 
-PluginManager::PluginManager(QObject *parent)
+PluginManager::PluginManager(const QDBusConnection &connection, QObject *parent)
     : QObject(parent)
-    , m_connection(QDBusConnection::sessionBus())
+    , m_connection(connection)
 {
 }
 

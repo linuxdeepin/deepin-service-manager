@@ -20,7 +20,7 @@ class ServiceManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit ServiceManager(QObject *parent = nullptr);
+    explicit ServiceManager(const QDBusConnection &connection, QObject *parent = nullptr);
     ~ServiceManager();
 
     void init(const QDBusConnection::BusType &type);
