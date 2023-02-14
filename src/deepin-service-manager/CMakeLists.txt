@@ -17,7 +17,6 @@ file(GLOB_RECURSE SRCS
 
 add_executable(${BIN_NAME}  ${SRCS})
 
-set (BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "define project build type.")
 target_compile_definitions(${BIN_NAME} PRIVATE
   VERSION="${VERSION}"
   BUILD_TYPE="${BUILD_TYPE}"

@@ -82,20 +82,13 @@ void ServiceManager::initGroup(const QDBusConnection::BusType &type)
               });
     qDebug() << "[ServiceManager]groups: " << groups;
     for (auto &&group : groups) {
-        if (!QString("Debug").compare(BUILD_TYPE)) {
-            QProcess *process = new QProcess(this);
-            process->start(qApp->applicationFilePath(), { "-c", typeMap[type] + '.' + group });
-
-        } else {
-            QDBusInterface remote("org.freedesktop.systemd1",
-                                  "/org/freedesktop/systemd1",
-                                  "org.freedesktop.systemd1.Manager",
-                                  connection);
-            remote.call(
-                    "StartUnit",
-                    QString("deepin-service-manager@%1.%2.service").arg(typeMap[type]).arg(group),
+        QDBusInterface remote("org.freedesktop.systemd1",
+                              "/org/freedesktop/systemd1",
+                              "org.freedesktop.systemd1.Manager",
+                              connection);
+        remote.call("StartUnit",
+                    QString("deepin-service-plugin-%1@%2.service").arg(typeMap[type]).arg(group),
                     "fail");
-        }
     }
 }
 
