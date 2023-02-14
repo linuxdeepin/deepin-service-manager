@@ -1,4 +1,4 @@
-Source: dde-service-manager
+Source: deepin-service
 Section: admin
 Priority: optional
 Maintainer: Deepin Sysdev <sysdev@deepin.com>
