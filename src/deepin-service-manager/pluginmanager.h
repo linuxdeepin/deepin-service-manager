@@ -18,7 +18,7 @@ class PluginManager : public QObject
     Q_PROPERTY(QStringList Plugins READ plugins);
 
 public:
-    explicit PluginManager(const QDBusConnection &connection, QObject *parent = nullptr);
+    explicit PluginManager(QObject *parent = nullptr);
     ~PluginManager();
 
     void init(const QDBusConnection::BusType &type, const QString &group);
@@ -36,7 +36,6 @@ private:
 
 private:
     PluginMap m_pluginMap;
-    QDBusConnection m_connection;
     QString m_group;
 };
 

@@ -120,7 +120,8 @@ bool ServiceQtDBus::registerService()
         lib->deleteLater();
         return false;
     }
-    int ret = objFunc(policy->name.toStdString().c_str(), nullptr); // TODO
+    auto connection = qDbusConnection();
+    int ret = objFunc(policy->name.toStdString().c_str(), (void *)&connection);
     if (ret) {
         return false;
     }

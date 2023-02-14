@@ -16,11 +16,10 @@
 
 static const QStringList GroupSiral{ "core", "dde", "app" };
 
-ServiceManager::ServiceManager(const QDBusConnection &connection, QObject *parent)
+ServiceManager::ServiceManager(QObject *parent)
     : QObject(parent)
     , m_publicService(new ServiceManagerPublic(this))
     , m_privateService(new ServiceManagerPrivate(this))
-    , m_connection(connection)
 {
     initConnection();
 }
@@ -32,30 +31,32 @@ void ServiceManager::init(const QDBusConnection::BusType &type)
     m_publicService->init(type);
     m_privateService->init(type);
 
-    if (!m_connection.registerService(ServiceManagerName)) {
-        qWarning() << "[ServiceManager]failed to register dbus service:"
-                   << m_connection.lastError().message();
-    }
-    if (!m_connection.registerObject(ServiceManagerPath,
-                                     m_publicService,
-                                     QDBusConnection::ExportScriptableContents
-                                             | QDBusConnection::ExportAllProperties)) {
-        qWarning() << "[ServiceManager]failed to register dbus object: "
-                   << m_connection.lastError().message();
-    }
-    if (!m_connection.registerObject(ServiceManagerPrivatePath,
-                                     m_privateService,
-                                     QDBusConnection::ExportAllSlots
-                                             | QDBusConnection::ExportAllSignals)) {
-        qWarning() << "[ServiceManager]failed to register dbus object: "
-                   << m_connection.lastError().message();
-    }
-
     initGroup(type);
 }
 
 void ServiceManager::initGroup(const QDBusConnection::BusType &type)
 {
+    m_busType = type;
+    QDBusConnection connection = QDBusConnection::connectToBus(type, ServiceManagerName);
+
+    if (!connection.registerService(ServiceManagerName)) {
+        qWarning() << "[ServiceManager]failed to register dbus service:"
+                   << connection.lastError().message();
+    }
+    if (!connection.registerObject(ServiceManagerPath,
+                                   m_publicService,
+                                   QDBusConnection::ExportScriptableContents
+                                           | QDBusConnection::ExportAllProperties)) {
+        qWarning() << "[ServiceManager]failed to register dbus object: "
+                   << connection.lastError().message();
+    }
+    if (!connection.registerObject(ServiceManagerPrivatePath,
+                                   m_privateService,
+                                   QDBusConnection::ExportAllSlots
+                                           | QDBusConnection::ExportAllSignals)) {
+        qWarning() << "[ServiceManager]failed to register dbus object: "
+                   << connection.lastError().message();
+    }
     QStringList groups;
     const QString &configPath = QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]);
 
@@ -89,7 +90,7 @@ void ServiceManager::initGroup(const QDBusConnection::BusType &type)
             QDBusInterface remote("org.freedesktop.systemd1",
                                   "/org/freedesktop/systemd1",
                                   "org.freedesktop.systemd1.Manager",
-                                  m_connection);
+                                  connection);
             remote.call(
                     "StartUnit",
                     QString("deepin-service-manager@%1.%2.service").arg(typeMap[type]).arg(group),
@@ -120,19 +121,20 @@ void ServiceManager::onRegisterGroup(const QString &groupName, const QString &se
     m_publicService->addGroup(groupName);
     const QString &groupPath = "/group/" + groupName;
 
+    QDBusConnection connection = QDBusConnection::connectToBus(m_busType, ServiceManagerName);
     // register group path
-    if (!m_connection.registerObject(groupPath,
-                                     groupManager,
-                                     QDBusConnection::ExportScriptableContents
-                                             | QDBusConnection::ExportAllProperties)) {
+    if (!connection.registerObject(groupPath,
+                                   groupManager,
+                                   QDBusConnection::ExportScriptableContents
+                                           | QDBusConnection::ExportAllProperties)) {
         qWarning() << "[ServiceManager]failed to register dbus object: "
-                   << m_connection.lastError().message();
+                   << connection.lastError().message();
     }
     // connect plugin manager, call method
-    m_connection.connect(serviceName,
-                         PluginManagerPath,
-                         PluginManagerInterface,
-                         "PluginAdded",
-                         groupManager,
-                         SLOT(addPlugin(const QString &)));
+    connection.connect(serviceName,
+                       PluginManagerPath,
+                       PluginManagerInterface,
+                       "PluginAdded",
+                       groupManager,
+                       SLOT(addPlugin(const QString &)));
 }

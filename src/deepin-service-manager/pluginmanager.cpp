@@ -15,9 +15,8 @@
 #include <QThread>
 #include <QTimer>
 
-PluginManager::PluginManager(const QDBusConnection &connection, QObject *parent)
+PluginManager::PluginManager(QObject *parent)
     : QObject(parent)
-    , m_connection(connection)
 {
 }
 
@@ -50,21 +49,21 @@ void PluginManager::init(const QDBusConnection::BusType &type, const QString &gr
 {
     m_group = group;
     // Register service and call pluginmanager
-    if (type == QDBusConnection::SystemBus)
-        m_connection = QDBusConnection::systemBus();
-    if (!m_connection.registerObject(PluginManagerPath,
-                                     this,
-                                     QDBusConnection::ExportScriptableContents
-                                             | QDBusConnection::ExportAllProperties)) {
+    QDBusConnection connection = type == QDBusConnection::SessionBus ? QDBusConnection::sessionBus()
+                                                                     : QDBusConnection::systemBus();
+    if (!connection.registerObject(PluginManagerPath,
+                                   this,
+                                   QDBusConnection::ExportScriptableContents
+                                           | QDBusConnection::ExportAllProperties)) {
         qWarning() << "[PluginManager]failed to register dbus object: "
-                   << m_connection.lastError().message();
+                   << connection.lastError().message();
     }
 
     // load plugin
     loadPlugins(type, QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]));
 }
 
-bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType, const QString &path)
+bool PluginManager::loadPlugins(const QDBusConnection::BusType &type, const QString &path)
 {
     qInfo() << "[PluginManager]Init Plugins:" << path;
     QList<Policy *> policys;
@@ -87,8 +86,11 @@ bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType, con
         // start delay
         const int delay = policy->startDelay * 1000;
         QEventLoop *loop = new QEventLoop(this);
-        QTimer::singleShot(delay, this, [this, sessionType, policy, loop] {
-            ServiceBase *srv = createService(sessionType, policy);
+        QTimer::singleShot(delay, this, [this, type, policy, loop] {
+            QDBusConnection connection = type == QDBusConnection::SessionBus
+                    ? QDBusConnection::sessionBus()
+                    : QDBusConnection::systemBus();
+            ServiceBase *srv = createService(type, policy);
             if (srv == nullptr) {
                 loop->quit();
                 return;
@@ -97,8 +99,8 @@ bool PluginManager::loadPlugins(const QDBusConnection::BusType &sessionType, con
                 QDBusInterface remote(ServiceManagerName,
                                       ServiceManagerPrivatePath,
                                       ServiceManagerInterface,
-                                      m_connection);
-                remote.call("RegisterGroup", m_group, m_connection.baseService());
+                                      connection);
+                remote.call("RegisterGroup", m_group, connection.baseService());
                 addPlugin(srv);
             }
             loop->quit();

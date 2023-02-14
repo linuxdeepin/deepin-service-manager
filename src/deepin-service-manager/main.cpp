@@ -62,13 +62,11 @@ int main(int argc, char *argv[])
     QMap<QString, QDBusConnection::BusType> busTypeMap;
     busTypeMap["system"] = QDBusConnection::SystemBus;
     busTypeMap["user"] = QDBusConnection::SessionBus;
-    QDBusConnection connection =
-            typeValue == "user" ? QDBusConnection::sessionBus() : QDBusConnection ::systemBus();
     if (hasGroup) {
-        PluginManager *srv = new PluginManager(connection);
+        PluginManager *srv = new PluginManager();
         srv->init(busTypeMap[typeValue], groupValue);
     } else {
-        ServiceManager *srv = new ServiceManager(connection);
+        ServiceManager *srv = new ServiceManager();
         srv->init(busTypeMap[typeValue]);
     }
 

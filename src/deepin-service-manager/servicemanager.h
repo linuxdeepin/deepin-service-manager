@@ -20,7 +20,7 @@ class ServiceManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit ServiceManager(const QDBusConnection &connection, QObject *parent = nullptr);
+    explicit ServiceManager(QObject *parent = nullptr);
     ~ServiceManager();
 
     void init(const QDBusConnection::BusType &type);
@@ -36,7 +36,7 @@ private:
     ServiceManagerPublic *m_publicService;
     ServiceManagerPrivate *m_privateService;
     QMap<QString, GroupData> m_groups; // groupName serviceName
-    QDBusConnection m_connection;
+    QDBusConnection::BusType m_busType;
 };
 
 #endif // PLUGINMANAGER_H
