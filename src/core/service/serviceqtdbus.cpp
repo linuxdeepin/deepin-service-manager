@@ -35,11 +35,9 @@ QDBusConnection ServiceQtDBus::qDbusConnection()
 
 void ServiceQtDBus::initThread()
 {
-    qInfo() << "[ServiceQtDBus]init service" << policy->paths()
-            << ", InitThread-ThreadID:" << QThread::currentThreadId();
+    qInfo() << "[ServiceQtDBus]init service: " << policy->paths();
     qDbusConnection().registerService(policy->name);
-    qDbusConnection().registerObject(QStringLiteral("/PrivateDeclaration"),
-                                     this); // TODO:this
+    qDbusConnection().registerObject(QStringLiteral("/PrivateDeclaration"), this);
 
     // TODO:无权限、隐藏、按需启动需求的service，不应该注册，避免触发hook，提高效率
     QTDbusHook::instance()->setServiceObject(this);
@@ -102,7 +100,7 @@ void ServiceQtDBus::initThread()
 
 bool ServiceQtDBus::registerService()
 {
-    qInfo() << "[ServiceQtDBus]service register:" << policy->libPath;
+    qInfo() << "[ServiceQtDBus]service register: " << policy->name;
 
     QFileInfo fileInfo(QString(SERVICE_LIB_DIR) + policy->libPath);
     if (!QLibrary::isLibrary(fileInfo.absoluteFilePath()))

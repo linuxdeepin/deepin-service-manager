@@ -6,12 +6,11 @@
 #include "service/servicesdbus.h"
 #include "utils.h"
 
-#include <qeventloop.h>
-
 #include <QDBusInterface>
 #include <QDBusMessage>
 #include <QDebug>
 #include <QDir>
+#include <QEventLoop>
 #include <QThread>
 #include <QTimer>
 
@@ -39,7 +38,7 @@ ServiceBase *PluginManager::createService(const QDBusConnection::BusType &sessio
         srv = new ServiceSDBus();
     if (srv) {
         srv->init(sessionType, policy);
-        qInfo() << "[PluginManager]Init plugin finish." << srv->policy->libPath;
+        qInfo() << "[PluginManager]init plugin finish:" << srv->policy->libPath;
     }
 
     return srv;
@@ -65,7 +64,7 @@ void PluginManager::init(const QDBusConnection::BusType &type, const QString &gr
 
 bool PluginManager::loadPlugins(const QDBusConnection::BusType &type, const QString &path)
 {
-    qInfo() << "[PluginManager]Init Plugins:" << path;
+    qInfo() << "[PluginManager]init plugins:" << path;
     QList<Policy *> policys;
     QFileInfoList list = QDir(path).entryInfoList();
     for (auto file : list) {
@@ -107,7 +106,7 @@ bool PluginManager::loadPlugins(const QDBusConnection::BusType &type, const QStr
         });
         loop->exec();
     }
-    qDebug() << "[PluginManager]plugin map: " << m_pluginMap;
+    qDebug() << "[PluginManager]added plugins: " << m_pluginMap.keys();
     return true;
 }
 
@@ -133,8 +132,8 @@ QList<Policy *> PluginManager::sortPolicy(QList<Policy *> policys)
             if (Policy *dependencyPolicy = containsDependency(dependency)) {
                 edges.append(QPair<Policy *, Policy *>{ dependencyPolicy, policy });
             } else {
-                qWarning() << QString("[PluginManager]Service:%1 cannot found "
-                                      "dependency:%2!")
+                qWarning() << QString("[PluginManager]service: %1 cannot found "
+                                      "dependency: %2!")
                                       .arg(policy->name)
                                       .arg(dependency);
             }
@@ -144,8 +143,9 @@ QList<Policy *> PluginManager::sortPolicy(QList<Policy *> policys)
     QScopedPointer<Graph<Policy *>> graph(new Graph<Policy *>(policys, edges));
     QList<Policy *> result;
     graph->topologicalSort(result);
+    qDebug() << "[PluginManager]sort result name:";
     for (auto policy : result) {
-        qDebug() << "[PluginManager]sort result name:" << policy->name;
+        qDebug() << "  " << policy->name;
     }
     return result;
 }

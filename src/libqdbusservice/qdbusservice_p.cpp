@@ -22,6 +22,6 @@ void QDBusServicePrivate::InitPolicy(QDBusConnection::BusType busType, QString p
 
 void QDBusServicePrivate::InitService()
 {
-    qInfo() << "[QDBusServicePrivate]init service name:" << policy->name;
+    qInfo() << "[QDBusServicePrivate]init service: " << policy->name;
     QTDbusHook::instance()->setServiceObject(this);
 }

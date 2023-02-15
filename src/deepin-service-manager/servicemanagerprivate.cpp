@@ -11,7 +11,7 @@ ServiceManagerPrivate::~ServiceManagerPrivate() { }
 
 void ServiceManagerPrivate::RegisterGroup(const QString &groupName, const QString &serviceName)
 {
-    qDebug() << "[ServiceManagerPrivate] register group:" << groupName << serviceName;
+    qDebug() << "[ServiceManagerPrivate]register group:" << groupName << serviceName;
     emit requestRegisterGroup(groupName, serviceName);
 }
 

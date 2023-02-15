@@ -28,10 +28,6 @@ void ServiceBase::init(const QDBusConnection::BusType &busType, Policy *p)
 
 void ServiceBase::initService()
 {
-    qInfo() << "[ServiceBase]Base init. name: " << policy->name;
-    qInfo() << "[ServiceBase]init service:" << policy->libPath
-            << ", InitService-ThreadID:" << QThread::currentThreadId();
-
     QThread *th = new QThread();
     setParent(nullptr);
     moveToThread(th);
@@ -48,7 +44,6 @@ bool ServiceBase::isRegister() const
 
 bool ServiceBase::registerService()
 {
-    qInfo() << "[ServiceBase]Base register";
     m_isRegister = true;
     return true;
 }

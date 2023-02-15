@@ -61,11 +61,11 @@ void QTDBusSpyHook(const QDBusMessage &msg)
                                                             isSubPath,
                                                             realPath);
     if (!findRet) {
-        qInfo() << "--can not find hook object, and run ignore hook." << msg.path();
+        qInfo() << "--can not find hook object: " << msg.path();
         return;
     }
     if (!serviceObj->isRegister()) {
-        qInfo() << "--to register dbus object." << msg.path();
+        qInfo() << "--to register dbus object: " << msg.path();
         serviceObj->registerService();
     }
     if (msg.member() == "Introspect" && msg.interface() == "org.freedesktop.DBus.Introspectable") {
@@ -136,11 +136,11 @@ int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
                                                             isSubPath,
                                                             realPath);
     if (!findRet) {
-        qInfo() << "--can not find hook object, and run ignore hook." << msg.path();
+        qInfo() << "--can not find hook object:" << msg.path();
         return 0;
     }
     if (!serviceObj->isRegister()) {
-        qInfo() << "--to register dbus object." << msg.path();
+        qInfo() << "--to register dbus object: " << msg.path();
         serviceObj->registerService();
     }
     if (msg.member() == "Introspect" && msg.interface() == "org.freedesktop.DBus.Introspectable") {
@@ -249,7 +249,7 @@ bool QTDbusHook::setServiceObject(ServiceBase *obj)
     for (auto path : paths) {
         ServiceObjectMap::iterator iterService = m_serviceMap.find(path);
         if (iterService != m_serviceMap.end()) {
-            qInfo() << "[QTDbusHook]set service path failed, the object is existed." << path;
+            qWarning() << "[QTDbusHook]set service path failed, the object is existed." << path;
             continue;
         }
         m_serviceMap[path] = obj;

@@ -42,7 +42,7 @@ bool Policy::checkPermission(const QString &process,
                              const QString &dest,
                              const CallDestType &type)
 {
-    qInfo() << "[Policy]CheckPermission:"
+    qInfo() << "[Policy]check permission:"
             << QString("process=%1, path=%2, interface=%3, dest=%4")
                        .arg(process, path, interface, dest);
     // 时间复杂度跟权限配置复杂度正相关，简单的配置就会校验很快
@@ -168,12 +168,10 @@ void Policy::parseConfig(const QString &path)
 {
     qInfo() << "[Policy]parse config:" << path;
     if (path.isEmpty()) {
-        qWarning() << "[Policy]the serivce has not policy config.";
         return;
     }
     QJsonDocument jsonDoc;
     if (!readJsonFile(jsonDoc, path)) {
-        qWarning() << "[Policy]readJsonFile error";
         return;
     }
     QJsonObject rootObj = jsonDoc.object();
@@ -193,16 +191,16 @@ void Policy::parseConfig(const QString &path)
         sdkType = SDKType::SD;
 
     if (name.isEmpty()) {
-        qWarning() << "[Policy]json error, name is empty";
+        qWarning() << "[Policy]json error, name is empty.";
         return;
     }
     if (!parseWhitelist(rootObj)) {
-        qWarning() << "[Policy]json error, parse Whitelist";
+        qWarning() << "[Policy]json error, parse whitelist error.";
         return;
     }
 
     if (!parsePolicy(rootObj)) {
-        qWarning() << "[Policy]json error, parse policy";
+        qWarning() << "[Policy]json error, parse policy error.";
         return;
     }
 }
@@ -211,7 +209,7 @@ bool Policy::readJsonFile(QJsonDocument &outDoc, const QString &fileName)
 {
     QFile jsonFIle(fileName);
     if (!jsonFIle.open(QIODevice::ReadOnly)) {
-        qWarning() << "[Policy]open file jsonObject.json error!";
+        qWarning() << QString("[Policy]open file: %1 error!").arg(fileName);
         return false;
     }
 
@@ -219,11 +217,11 @@ bool Policy::readJsonFile(QJsonDocument &outDoc, const QString &fileName)
     outDoc = QJsonDocument::fromJson(jsonFIle.readAll(), &jsonParserError);
     jsonFIle.close();
     if (jsonParserError.error != QJsonParseError::NoError) {
-        qWarning() << "[Policy]fromJson jsonObject error!";
+        qWarning() << "[Policy]QJsonDocument::fromJson error!";
         return false;
     }
     if (outDoc.isNull()) {
-        qWarning() << "[Policy]readJsonFile error!";
+        qWarning() << "[Policy]json document is null!";
         return false;
     }
     return true;
@@ -303,7 +301,7 @@ bool Policy::parsePolicyPath(const QJsonObject &obj)
     QString path;
     jsonGetString(obj, "path", path);
     if (path.isEmpty()) {
-        qWarning() << "[Policy]parse policy path error, invalid format";
+        qWarning() << "[Policy]parse policy-path error, invalid format";
         return false;
     }
 
@@ -353,7 +351,7 @@ bool Policy::parsePolicyInterface(const QJsonObject &obj, PolicyPath &policyPath
     QString interface;
     jsonGetString(obj, "interface", interface);
     if (interface.isEmpty()) {
-        qWarning() << "[Policy]parse policy interface error, invalid format";
+        qWarning() << "[Policy]parse policy-interface error, invalid format";
         return false;
     }
 
@@ -414,7 +412,7 @@ bool Policy::parsePolicyMethod(const QJsonObject &obj, PolicyInterface &policyIn
     QString method;
     jsonGetString(obj, "method", method);
     if (method.isEmpty()) {
-        qWarning() << "[Policy]parse policy method error, invalid format";
+        qWarning() << "[Policy]parse policy-method error, invalid format";
         return false;
     }
 
@@ -443,7 +441,7 @@ bool Policy::parsePolicyProperties(const QJsonObject &obj, PolicyInterface &poli
     QString property;
     jsonGetString(obj, "property", property);
     if (property.isEmpty()) {
-        qWarning() << "[Policy]parse policy property error, invalid format";
+        qWarning() << "[Policy]parse policy-property error, invalid format";
         return false;
     }
 
