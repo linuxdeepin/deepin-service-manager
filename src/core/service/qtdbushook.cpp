@@ -7,6 +7,7 @@
 #include <QDBusMessage>
 #include <QDebug>
 #include <QFile>
+#include <QTimer>
 #ifdef Q_DBUS_EXPORT // TODO
 extern Q_DBUS_EXPORT void qDBusAddSpyHook(void (*)(const QDBusMessage &));
 extern Q_DBUS_EXPORT void qDBusAddFilterHook(int (*)(const QString &, const QDBusMessage &));
@@ -67,6 +68,13 @@ void QTDBusSpyHook(const QDBusMessage &msg)
     if (!serviceObj->isRegister()) {
         qInfo() << "--to register dbus object: " << msg.path();
         serviceObj->registerService();
+    }
+
+    if (!serviceObj->policy->isResident()) {
+        qInfo() << QString("--service: %1 will unregister in %2 minutes!")
+                           .arg(serviceObj->policy->name)
+                           .arg(serviceObj->policy->idleTime);
+        QTimer::singleShot(0, serviceObj, SLOT(restartTimer()));
     }
     if (msg.member() == "Introspect" && msg.interface() == "org.freedesktop.DBus.Introspectable") {
         if (serviceObj->policy->checkPathHide(realPath)) {
@@ -142,6 +150,12 @@ int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
     if (!serviceObj->isRegister()) {
         qInfo() << "--to register dbus object: " << msg.path();
         serviceObj->registerService();
+    }
+
+    if (!serviceObj->policy->isResident()) {
+        qInfo() << QString("--service: %1 will unregister in 10 minutes!")
+                           .arg(serviceObj->policy->name);
+        QTimer::singleShot(0, serviceObj, SLOT(restartTimer()));
     }
     if (msg.member() == "Introspect" && msg.interface() == "org.freedesktop.DBus.Introspectable") {
         if (serviceObj->policy->checkPathHide(realPath)) {

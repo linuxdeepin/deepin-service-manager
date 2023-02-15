@@ -3,6 +3,8 @@
 
 #include "servicebase.h"
 
+class QLibrary;
+
 class ServiceQtDBus : public ServiceBase
 {
     Q_OBJECT
@@ -12,9 +14,16 @@ public:
     QDBusConnection qDbusConnection();
 
     virtual bool registerService() override;
+    virtual bool unregisterService() override;
 
 protected:
     virtual void initThread() override;
+
+private:
+    bool libFuncCall(const QString &funcName, bool isRegister);
+
+private:
+    QLibrary *m_library;
 };
 
 #endif // SERVICEQTDBUS_H

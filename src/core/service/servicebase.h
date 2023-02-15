@@ -8,6 +8,9 @@
 
 typedef void *(*ServiceObject)(const char *path, const int len);
 typedef int (*DSMRegister)(const char *name, void *data);
+typedef int (*DSMUnRegister)(const char *name, void *data);
+
+class QTimer;
 
 class ServiceBase : public QObject
 {
@@ -18,9 +21,11 @@ public:
 
     bool isRegister() const;
     virtual bool registerService();
+    virtual bool unregisterService();
 
 public Q_SLOTS:
     void init(const QDBusConnection::BusType &busType, Policy *p);
+    void restartTimer();
 
 protected:
     virtual void initService();
@@ -33,7 +38,8 @@ protected:
     bool m_isRegister;
 
     QDBusConnection::BusType m_sessionType;
-    SDKType m_SDKType; // qtdbus、sdbus
+    SDKType m_SDKType; // qdbus、sdbus
+    QTimer *m_timer;
 };
 
 #endif // SERVICEBASE_H

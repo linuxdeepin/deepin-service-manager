@@ -182,6 +182,7 @@ void Policy::parseConfig(const QString &path)
     jsonGetString(rootObj, "policyStartType", policyStartType);
     jsonGetStringList(rootObj, "dependencies", dependencies);
     jsonGetInt(rootObj, "startDelay", startDelay);
+    jsonGetInt(rootObj, "idleTime", idleTime, 10);
     // get SDKType
     QString sdkTypeString;
     jsonGetString(rootObj, "pluginType", sdkTypeString, "qt");

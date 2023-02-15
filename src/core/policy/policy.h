@@ -135,6 +135,7 @@ public:
     QStringList dependencies;
     SDKType sdkType;
     int startDelay;
+    int idleTime;
 };
 
 #endif // POLICY_H

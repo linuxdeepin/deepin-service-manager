@@ -28,6 +28,12 @@ int sd_bus_message_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_
     if (!qobj->isRegister()) {
         qobj->registerService();
     }
+    if (!qobj->policy->isResident()) {
+        qInfo() << QString("--service: %1 will unregister in %2 minutes!")
+                           .arg(qobj->policy->name)
+                           .arg(qobj->policy->idleTime);
+        qobj->restartTimer();
+    }
     QString mem = sd_bus_message_get_member(m);
     if (mem == "Hello") {
         return sd_bus_reply_method_return(m, "s", "123");
@@ -88,6 +94,10 @@ void ServiceSDBus::initThread()
         return;
     }
 
+    QFileInfo fileInfo(QString(SERVICE_LIB_DIR) + policy->libPath);
+    if (QLibrary::isLibrary(fileInfo.absoluteFilePath())) {
+        m_library = new QLibrary(fileInfo.absoluteFilePath());
+    }
     if (policy->isResident()) {
         registerService();
     }
@@ -119,74 +129,47 @@ void ServiceSDBus::initThread()
     ServiceBase::initThread();
 }
 
-// bool ServiceSDBus::Register(const QString &path, const QString &interface)
-//{
-//     if (m_bus == nullptr) {
-//         return false;
-//     }
-//     QFileInfo fileInfo(ServiceBase::libPath());
-//     if (!QLibrary::isLibrary(fileInfo.absoluteFilePath()))
-//         return false;
-
-//    // TODO: 释放lib、dbusobject、ServiceBase、unregisterObject等
-//    QLibrary *lib = new QLibrary(fileInfo.absoluteFilePath());
-//    ServiceObject objFunc = ServiceObject(lib->resolve("ServiceObject"));
-//    if (!objFunc) {
-//        qWarning() << "failed to resolve the `ServiceObject` method: "<<
-//        fileInfo.fileName() ; if (lib->isLoaded())
-//            lib->unload();
-//        lib->deleteLater();
-//        return false;
-//    }
-
-//    void *obj = objFunc(ServiceBase::path().toStdString().c_str(),
-//    int(ServiceBase::path().toStdString().length())); if (!obj) {
-//        return false;
-//    }
-//    sd_bus_slot *slot = NULL;
-//    if (sd_bus_add_object_vtable(m_bus, &slot,
-//                                    ServiceBase::path().toStdString().c_str(),
-//                                    ServiceBase::interface().toStdString().c_str(),
-//                                    // TODO:interface问题 (const sd_bus_vtable
-//                                    *)obj, NULL) < 0) {
-//        qWarning() << "[hook]sd_bus_add_object_vtable error";
-//        return -1;
-//    }
-
-//    ServiceBase::Register("", "");
-
-//    return true;
-//}
-
 bool ServiceSDBus::registerService()
 {
     if (m_bus == nullptr) {
         return false;
     }
-    QFileInfo fileInfo(QString(SERVICE_LIB_DIR) + policy->libPath);
-    if (!QLibrary::isLibrary(fileInfo.absoluteFilePath()))
-        return false;
-
-    // TODO: 释放lib、dbusobject、ServiceBase、unregisterObject等
-    QLibrary *lib = new QLibrary(fileInfo.absoluteFilePath());
-    DSMRegister objFunc = DSMRegister(lib->resolve("DSMRegister"));
-    if (!objFunc) {
-        qWarning() << "[ServiceSDBus]failed to resolve the `DSMRegister` "
-                      "method: "
-                   << fileInfo.fileName();
-        if (lib->isLoaded())
-            lib->unload();
-        lib->deleteLater();
+    if (libFuncCall("DSMRegister", true)) {
+        ServiceBase::registerService();
+        return true;
+    } else {
         return false;
     }
+}
 
-    int ret = objFunc(policy->name.toStdString().c_str(),
-                      (void *)m_bus); // TODO:old type cast
+bool ServiceSDBus::unregisterService()
+{
+    if (libFuncCall("DSMUnRegister", false)) {
+        ServiceBase::registerService();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool ServiceSDBus::libFuncCall(const QString &funcName, bool isRegister)
+{
+    if (m_library == nullptr || !m_library->isLoaded()) {
+        return false;
+    }
+    auto objFunc = isRegister ? DSMRegister(m_library->resolve(funcName.toStdString().c_str()))
+                              : DSMUnRegister(m_library->resolve(funcName.toStdString().c_str()));
+    if (!objFunc) {
+        qWarning() << QString("[ServiceSDBus]failed to resolve the `%1` method: ").arg(funcName)
+                   << m_library->fileName();
+        if (m_library->isLoaded())
+            m_library->unload();
+        m_library->deleteLater();
+        return false;
+    }
+    int ret = objFunc(policy->name.toStdString().c_str(), (void *)m_bus);
     if (ret) {
         return false;
     }
-
-    ServiceBase::registerService();
-
     return true;
 }
