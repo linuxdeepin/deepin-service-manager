@@ -1,6 +1,9 @@
 #include "demo2aadaptor.h"
 #include "service.h"
 
+#include <qdbuscontext.h>
+#include <qobject.h>
+
 #include <QDBusConnection>
 #include <QDebug>
 
@@ -11,8 +14,10 @@ extern "C" int DSMRegister(const char *name, void *data)
     (void)data;
     service = new Service();
     new Demo2aAdaptor(service);
-    QDBusConnection::connectToBus(QDBusConnection::SessionBus, QString(name))
-            .registerObject("/org/deepin/service/demo2", service, QDBusConnection::ExportAdaptors);
+    auto connection = reinterpret_cast<QDBusConnection *>(data);
+    connection->registerObject("/org/deepin/service/demo2",
+                               service,
+                               QDBusConnection::ExportAdaptors);
     return 0;
 }
 

@@ -3,7 +3,16 @@
 
 #include <QDBusConnection>
 
+class Test
+{
+public:
+    QString name;
+    int id;
+};
+
 static Service *service = nullptr;
+
+static Test *test = nullptr;
 
 extern "C" int DSMRegister(const char *name, void *data)
 {
@@ -12,8 +21,11 @@ extern "C" int DSMRegister(const char *name, void *data)
     QDBusConnection::RegisterOptions opts = QDBusConnection::ExportAllSlots
             | QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllProperties;
 
-    QDBusConnection::connectToBus(QDBusConnection::SystemBus, QString(name))
-            .registerObject("/org/deepin/services/demo1", service, opts);
+    auto connection = reinterpret_cast<QDBusConnection *>(data);
+    connection->registerObject("/org/deepin/service/demo1", service, opts);
+    test = new Test();
+    test->name = "tetssdfsdgfdhdghdfh";
+    test->id = 100;
     return 0;
 }
 
@@ -25,5 +37,7 @@ extern "C" int DSMUnRegister(const char *name, void *data)
     (void)data;
     service->deleteLater();
     service = nullptr;
+    delete test;
+    test = nullptr;
     return 0;
 }

@@ -3,6 +3,9 @@ set(BIN_NAME "plugin-qt-demo2")
 
 project(${BIN_NAME})
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include(GNUInstallDirs)
 find_package(Qt5 COMPONENTS Core Widgets DBus REQUIRED)
 
@@ -37,5 +40,9 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo2.json ${CMAKE_BINARY_DIR}/share/user/)
 else()
     install(TARGETS ${BIN_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR}/deepin-service-manager/)
-    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo2.json DESTINATION share/deepin-service-manager/user/)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/plugin-qt-demo2.json DESTINATION share/deepin-service-manager/system/)
 endif()
+
+install(FILES org.deepin.service.demo2.conf
+    DESTINATION share/dbus-1/system.d/
+)

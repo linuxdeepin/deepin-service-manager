@@ -1,6 +1,6 @@
 {
     "name": "org.deepin.service.demo2",
-    "group": "dtk",
+    "group": "core",
     "libPath": "libplugin-qt-demo2.so",
     "policyVersion": "1.0",
     "policyStartType": "Resident",
