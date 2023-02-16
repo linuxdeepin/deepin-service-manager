@@ -1,7 +1,5 @@
 #include "servicemanagerpublic.h"
 
-#include "libqdbusservice/qdbusservice.h"
-
 ServiceManagerPublic::ServiceManagerPublic(QObject *parent)
     : QDBusService(parent)
 {

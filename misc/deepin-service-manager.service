@@ -3,7 +3,7 @@ Description=deepin-service-manager
 After=dbus.service
 
 [Service]
-ExecStart=/usr/bin/deepin-service-manager -c system
+ExecStart=/usr/bin/deepin-service-manager
 StandardOutput=syslog
 Restart=always
 RestartSec=3

@@ -4,7 +4,6 @@
 #include "policy/policy.h"
 #include "service/serviceqtdbus.h"
 #include "service/servicesdbus.h"
-#include "utils.h"
 
 #include <QDBusInterface>
 #include <QDBusMessage>
@@ -59,11 +58,12 @@ void PluginManager::init(const QDBusConnection::BusType &type, const QString &gr
     }
 
     // load plugin
-    loadPlugins(type, QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]));
+    loadPlugins(type);
 }
 
-bool PluginManager::loadPlugins(const QDBusConnection::BusType &type, const QString &path)
+bool PluginManager::loadPlugins(const QDBusConnection::BusType &type)
 {
+    const QString &path = QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]);
     qInfo() << "[PluginManager]init plugins:" << path;
     QList<Policy *> policys;
     QFileInfoList list = QDir(path).entryInfoList();

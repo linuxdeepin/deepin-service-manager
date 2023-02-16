@@ -4,7 +4,6 @@
 #include "policy/policy.h"
 #include "servicemanagerprivate.h"
 #include "servicemanagerpublic.h"
-#include "utils.h"
 
 #include <QCoreApplication>
 #include <QDBusError>
@@ -86,9 +85,7 @@ void ServiceManager::initGroup(const QDBusConnection::BusType &type)
                               "/org/freedesktop/systemd1",
                               "org.freedesktop.systemd1.Manager",
                               connection);
-        remote.call("StartUnit",
-                    QString("deepin-service-plugin-%1@%2.service").arg(typeMap[type]).arg(group),
-                    "fail");
+        remote.call("StartUnit", QString("deepin-service-plugin@%1.service").arg(group), "fail");
     }
 }
 

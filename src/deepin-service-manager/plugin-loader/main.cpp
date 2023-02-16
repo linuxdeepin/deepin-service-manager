@@ -19,56 +19,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "pluginmanager.h"
-#include "servicemanager.h"
-
-#include <qmap.h>
 
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDebug>
 
+#include <unistd.h>
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     a.setApplicationVersion(VERSION);
 
-    QCommandLineOption controlOption(
-            { { "c", "control" }, "Format: <dbus type>.<group name>\neg:user.core", "control" });
+    QCommandLineOption groupOption({ { "g", "group" }, "eg:core", "group name" });
     QCommandLineParser parser;
-    parser.setApplicationDescription("deepin service manager");
+    parser.setApplicationDescription("deepin service plugin loader");
     parser.addHelpOption();
     parser.addVersionOption();
-    parser.addOption(controlOption);
+    parser.addOption(groupOption);
     parser.process(a);
 
-    if (!parser.isSet(controlOption)) {
-        qWarning() << "[main]must set dbus type!";
+    if (!parser.isSet(groupOption)) {
+        qWarning() << "[main]must set group name!";
         return -1;
     }
 
-    const QStringList &controlValues = parser.value(controlOption).split('.');
-    const QString &typeValue = controlValues.first();
-    const QString &groupValue = controlValues.last();
-    const bool hasGroup = controlValues.count() == 2;
-
-    if (!(typeValue == "system" || typeValue == "user")) {
-        qWarning() << "[main]dbus type must be 'system' or 'user'!";
-        return -1;
-    }
+    const QString &typeValue = getuid() < 1000 ? "system" : "user";
+    const QString &groupValue = parser.value(groupOption);
 
     qDebug() << "[main]deepin service config dir:" << QString(SERVICE_CONFIG_DIR);
 
     QMap<QString, QDBusConnection::BusType> busTypeMap;
     busTypeMap["system"] = QDBusConnection::SystemBus;
     busTypeMap["user"] = QDBusConnection::SessionBus;
-    if (hasGroup) {
-        PluginManager *srv = new PluginManager();
-        srv->init(busTypeMap[typeValue], groupValue);
-    } else {
-        ServiceManager *srv = new ServiceManager();
-        srv->init(busTypeMap[typeValue]);
-    }
+    PluginManager *srv = new PluginManager();
+    srv->init(busTypeMap[typeValue], groupValue);
 
     return a.exec();
 }

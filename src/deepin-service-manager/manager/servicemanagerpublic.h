@@ -1,8 +1,8 @@
 #ifndef SERVICEMANAGERPUBLIC_H
 #define SERVICEMANAGERPUBLIC_H
 
-#include "libqdbusservice/qdbusservice.h"
-#include "utils.h"
+#include "../utils.h"
+#include "qdbusservice.h"
 
 class ServiceManagerPublic : public QDBusService
 {

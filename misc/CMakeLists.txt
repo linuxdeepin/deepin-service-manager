@@ -13,24 +13,24 @@ install(FILES org.deepin.service.manager.conf
     DESTINATION share/dbus-1/system.d/
 )
 
-install(FILES deepin-service-manager-system.service
+install(FILES deepin-service-manager.service
     DESTINATION lib/systemd/system/
 )
 
-install(FILES deepin-service-plugin-system@.service
+install(FILES deepin-service-plugin@.service
     DESTINATION lib/systemd/system/
 )
 
-install(FILES deepin-service-manager-user.service
+install(FILES deepin-service-manager.service
     DESTINATION lib/systemd/user/
 )
 
-install(FILES deepin-service-plugin-user@.service
+install(FILES deepin-service-plugin@.service
     DESTINATION lib/systemd/user/
 )
 
-install_symlink(deepin-service-manager-system.service multi-user.target.wants)
-install_user_symlink(deepin-service-manager-user.service default.target.wants)
+install_symlink(deepin-service-manager.service multi-user.target.wants)
+install_user_symlink(deepin-service-manager.service default.target.wants)
 
 set(LIB_NAME "deepin-qdbus-service")
 

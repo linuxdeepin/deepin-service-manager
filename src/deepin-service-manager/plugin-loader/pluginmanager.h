@@ -1,14 +1,13 @@
 #ifndef PLUGINMANAGER_H
 #define PLUGINMANAGER_H
 
-#include "service/servicebase.h"
-#include "utils.h"
-
-#include <qlist.h>
+#include "../utils.h"
 
 #include <QMap>
 #include <QObject>
 
+class ServiceBase;
+class Policy;
 typedef QMap<QString, ServiceBase *> PluginMap;
 
 class PluginManager : public QObject
@@ -28,7 +27,7 @@ signals:
 
 private:
     ServiceBase *createService(const QDBusConnection::BusType &sessionType, Policy *policy);
-    bool loadPlugins(const QDBusConnection::BusType &sessionType, const QString &path);
+    bool loadPlugins(const QDBusConnection::BusType &sessionType);
     void addPlugin(ServiceBase *obj);
     QList<Policy *> sortPolicy(QList<Policy *> policys);
 

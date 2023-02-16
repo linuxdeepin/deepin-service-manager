@@ -1,9 +1,10 @@
 [Unit]
 Description=deepin-service-manager
 After=dbus.service
+PartOf=deepin-service-manager.service
 
 [Service]
-ExecStart=/usr/bin/deepin-service-manager -c user
+ExecStart=/usr/bin/deepin-service-plugin-loader -g %i
 StandardOutput=syslog
 Restart=always
 RestartSec=3
