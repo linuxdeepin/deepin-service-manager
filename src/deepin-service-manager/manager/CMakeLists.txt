@@ -27,7 +27,7 @@ target_include_directories(${BIN_NAME} PUBLIC
   Qt5::Core
   Qt5::DBus
   ${SRC_BASE_DIR}/core
-  ${SRC_BASE_DIR}}/libqdbusservice
+  ${SRC_BASE_DIR}/libqdbusservice
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE

@@ -1,7 +1,3 @@
-
-
-
-
 add_subdirectory("plugin-qt")
 add_subdirectory("plugin-sdbus")
 
