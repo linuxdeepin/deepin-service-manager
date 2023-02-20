@@ -25,3 +25,20 @@ void QDBusServicePrivate::InitService()
     qInfo() << "[QDBusServicePrivate]init service: " << policy->name;
     QTDbusHook::instance()->setServiceObject(this);
 }
+
+QDBusConnection QDBusServicePrivate::qDbusConnection() const
+{
+    if (policy->name.isEmpty()) {
+        if (m_sessionType == QDBusConnection::SystemBus) {
+            return QDBusConnection::systemBus();
+        } else {
+            return QDBusConnection::sessionBus();
+        }
+    } else {
+        if (m_sessionType == QDBusConnection::SystemBus) {
+            return QDBusConnection::connectToBus(QDBusConnection::SystemBus, policy->name);
+        } else {
+            return QDBusConnection::connectToBus(QDBusConnection::SessionBus, policy->name);
+        }
+    }
+}

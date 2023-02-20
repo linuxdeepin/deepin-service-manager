@@ -1,37 +1,28 @@
 #include "demoadaptor.h"
 #include "service.h"
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QDBusConnection>
 #include <QDebug>
-#include <QTextEdit>
-#include <QVBoxLayout>
-#include <QWidget>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-
-    QWidget *widget = new QWidget();
-    QVBoxLayout *mainLayout = new QVBoxLayout();
-    widget->setLayout(mainLayout);
-    QTextEdit *textEdit = new QTextEdit();
-    mainLayout->addWidget(textEdit);
-    widget->setMinimumSize(800, 600);
-    widget->show();
+    QCoreApplication a(argc, argv);
 
     Service s;
     DemoAdaptor adp(&s);
-    if (!QDBusConnection::sessionBus().registerObject("/org/deepin/service/sdk/demo", &s)) {
-        qWarning() << "failed to register dbus object"
-                   << QDBusConnection::sessionBus().lastError().message();
+    // 从QDBusService对象拿到 QDBusConnection 防止注册对象不一致，导致无法正常管理权限
+    QDBusConnection connection = s.qDbusConnection();
+    if (!connection.registerObject("/org/deepin/service/sdk/demo", &s)) {
+        qWarning() << "failed to register dbus object" << connection.lastError().message();
     }
-    if (!QDBusConnection::sessionBus().registerService("org.deepin.service.sdk.demo")) {
-        qWarning() << "failed to register dbus object"
-                   << QDBusConnection::sessionBus().lastError().message();
+    if (!connection.registerService("org.deepin.service.sdk.demo")) {
+        qWarning() << "failed to register dbus object" << connection.lastError().message();
     }
 
-    QObject::connect(&s, &Service::dbusLog, textEdit, &QTextEdit::append);
+    QObject::connect(&s, &Service::dbusLog, [](const QString &log) {
+        qDebug() << log;
+    });
 
     return a.exec();
 }

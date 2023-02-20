@@ -12,6 +12,7 @@ public:
     explicit QDBusServicePrivate(QObject *parent = nullptr);
 
     void InitPolicy(QDBusConnection::BusType busType, QString policyFile);
+    QDBusConnection qDbusConnection() const;
 
 public Q_SLOTS:
     virtual void InitService();

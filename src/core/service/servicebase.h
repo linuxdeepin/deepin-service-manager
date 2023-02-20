@@ -23,6 +23,9 @@ public:
     virtual bool registerService();
     virtual bool unregisterService();
 
+Q_SIGNALS:
+    void idleSignal();
+
 public Q_SLOTS:
     void init(const QDBusConnection::BusType &busType, Policy *p);
     void restartTimer();

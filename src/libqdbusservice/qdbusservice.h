@@ -20,7 +20,8 @@ class EXPORT_PLUGIN_LIBRARY QDBusService : public QObject
 
 public:
     explicit QDBusService(QObject *parent = nullptr);
-    void InitPolicy(QDBusConnection::BusType busType, QString policyFile);
+    void InitPolicy(const QDBusConnection::BusType &busType, const QString &policyFile);
+    QDBusConnection qDbusConnection() const;
 };
 
 #endif // QDBUSSERVICE_H

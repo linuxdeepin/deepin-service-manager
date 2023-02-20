@@ -36,7 +36,7 @@ void ServiceManager::init(const QDBusConnection::BusType &type)
 void ServiceManager::initGroup(const QDBusConnection::BusType &type)
 {
     m_busType = type;
-    QDBusConnection connection = QDBusConnection::connectToBus(type, ServiceManagerName);
+    QDBusConnection connection = m_publicService->qDbusConnection();
 
     if (!connection.registerService(ServiceManagerName)) {
         qWarning() << "[ServiceManager]failed to register dbus service:"
@@ -111,7 +111,7 @@ void ServiceManager::onRegisterGroup(const QString &groupName, const QString &se
     m_publicService->addGroup(groupName);
     const QString &groupPath = "/group/" + groupName;
 
-    QDBusConnection connection = QDBusConnection::connectToBus(m_busType, ServiceManagerName);
+    QDBusConnection connection = m_publicService->qDbusConnection();
     // register group path
     if (!connection.registerObject(groupPath,
                                    groupManager,

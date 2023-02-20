@@ -98,6 +98,7 @@ void ServiceSDBus::initThread()
     if (QLibrary::isLibrary(fileInfo.absoluteFilePath())) {
         m_library = new QLibrary(fileInfo.absoluteFilePath());
     }
+
     if (policy->isResident()) {
         registerService();
     }
