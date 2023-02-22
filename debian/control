@@ -18,10 +18,15 @@ Depends:
 Description: deepin desktop-environment - service manager frame
  Load system plug-ins for unified management
 
-Package: deepin-service-dev
+Package: libdeepin-service-dev
+Architecture: any
+Depends:
+ ${misc:Depends}
+Description: deepin desktop-environment - service frame for development
+
+Package: libdeepin-service
 Architecture: any
 Depends:
  ${shlibs:Depends},
  ${misc:Depends}
 Description: deepin desktop-environment - service frame
- Load system plug-ins for unified management
