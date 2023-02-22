@@ -1,5 +1,8 @@
+cmake_minimum_required(VERSION 3.13)
 
 set(Plugin_NAME "plugin-sdbus-demo1")
+
+project(${Plugin_NAME})
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(Systemd REQUIRED IMPORTED_TARGET libsystemd)

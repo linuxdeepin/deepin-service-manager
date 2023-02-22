@@ -1,7 +1,11 @@
+cmake_minimum_required(VERSION 3.13)
 
 set(BIN_NAME "plugin-qt-demo1")
 
 project(${BIN_NAME})
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 include(GNUInstallDirs)
 file(GLOB_RECURSE SRCS "*.h" "*.cpp")

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.13)
 
 set (VERSION "1.0.0" CACHE STRING "define project version")
 
