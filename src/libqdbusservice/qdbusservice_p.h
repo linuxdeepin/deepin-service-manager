@@ -13,6 +13,7 @@ public:
 
     void InitPolicy(QDBusConnection::BusType busType, QString policyFile);
     QDBusConnection qDbusConnection() const;
+    void lockTimer(bool lock);
 
 public Q_SLOTS:
     virtual void InitService();

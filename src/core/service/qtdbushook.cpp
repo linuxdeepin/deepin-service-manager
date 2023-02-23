@@ -8,7 +8,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QTimer>
-#ifdef Q_DBUS_EXPORT // TODO
+#ifdef Q_DBUS_EXPORT
 extern Q_DBUS_EXPORT void qDBusAddSpyHook(void (*)(const QDBusMessage &));
 extern Q_DBUS_EXPORT void qDBusAddFilterHook(int (*)(const QString &, const QDBusMessage &));
 #else
@@ -70,7 +70,7 @@ void QTDBusSpyHook(const QDBusMessage &msg)
         serviceObj->registerService();
     }
 
-    if (!serviceObj->policy->isResident()) {
+    if (!serviceObj->policy->isResident() && !serviceObj->isLockTimer()) {
         qInfo() << QString("--service: %1 will unregister in %2 minutes!")
                            .arg(serviceObj->policy->name)
                            .arg(serviceObj->policy->idleTime);
@@ -152,7 +152,7 @@ int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
         serviceObj->registerService();
     }
 
-    if (!serviceObj->policy->isResident()) {
+    if (!serviceObj->policy->isResident() && !serviceObj->isLockTimer()) {
         qInfo() << QString("--service: %1 will unregister in 10 minutes!")
                            .arg(serviceObj->policy->name);
         QTimer::singleShot(0, serviceObj, SLOT(restartTimer()));

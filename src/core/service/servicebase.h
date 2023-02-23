@@ -20,6 +20,7 @@ public:
     virtual ~ServiceBase();
 
     bool isRegister() const;
+    bool isLockTimer() const;
     virtual bool registerService();
     virtual bool unregisterService();
 
@@ -39,6 +40,7 @@ public:
 
 protected:
     bool m_isRegister;
+    bool m_isLockTimer;
 
     QDBusConnection::BusType m_sessionType;
     SDKType m_SDKType; // qdbus、sdbus

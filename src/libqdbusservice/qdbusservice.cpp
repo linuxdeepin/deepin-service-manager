@@ -24,3 +24,9 @@ QDBusConnection QDBusService::qDbusConnection() const
     Q_D(const QDBusService);
     return d->qDbusConnection();
 }
+
+void QDBusService::lockTimer(bool lock)
+{
+    Q_D(QDBusService);
+    d->lockTimer(lock);
+}

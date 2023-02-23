@@ -12,6 +12,7 @@ ServiceBase::ServiceBase(QObject *parent)
     : QObject(parent)
     , policy(nullptr)
     , m_isRegister(false)
+    , m_isLockTimer(false)
     , m_timer(new QTimer(this))
 {
     m_timer->setSingleShot(true);
@@ -47,6 +48,11 @@ void ServiceBase::initThread() { }
 bool ServiceBase::isRegister() const
 {
     return m_isRegister;
+}
+
+bool ServiceBase::isLockTimer() const
+{
+    return m_isLockTimer;
 }
 
 void ServiceBase::restartTimer()

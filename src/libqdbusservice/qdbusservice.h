@@ -5,7 +5,7 @@
 #include <QObject>
 
 #if defined(EXPORT_LIBRARY)
-#  define EXPORT_PLUGIN_LIBRARY Q_DECL_EXPORT // TODO
+#  define EXPORT_PLUGIN_LIBRARY Q_DECL_EXPORT
 #else
 #  define EXPORT_PLUGIN_LIBRARY Q_DECL_IMPORT
 #endif
@@ -22,6 +22,7 @@ public:
     explicit QDBusService(QObject *parent = nullptr);
     void InitPolicy(const QDBusConnection::BusType &busType, const QString &policyFile);
     QDBusConnection qDbusConnection() const;
+    void lockTimer(bool lock);
 };
 
 #endif // QDBUSSERVICE_H

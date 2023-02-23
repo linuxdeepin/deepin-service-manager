@@ -5,6 +5,7 @@
 
 #include <QDebug>
 #include <QMap>
+#include <QTimer>
 #include <QVariant>
 
 QDBusServicePrivate::QDBusServicePrivate(QObject *parent)
@@ -40,5 +41,16 @@ QDBusConnection QDBusServicePrivate::qDbusConnection() const
         } else {
             return QDBusConnection::connectToBus(QDBusConnection::SessionBus, policy->name);
         }
+    }
+}
+
+void QDBusServicePrivate::lockTimer(bool lock)
+{
+    if (lock) {
+        m_isLockTimer = true;
+        m_timer->stop();
+    } else {
+        m_isLockTimer = false;
+        m_timer->start();
     }
 }
