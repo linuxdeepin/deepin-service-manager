@@ -62,4 +62,7 @@ else()
     install(FILES sdk-demo.json DESTINATION share/deepin-service-manager/other/)
 endif()
 
-install(FILES org.deepin.service.sdk.demo.service DESTINATION share/dbus-1/services/)
+install(FILES org.deepin.service.sdk.demo.service DESTINATION share/dbus-1/system-services/)
+install(FILES org.deepin.service.sdk.demo.conf
+    DESTINATION share/dbus-1/system.d/
+)
