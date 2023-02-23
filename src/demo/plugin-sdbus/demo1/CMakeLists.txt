@@ -23,10 +23,11 @@ target_link_libraries(${Plugin_NAME}
     -lpthread
 )
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug") # delete this judgement in your project
     EXECUTE_PROCESS(COMMAND mkdir -p ${CMAKE_BINARY_DIR}/share/user/)
     EXECUTE_PROCESS(COMMAND cp -f ${CMAKE_CURRENT_SOURCE_DIR}/plugin-sdbus-demo1.json ${CMAKE_BINARY_DIR}/share/user/)
 else()
+    # just need this in your project
     install(TARGETS ${Plugin_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR}/deepin-service-manager/)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/plugin-sdbus-demo1.json DESTINATION share/deepin-service-manager/user/)
 endif()
