@@ -14,14 +14,14 @@ QDBusServicePrivate::QDBusServicePrivate(QObject *parent)
     ServiceBase::registerService();
 }
 
-void QDBusServicePrivate::InitPolicy(QDBusConnection::BusType busType, QString policyFile)
+void QDBusServicePrivate::initPolicy(QDBusConnection::BusType busType, QString policyFile)
 {
     Policy *policy = new Policy(this);
     policy->parseConfig(policyFile);
     init(busType, policy);
 }
 
-void QDBusServicePrivate::InitService()
+void QDBusServicePrivate::initService()
 {
     qInfo() << "[QDBusServicePrivate]init service: " << policy->name;
     QTDbusHook::instance()->setServiceObject(this);

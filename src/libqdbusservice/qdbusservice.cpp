@@ -10,10 +10,10 @@ QDBusService::QDBusService(QObject *parent)
 {
 }
 
-void QDBusService::InitPolicy(const QDBusConnection::BusType &busType, const QString &policyFile)
+void QDBusService::initPolicy(const QDBusConnection::BusType &busType, const QString &policyFile)
 {
     Q_D(QDBusService);
-    d->InitPolicy(busType, policyFile);
+    d->initPolicy(busType, policyFile);
     connect(d, &QDBusServicePrivate::idleSignal, [] {
         qApp->quit();
     });

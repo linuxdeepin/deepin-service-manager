@@ -11,12 +11,12 @@ class QDBusServicePrivate : public ServiceQtDBus
 public:
     explicit QDBusServicePrivate(QObject *parent = nullptr);
 
-    void InitPolicy(QDBusConnection::BusType busType, QString policyFile);
+    void initPolicy(QDBusConnection::BusType busType, QString policyFile);
     QDBusConnection qDbusConnection() const;
     void lockTimer(bool lock);
 
 public Q_SLOTS:
-    virtual void InitService();
+    virtual void initService() override;
 };
 
 #endif // QDBUSSERVICEPRIVATE_H
