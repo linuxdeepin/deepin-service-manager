@@ -176,12 +176,12 @@ void Policy::parseConfig(const QString &path)
     }
     QJsonObject rootObj = jsonDoc.object();
     jsonGetString(rootObj, "name", name);
-    jsonGetString(rootObj, "group", group);
-    jsonGetString(rootObj, "libPath", libPath, "core");
-    jsonGetString(rootObj, "policyVersion", policyVersion);
-    jsonGetString(rootObj, "policyStartType", policyStartType);
+    jsonGetString(rootObj, "group", group, "core");
+    jsonGetString(rootObj, "libPath", libPath);
+    jsonGetString(rootObj, "policyVersion", policyVersion, "1.0");
+    jsonGetString(rootObj, "policyStartType", policyStartType, "Resident");
     jsonGetStringList(rootObj, "dependencies", dependencies);
-    jsonGetInt(rootObj, "startDelay", startDelay);
+    jsonGetInt(rootObj, "startDelay", startDelay, 0);
     jsonGetInt(rootObj, "idleTime", idleTime, 10);
     // get SDKType
     QString sdkTypeString;
