@@ -19,6 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "pluginmanager.h"
+#include "servicemanager.h"
 
 #include <QCommandLineOption>
 #include <QCommandLineParser>
@@ -40,21 +41,23 @@ int main(int argc, char *argv[])
     parser.addOption(groupOption);
     parser.process(a);
 
-    if (!parser.isSet(groupOption)) {
-        qWarning() << "[main]must set group name!";
-        return -1;
-    }
+    const bool isSetGroup = parser.isSet(groupOption);
 
     const QString &typeValue = getuid() < 1000 ? "system" : "user";
-    const QString &groupValue = parser.value(groupOption);
+    const QString &groupValue = isSetGroup ? parser.value(groupOption) : QString();
 
     qDebug() << "[main]deepin service config dir:" << QString(SERVICE_CONFIG_DIR);
 
     QMap<QString, QDBusConnection::BusType> busTypeMap;
     busTypeMap["system"] = QDBusConnection::SystemBus;
     busTypeMap["user"] = QDBusConnection::SessionBus;
-    PluginManager *srv = new PluginManager();
-    srv->init(busTypeMap[typeValue], groupValue);
+    if (isSetGroup) {
+        PluginManager *srv = new PluginManager();
+        srv->init(busTypeMap[typeValue], groupValue);
+    } else {
+        ServiceManager *srv = new ServiceManager();
+        srv->init(busTypeMap[typeValue]);
+    }
 
     return a.exec();
 }

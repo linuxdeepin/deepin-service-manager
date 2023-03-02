@@ -4,8 +4,7 @@ After=dbus.service
 PartOf=deepin-service-manager.service
 
 [Service]
-ExecStart=/usr/bin/deepin-service-plugin-loader -g %i
-StandardOutput=syslog
+ExecStart=/usr/bin/deepin-service-manager -g %i
 Restart=always
 RestartSec=3
 

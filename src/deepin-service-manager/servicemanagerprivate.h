@@ -1,8 +1,8 @@
 #ifndef SERVICEMANAGERPRIVATE_H
 #define SERVICEMANAGERPRIVATE_H
 
-#include "../utils.h"
 #include "qdbusservice.h"
+#include "utils.h"
 
 class ServiceManagerPrivate : public QDBusService
 {

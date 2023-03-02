@@ -1,7 +1,7 @@
 #ifndef PLUGINMANAGER_H
 #define PLUGINMANAGER_H
 
-#include "../utils.h"
+#include "utils.h"
 
 #include <QMap>
 #include <QObject>
