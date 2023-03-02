@@ -18,8 +18,9 @@ public:
     void addGroup(const QString &groupName);
     void init(const QDBusConnection::BusType &type);
 
-private:
     QStringList groups() const;
+
+private:
     QString version() const;
 
 private:

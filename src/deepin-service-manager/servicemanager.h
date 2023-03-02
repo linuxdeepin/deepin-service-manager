@@ -8,13 +8,6 @@
 class ServiceManagerPublic;
 class ServiceManagerPrivate;
 class GroupManager;
-typedef GroupManager _GroupManager;
-
-struct GroupData
-{
-    QString ServiceName;
-    _GroupManager *GroupManager;
-};
 
 class ServiceManager : public QObject
 {
@@ -31,11 +24,11 @@ private slots:
 private:
     void initConnection();
     void initGroup(const QDBusConnection::BusType &type);
+    GroupManager *addGroup(const QString &group);
 
 private:
     ServiceManagerPublic *m_publicService;
     ServiceManagerPrivate *m_privateService;
-    QMap<QString, GroupData> m_groups; // groupName serviceName
     QDBusConnection::BusType m_busType;
 };
 

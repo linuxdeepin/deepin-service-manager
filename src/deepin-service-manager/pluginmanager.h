@@ -6,10 +6,6 @@
 #include <QMap>
 #include <QObject>
 
-class ServiceBase;
-class Policy;
-typedef QMap<QString, ServiceBase *> PluginMap;
-
 class PluginManager : public QObject
 {
     Q_OBJECT
@@ -18,7 +14,6 @@ class PluginManager : public QObject
 
 public:
     explicit PluginManager(QObject *parent = nullptr);
-    ~PluginManager();
 
     void init(const QDBusConnection::BusType &type, const QString &group);
 
@@ -26,15 +21,10 @@ signals:
     Q_SCRIPTABLE void PluginAdded(const QString &plugin);
 
 private:
-    ServiceBase *createService(const QDBusConnection::BusType &sessionType, Policy *policy);
-    bool loadPlugins(const QDBusConnection::BusType &sessionType);
-    void addPlugin(ServiceBase *obj);
-    QList<Policy *> sortPolicy(QList<Policy *> policys);
-
     QStringList plugins() const;
 
 private:
-    PluginMap m_pluginMap;
+    QStringList m_plugins;
     QString m_group;
 };
 
