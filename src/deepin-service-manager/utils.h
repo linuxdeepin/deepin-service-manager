@@ -3,14 +3,17 @@
 
 #include <QDBusConnection>
 
-#define ServiceManagerInterface "org.deepin.service.manager1"
-#define PluginManagerInterface "org.deepin.service.manager.Plugin1"
+#define ServiceManagerInterface "org.deepin.ServiceManager1"
+#define PluginManagerInterface "org.deepin.ServiceManager1.Plugin"
+#define ServiceGroupInterface "org.deepin.ServiceManager1.Group"
 
-static const QString &ServiceManagerName = QStringLiteral("org.deepin.service.manager");
-static const QString &ServiceManagerPath = QStringLiteral("/manager");
-static const QString &ServiceManagerPrivatePath = QStringLiteral("/manager/private");
+static const QString &ServiceManagerName = QStringLiteral("org.deepin.ServiceManager1");
+static const QString &ServiceManagerPath = QStringLiteral("/org/deepin/ServiceManager1");
+static const QString &ServiceGroupPath = QStringLiteral("/org/deepin/Group1/");
+static const QString &ServiceManagerPrivatePath =
+        QStringLiteral("/org/deepin/ServiceManager1/Private");
 
-static const QString &PluginManagerPath = QStringLiteral("/manager/Plugin");
+static const QString &PluginManagerPath = QStringLiteral("/org/deepin/ServiceManager1/Plugin");
 
 static const QMap<QDBusConnection::BusType, QString> typeMap{
     { QDBusConnection::SystemBus, "system" }, { QDBusConnection::SessionBus, "user" }

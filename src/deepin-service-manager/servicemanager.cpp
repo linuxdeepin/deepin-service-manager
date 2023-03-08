@@ -110,7 +110,7 @@ GroupManager *ServiceManager::addGroup(const QString &group)
     GroupManager *groupManager = new GroupManager(this);
 
     m_publicService->addGroup(group);
-    const QString &groupPath = "/group/" + group;
+    const QString &groupPath = ServiceGroupPath + group;
 
     QDBusConnection connection = m_publicService->qDbusConnection();
     // register group path
@@ -121,6 +121,7 @@ GroupManager *ServiceManager::addGroup(const QString &group)
         qWarning() << "[ServiceManager]failed to register dbus object: "
                    << connection.lastError().message();
     }
+    qInfo() << "[ServiceManager]added group: " << groupPath;
     return groupManager;
 }
 

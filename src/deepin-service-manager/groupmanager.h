@@ -1,12 +1,14 @@
 #ifndef GROUPMANAGER_H
 #define GROUPMANAGER_H
 
+#include "utils.h"
+
 #include <QObject>
 
 class GroupManager : public QObject
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.deepin.service.manager1");
+    Q_CLASSINFO("D-Bus Interface", ServiceGroupInterface);
     Q_PROPERTY(QStringList Plugins READ plugins);
 
 public:

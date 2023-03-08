@@ -1,16 +1,16 @@
 {
-    "name": "org.deepin.service.manager",
+    "name": "org.deepin.service.manager1",
     "group": "core",
     "policyVersion": "1.0",
     "dependencies": [],
     "policy": [
         {
-            "path": "/manager",
+            "path": "/org/deepin/ServiceManager1",
             "pathhide": false,
             "permission": false
         },
         {
-            "path": "/manager/private",
+            "path": "/org/deepin/ServiceManager1/Private",
             "pathhide": true,
             "permission": false
         }
