@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
 macro(install_symlink filepath wantsdir)
     file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/link/${wantsdir}/)
     execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_INSTALL_PREFIX}/lib/systemd/system/${filepath} ${PROJECT_BINARY_DIR}/link/${wantsdir}/${filepath})

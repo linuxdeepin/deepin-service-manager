@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
 cmake_minimum_required(VERSION 3.13)
 
 set (VERSION "1.0.0" CACHE STRING "define project version")

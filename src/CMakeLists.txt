@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(SRC_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})

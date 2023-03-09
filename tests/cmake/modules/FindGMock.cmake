@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
 # Locate the Google C++ Mocking Framework.
 # (This file is almost an identical copy of the original FindGTest.cmake file,
 #  feel free to use it as it is or modify it for your own needs.)
