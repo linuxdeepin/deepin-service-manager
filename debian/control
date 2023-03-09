@@ -21,7 +21,8 @@ Description: deepin desktop-environment - service manager frame
 Package: libdeepin-service-dev
 Architecture: any
 Depends:
- ${misc:Depends}
+ ${misc:Depends},
+ libdeepin-service( =${binary:Version})
 Description: deepin desktop-environment - service frame for development
 
 Package: libdeepin-service
