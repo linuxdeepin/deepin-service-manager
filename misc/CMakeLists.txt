@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
+macro(install_symlink filepath wantsdir)
+    file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/link/${wantsdir}/)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_INSTALL_PREFIX}/lib/systemd/system/${filepath} ${PROJECT_BINARY_DIR}/link/${wantsdir}/${filepath})
+    install(FILES ${PROJECT_BINARY_DIR}/link/${wantsdir}/${filepath} DESTINATION lib/systemd/system/${wantsdir}/)
+endmacro(install_symlink)
+macro(install_user_symlink filepath wantsdir)
+    file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/link/${wantsdir}/)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_INSTALL_PREFIX}/lib/systemd/user/${filepath} ${PROJECT_BINARY_DIR}/link/${wantsdir}/${filepath})
+    install(FILES ${PROJECT_BINARY_DIR}/link/${wantsdir}/${filepath} DESTINATION lib/systemd/user/${wantsdir}/)
+endmacro(install_user_symlink)
+
+install(FILES org.deepin.service.manager.conf
+    DESTINATION share/dbus-1/system.d/
+)
+
+install(FILES deepin-service-manager.service
+    DESTINATION lib/systemd/system/
+)
+
+install(FILES deepin-service-plugin@.service
+    DESTINATION lib/systemd/system/
+)
+
+install(FILES deepin-service-manager.service
+    DESTINATION lib/systemd/user/
+)
+
+install(FILES deepin-service-plugin@.service
+    DESTINATION lib/systemd/user/
+)
+
+install_symlink(deepin-service-manager.service multi-user.target.wants)
+install_user_symlink(deepin-service-manager.service default.target.wants)
+
+set(LIB_NAME "deepin-qdbus-service")
+
+# config pkgconfig file
+configure_file(${LIB_NAME}.pc.in ${LIB_NAME}.pc @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${LIB_NAME}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+# config cmake file
+configure_file(${LIB_NAME}Config.cmake.in ${LIB_NAME}Config.cmake @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${LIB_NAME}Config.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${LIB_NAME})

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
 cmake_minimum_required(VERSION 3.7)
 
 set(BIN_NAME dde_service_manager_ut)
@@ -7,8 +10,8 @@ set(CMAKE_AUTOMOC ON)
 
 # 源文件
 file(GLOB_RECURSE SRCS
-    "../src/dde-service-manager/dbus_manager.h"
-    "../src/dde-service-manager/dbus_manager.cpp"
+    "../src/deepin-service-manager/dbus_manager.h"
+    "../src/deepin-service-manager/dbus_manager.cpp"
     "*.h"
     "*.cpp")
 

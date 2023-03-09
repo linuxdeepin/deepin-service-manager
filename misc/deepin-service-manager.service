@@ -1,0 +1,11 @@
+[Unit]
+Description=deepin-service-manager
+After=dbus.service
+
+[Service]
+ExecStart=/usr/bin/deepin-service-manager
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

@@ -1,8 +1,0 @@
-[Desktop Entry]
-Comment=Dde service manager
-Exec=systemctl --user enable dde-service-manager-session.service --now --runtime
-Name=Dde service manager
-NoDisplay=true
-OnlyShowIn=Deepin
-Type=Application
-X-Deepin-Vendor=user-custom

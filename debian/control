@@ -1,20 +1,33 @@
-Source: dde-service-manager
+Source: deepin-service
 Section: admin
 Priority: optional
 Maintainer: Deepin Sysdev <sysdev@deepin.com>
 Build-Depends:  debhelper (>= 11),
  pkg-config,
  cmake,
- libgtest-dev,
- libkf5wayland-dev
+ qtbase5-dev,
+ libsystemd-dev
 Standards-Version: 4.1.3
-Homepage: https://github.com/linuxdeepin/dde-plugin-loader
+Homepage: https://github.com/linuxdeepin
 
-Package: dde-service-manager
+Package: deepin-service-manager
 Architecture: any
 Depends:
  ${shlibs:Depends},
- ${misc:Depends},
- libkf5waylandclient5
+ ${misc:Depends}
 Description: deepin desktop-environment - service manager frame
  Load system plug-ins for unified management
+
+Package: libdeepin-service-dev
+Architecture: any
+Depends:
+ ${misc:Depends},
+ libdeepin-service( =${binary:Version})
+Description: deepin desktop-environment - service frame for development
+
+Package: libdeepin-service
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends}
+Description: deepin desktop-environment - service frame
