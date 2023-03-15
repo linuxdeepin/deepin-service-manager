@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+#include "pluginloader.h"
 #include "pluginmanager.h"
 #include "servicemanager.h"
 
@@ -18,26 +19,35 @@ int main(int argc, char *argv[])
     a.setApplicationVersion(VERSION);
 
     QCommandLineOption groupOption({ { "g", "group" }, "eg:core", "group name" });
+    QCommandLineOption nameOption({ { "n", "name" }, "eg:org.deepin.demo", "service name" });
     QCommandLineParser parser;
     parser.setApplicationDescription("deepin service plugin loader");
     parser.addHelpOption();
     parser.addVersionOption();
     parser.addOption(groupOption);
+    parser.addOption(nameOption);
     parser.process(a);
 
     const bool isSetGroup = parser.isSet(groupOption);
+    const bool isSetName = parser.isSet(nameOption);
 
     const QString &typeValue = getuid() < 1000 ? "system" : "user";
     const QString &groupValue = isSetGroup ? parser.value(groupOption) : QString();
+    const QString &nameValue = isSetName ? parser.value(nameOption) : QString();
 
     qDebug() << "[main]deepin service config dir:" << QString(SERVICE_CONFIG_DIR);
 
     QMap<QString, QDBusConnection::BusType> busTypeMap;
     busTypeMap["system"] = QDBusConnection::SystemBus;
     busTypeMap["user"] = QDBusConnection::SessionBus;
-    if (isSetGroup) {
+    if (isSetName) {
         PluginManager *srv = new PluginManager();
-        srv->init(busTypeMap[typeValue], groupValue);
+        srv->init(busTypeMap[typeValue]);
+        srv->loadByName(nameValue);
+    } else if (isSetGroup) {
+        PluginManager *srv = new PluginManager();
+        srv->init(busTypeMap[typeValue]);
+        srv->loadByGroup(groupValue);
     } else {
         ServiceManager *srv = new ServiceManager();
         srv->init(busTypeMap[typeValue]);

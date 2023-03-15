@@ -19,17 +19,20 @@ class PluginManager : public QObject
 public:
     explicit PluginManager(QObject *parent = nullptr);
 
-    void init(const QDBusConnection::BusType &type, const QString &group);
+    void init(const QDBusConnection::BusType &type);
+    void loadByGroup(const QString &group);
+    void loadByName(const QString &name);
 
 signals:
     Q_SCRIPTABLE void PluginAdded(const QString &plugin);
+    Q_SCRIPTABLE void PluginRemoved(const QString &plugin);
 
 private:
     QStringList plugins() const;
 
 private:
     QStringList m_plugins;
-    QString m_group;
+    QDBusConnection::BusType m_type;
 };
 
 #endif // PLUGINMANAGER_H

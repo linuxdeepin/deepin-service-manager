@@ -21,6 +21,7 @@ public:
 public Q_SLOTS:
     void addPlugin(const QString &pluginName);
     void removePlugin(const QString &pluginName);
+    void onNameOwnerChanged(const QString &service, const QString &from, const QString &to);
 
 private:
     QStringList plugins() const;

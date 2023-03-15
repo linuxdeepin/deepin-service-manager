@@ -53,9 +53,7 @@ void ServiceQtDBus::initThread()
         m_library = new QLibrary(fileInfo.absoluteFilePath());
     }
 
-    if (policy->isResident()) {
-        registerService();
-    }
+    registerService();
     ServiceBase::initThread();
 }
 

@@ -24,3 +24,17 @@ void GroupManager::removePlugin(const QString &pluginName)
     if (m_plugins.contains(pluginName))
         m_plugins.removeOne(pluginName);
 }
+
+void GroupManager::onNameOwnerChanged(const QString &service,
+                                      const QString &from,
+                                      const QString &to)
+{
+    Q_UNUSED(from);
+    if (!to.isEmpty()) {
+        return;
+    }
+    if (!m_plugins.contains(service)) {
+        return;
+    }
+    m_plugins.removeOne(service);
+}

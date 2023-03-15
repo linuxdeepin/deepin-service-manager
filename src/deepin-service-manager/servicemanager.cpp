@@ -94,7 +94,8 @@ void ServiceManager::initGroup(const QDBusConnection::BusType &type)
         connect(plugin, &PluginLoader::PluginAdded, this, [groupManager](const QString &name) {
             groupManager->addPlugin(name);
         });
-        plugin->init(type, core);
+        plugin->init(type, true);
+        plugin->loadByGroup(core);
         groups.removeOne(core);
     }
     qDebug() << "groups:" << groups;
@@ -109,23 +110,27 @@ void ServiceManager::initGroup(const QDBusConnection::BusType &type)
 
 GroupManager *ServiceManager::addGroup(const QString &group)
 {
-    if (m_publicService->groups().contains(group))
-        return nullptr;
-    GroupManager *groupManager = new GroupManager(this);
+    GroupManager *groupManager = nullptr;
+    if (m_groups.contains(group)) {
+        groupManager = m_groups.value(group);
+    } else {
+        groupManager = new GroupManager(this);
+        m_groups.insert(group, groupManager);
+        m_publicService->addGroup(group);
+        const QString &groupPath = ServiceGroupPath + group;
 
-    m_publicService->addGroup(group);
-    const QString &groupPath = ServiceGroupPath + group;
-
-    QDBusConnection connection = m_publicService->qDbusConnection();
-    // register group path
-    if (!connection.registerObject(groupPath,
-                                   groupManager,
-                                   QDBusConnection::ExportScriptableContents
-                                           | QDBusConnection::ExportAllProperties)) {
-        qWarning() << "[ServiceManager]failed to register dbus object: "
-                   << connection.lastError().message();
+        QDBusConnection connection = m_publicService->qDbusConnection();
+        // register group path
+        if (!connection.registerObject(groupPath,
+                                       groupManager,
+                                       QDBusConnection::ExportScriptableContents
+                                               | QDBusConnection::ExportAllProperties)) {
+            qWarning() << "[ServiceManager]failed to register dbus object: "
+                       << connection.lastError().message();
+        }
+        qInfo() << "[ServiceManager]added group: " << groupPath;
     }
-    qInfo() << "[ServiceManager]added group: " << groupPath;
+
     return groupManager;
 }
 
@@ -144,11 +149,23 @@ void ServiceManager::onRegisterGroup(const QString &groupName, const QString &se
     if (groupManager) {
         // connect plugin manager, call method
         QDBusConnection connection = m_publicService->qDbusConnection();
+        connection.connect("org.freedesktop.DBus",
+                           "/org/freedesktop/DBus",
+                           "org.freedesktop.DBus",
+                           "NameOwnerChanged",
+                           groupManager,
+                           SLOT(removePlugin(const QString &, const QString &, const QString &)));
         connection.connect(serviceName,
                            PluginManagerPath,
                            PluginManagerInterface,
                            "PluginAdded",
                            groupManager,
                            SLOT(addPlugin(const QString &)));
+        connection.connect(serviceName,
+                           PluginManagerPath,
+                           PluginManagerInterface,
+                           "PluginRemoved",
+                           groupManager,
+                           SLOT(removePlugin(const QString &)));
     }
 }

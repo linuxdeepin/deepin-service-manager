@@ -33,6 +33,7 @@ private:
 private:
     ServiceManagerPublic *m_publicService;
     ServiceManagerPrivate *m_privateService;
+    QMap<QString, GroupManager *> m_groups;
     QDBusConnection::BusType m_busType;
 };
 
