@@ -12,7 +12,7 @@ macro(install_user_symlink filepath wantsdir)
     install(FILES ${PROJECT_BINARY_DIR}/link/${wantsdir}/${filepath} DESTINATION lib/systemd/user/${wantsdir}/)
 endmacro(install_user_symlink)
 
-install(FILES org.deepin.service.manager.conf
+install(FILES org.deepin.ServiceManager1.conf
     DESTINATION share/dbus-1/system.d/
 )
 
