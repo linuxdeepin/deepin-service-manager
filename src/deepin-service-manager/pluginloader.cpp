@@ -39,7 +39,7 @@ ServiceBase *PluginLoader::createService(Policy *policy)
         srv = new ServiceSDBus();
     if (srv) {
         srv->init(m_type, policy);
-        qInfo() << "[PluginLoader]init plugin finish:" << srv->policy->libPath;
+        qInfo() << "[PluginLoader]init plugin finish:" << srv->policy->pluginPath;
     }
 
     return srv;
@@ -84,7 +84,7 @@ void PluginLoader::loadByGroup(const QString &group)
                 loop->quit();
                 return;
             }
-            if (!policy->libPath.isEmpty()) {
+            if (!policy->pluginPath.isEmpty()) {
                 addPlugin(srv);
             }
             loop->quit();
@@ -115,7 +115,7 @@ void PluginLoader::loadByName(const QString &name)
         if (srv == nullptr) {
             return;
         }
-        if (!policy->libPath.isEmpty()) {
+        if (!policy->pluginPath.isEmpty()) {
             qInfo() << "[PluginLoader]init plugin:" << file;
 
             addPlugin(srv);

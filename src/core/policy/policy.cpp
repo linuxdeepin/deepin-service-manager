@@ -122,7 +122,7 @@ bool Policy::allowSubPath(const QString &path) const
 
 bool Policy::isResident() const
 {
-    return policyStartType == "Resident";
+    return startType == "Resident";
 }
 
 void Policy::print()
@@ -180,10 +180,13 @@ void Policy::parseConfig(const QString &path)
     }
     QJsonObject rootObj = jsonDoc.object();
     jsonGetString(rootObj, "name", name);
-    jsonGetString(rootObj, "group", group, "core");
-    jsonGetString(rootObj, "libPath", libPath);
-    jsonGetString(rootObj, "policyVersion", policyVersion, "1.0");
-    jsonGetString(rootObj, "policyStartType", policyStartType, "Resident");
+    jsonGetString(rootObj, "group", group, "app");
+    jsonGetString(rootObj, "libPath", pluginPath); // 兼容
+    jsonGetString(rootObj, "pluginPath", pluginPath, pluginPath);
+    jsonGetString(rootObj, "policyVersion", version, "1.0"); // 兼容
+    jsonGetString(rootObj, "version", version, version);
+    jsonGetString(rootObj, "policyStartType", startType, "Resident"); // 兼容
+    jsonGetString(rootObj, "startType", startType, startType);
     jsonGetStringList(rootObj, "dependencies", dependencies);
     jsonGetInt(rootObj, "startDelay", startDelay, 0);
     jsonGetInt(rootObj, "idleTime", idleTime, 10);

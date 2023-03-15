@@ -47,7 +47,7 @@ void ServiceQtDBus::initThread()
     // TODO:无权限、隐藏、按需启动需求的service，不应该注册，避免触发hook，提高效率
     QTDbusHook::instance()->setServiceObject(this);
 
-    QFileInfo fileInfo(QString(SERVICE_LIB_DIR) + policy->libPath);
+    QFileInfo fileInfo(QString(SERVICE_LIB_DIR) + policy->pluginPath);
     if (QLibrary::isLibrary(fileInfo.absoluteFilePath())) {
         qInfo() << "[ServiceQtDBus]init library: " << fileInfo.absoluteFilePath();
         m_library = new QLibrary(fileInfo.absoluteFilePath());
