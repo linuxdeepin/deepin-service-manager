@@ -21,14 +21,17 @@ public:
     explicit PluginLoader(QObject *parent = nullptr);
     ~PluginLoader();
 
-    void init(const QDBusConnection::BusType &type, const QString &group);
+    void init(const QDBusConnection::BusType &type, const bool isResident);
+    void loadByGroup(const QString &group);
+    void loadByName(const QString &name);
+    QString getGroup(const QString &name);
 
 signals:
     void PluginAdded(const QString &plugin);
+    void PluginRemoved(const QString &plugin);
 
 private:
-    ServiceBase *createService(const QDBusConnection::BusType &sessionType, Policy *policy);
-    bool loadPlugins(const QDBusConnection::BusType &sessionType);
+    ServiceBase *createService(Policy *policy);
     void addPlugin(ServiceBase *obj);
     QList<Policy *> sortPolicy(QList<Policy *> policys);
 
@@ -36,7 +39,8 @@ private:
 
 private:
     PluginMap m_pluginMap;
-    QString m_group;
+    QDBusConnection::BusType m_type;
+    bool m_isResident;
 };
 
 #endif // PLUGINLOADER

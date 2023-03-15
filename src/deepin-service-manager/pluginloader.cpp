@@ -2,13 +2,15 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "graph.h"
 #include "pluginloader.h"
+
+#include "graph.h"
 #include "policy/policy.h"
 #include "service/serviceqtdbus.h"
 #include "service/servicesdbus.h"
 #include "utils.h"
 
+#include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 #include <QEventLoop>
@@ -28,8 +30,7 @@ PluginLoader::~PluginLoader()
     m_pluginMap.clear();
 }
 
-ServiceBase *PluginLoader::createService(const QDBusConnection::BusType &sessionType,
-                                         Policy *policy)
+ServiceBase *PluginLoader::createService(Policy *policy)
 {
     ServiceBase *srv = nullptr;
     if (policy->sdkType == SDKType::QT)
@@ -37,23 +38,22 @@ ServiceBase *PluginLoader::createService(const QDBusConnection::BusType &session
     if (policy->sdkType == SDKType::SD)
         srv = new ServiceSDBus();
     if (srv) {
-        srv->init(sessionType, policy);
+        srv->init(m_type, policy);
         qInfo() << "[PluginLoader]init plugin finish:" << srv->policy->libPath;
     }
 
     return srv;
 }
 
-void PluginLoader::init(const QDBusConnection::BusType &type, const QString &group)
+void PluginLoader::init(const QDBusConnection::BusType &type, const bool isResident)
 {
-    m_group = group;
-    // load plugin
-    loadPlugins(type);
+    m_type = type;
+    m_isResident = isResident;
 }
 
-bool PluginLoader::loadPlugins(const QDBusConnection::BusType &type)
+void PluginLoader::loadByGroup(const QString &group)
 {
-    const QString &path = QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]);
+    const QString &path = QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[m_type]);
     qInfo() << "[PluginLoader]init plugins:" << path;
     QList<Policy *> policys;
     QFileInfoList list = QDir(path).entryInfoList();
@@ -63,8 +63,11 @@ bool PluginLoader::loadPlugins(const QDBusConnection::BusType &type)
         }
         Policy *policy = new Policy(this);
         policy->parseConfig(file.absoluteFilePath());
-        if (policy->group != m_group) {
+        if (policy->group != group) {
             policy->deleteLater();
+            continue;
+        }
+        if (m_isResident != policy->isResident()) {
             continue;
         }
         policys.append(policy);
@@ -75,11 +78,8 @@ bool PluginLoader::loadPlugins(const QDBusConnection::BusType &type)
         // start delay
         const int delay = policy->startDelay * 1000;
         QEventLoop *loop = new QEventLoop(this);
-        QTimer::singleShot(delay, this, [this, type, policy, loop] {
-            QDBusConnection connection = type == QDBusConnection::SessionBus
-                    ? QDBusConnection::sessionBus()
-                    : QDBusConnection::systemBus();
-            ServiceBase *srv = createService(type, policy);
+        QTimer::singleShot(delay, this, [this, policy, loop] {
+            ServiceBase *srv = createService(policy);
             if (srv == nullptr) {
                 loop->quit();
                 return;
@@ -92,13 +92,70 @@ bool PluginLoader::loadPlugins(const QDBusConnection::BusType &type)
         loop->exec();
     }
     qDebug() << "[PluginLoader]added plugins: " << m_pluginMap.keys();
-    return true;
+}
+
+void PluginLoader::loadByName(const QString &name)
+{
+    const QString &path = QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[m_type]);
+    QFileInfoList list = QDir(path).entryInfoList();
+    for (auto file : list) {
+        if (!file.isFile() || (file.suffix().compare("json", Qt::CaseInsensitive) != 0)) {
+            continue;
+        }
+        Policy *policy = new Policy(this);
+        policy->parseConfig(file.absoluteFilePath());
+        if (policy->name != name) {
+            policy->deleteLater();
+            continue;
+        }
+        if (m_isResident != policy->isResident())
+            continue;
+
+        ServiceBase *srv = createService(policy);
+        if (srv == nullptr) {
+            return;
+        }
+        if (!policy->libPath.isEmpty()) {
+            qInfo() << "[PluginLoader]init plugin:" << file;
+
+            addPlugin(srv);
+        }
+        break;
+    }
+}
+
+QString PluginLoader::getGroup(const QString &name)
+{
+    // 要在load插件之前获取group，所以不能通过map获取，只能通过Policy获取
+    const QString &path = QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[m_type]);
+    QFileInfoList list = QDir(path).entryInfoList();
+    for (auto file : list) {
+        if (!file.isFile() || (file.suffix().compare("json", Qt::CaseInsensitive) != 0)) {
+            continue;
+        }
+        Policy *policy = new Policy(this);
+        policy->parseConfig(file.absoluteFilePath());
+        if (policy->name == name) {
+            const QString &group = policy->group;
+            policy->deleteLater();
+            return group;
+        } else {
+            policy->deleteLater();
+        }
+    }
+
+    return QString();
 }
 
 void PluginLoader::addPlugin(ServiceBase *obj)
 {
     m_pluginMap[obj->policy->name] = obj;
-    emit PluginAdded(obj->policy->name);
+    connect(obj, &ServiceBase::idleSignal, this, [this] {
+        ServiceBase *srv = qobject_cast<ServiceBase *>(sender());
+        Q_EMIT PluginRemoved(srv->policy->name);
+        qApp->quit();
+    });
+    Q_EMIT PluginAdded(obj->policy->name);
 }
 
 QList<Policy *> PluginLoader::sortPolicy(QList<Policy *> policys)
