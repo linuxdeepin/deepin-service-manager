@@ -133,9 +133,9 @@ public:
 public:
     QString name;
     QString group;
-    QString libPath;
-    QString policyVersion;
-    QString policyStartType;
+    QString pluginPath;
+    QString version;
+    QString startType;
     QStringList dependencies;
     SDKType sdkType;
     int startDelay;

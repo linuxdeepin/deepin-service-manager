@@ -98,7 +98,7 @@ void ServiceSDBus::initThread()
         return;
     }
 
-    QFileInfo fileInfo(QString(SERVICE_LIB_DIR) + policy->libPath);
+    QFileInfo fileInfo(QString(SERVICE_LIB_DIR) + policy->pluginPath);
     if (QLibrary::isLibrary(fileInfo.absoluteFilePath())) {
         m_library = new QLibrary(fileInfo.absoluteFilePath());
     }
