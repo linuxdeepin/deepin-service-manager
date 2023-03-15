@@ -9,7 +9,7 @@
 
 #define ServiceManagerInterface "org.deepin.ServiceManager1"
 #define PluginManagerInterface "org.deepin.ServiceManager1.Plugin"
-#define ServiceGroupInterface "org.deepin.ServiceManager1.Group"
+#define ServiceGroupInterface "org.deepin.Group1"
 
 static const QString &ServiceManagerName = QStringLiteral("org.deepin.ServiceManager1");
 static const QString &ServiceManagerPath = QStringLiteral("/org/deepin/ServiceManager1");
