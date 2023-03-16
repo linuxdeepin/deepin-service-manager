@@ -20,11 +20,19 @@ install(FILES deepin-service-manager.service
     DESTINATION lib/systemd/system/
 )
 
+install(FILES deepin-service-group@.service
+    DESTINATION lib/systemd/system/
+)
+
 install(FILES deepin-service-plugin@.service
     DESTINATION lib/systemd/system/
 )
 
 install(FILES deepin-service-manager.service
+    DESTINATION lib/systemd/user/
+)
+
+install(FILES deepin-service-group@.service
     DESTINATION lib/systemd/user/
 )
 
