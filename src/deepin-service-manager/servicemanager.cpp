@@ -104,7 +104,7 @@ void ServiceManager::initGroup(const QDBusConnection::BusType &type)
                               "/org/freedesktop/systemd1",
                               "org.freedesktop.systemd1.Manager",
                               m_publicService->qDbusConnection());
-        remote.call("StartUnit", QString("deepin-service-plugin@%1.service").arg(group), "fail");
+        remote.call("StartUnit", QString("deepin-service-group@%1.service").arg(group), "fail");
     }
 }
 
