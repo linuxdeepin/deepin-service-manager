@@ -28,3 +28,8 @@ License: CC0-1.0
 Files: .github/* .gitignore
 Copyright: None
 License: CC0-1.0
+
+# OBS
+Files: .obs/workflows.yml
+Copyright: None
+License: CC0-1.0
