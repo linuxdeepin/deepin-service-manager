@@ -157,7 +157,7 @@ bool ServiceSDBus::unregisterService()
 
 bool ServiceSDBus::libFuncCall(const QString &funcName, bool isRegister)
 {
-    if (m_library == nullptr || !m_library->isLoaded()) {
+    if (m_library == nullptr) {
         return false;
     }
     auto objFunc = isRegister ? DSMRegister(m_library->resolve(funcName.toStdString().c_str()))
