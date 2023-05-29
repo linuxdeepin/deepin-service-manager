@@ -19,7 +19,7 @@ static Test *test = nullptr;
 
 extern "C" int DSMRegister(const char *name, void *data)
 {
-    (void)data;
+    (void)name;
     service = new Service();
     QDBusConnection::RegisterOptions opts = QDBusConnection::ExportAllSlots
             | QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllProperties;

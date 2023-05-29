@@ -15,7 +15,7 @@ static Service *service = nullptr;
 
 extern "C" int DSMRegister(const char *name, void *data)
 {
-    (void)data;
+    (void)name;
     service = new Service();
     new Demo2aAdaptor(service);
     auto connection = reinterpret_cast<QDBusConnection *>(data);
