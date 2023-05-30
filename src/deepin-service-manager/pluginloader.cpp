@@ -14,7 +14,10 @@
 #include <QDebug>
 #include <QDir>
 #include <QEventLoop>
+#include <QLoggingCategory>
 #include <QTimer>
+
+Q_LOGGING_CATEGORY(dsm_PluginLoader, "[PluginLoader]")
 
 PluginLoader::PluginLoader(QObject *parent)
     : QObject(parent)
@@ -39,7 +42,6 @@ ServiceBase *PluginLoader::createService(Policy *policy)
         srv = new ServiceSDBus();
     if (srv) {
         srv->init(m_type, policy);
-        qInfo() << "[PluginLoader]init plugin finish:" << srv->policy->pluginPath;
     }
 
     return srv;
@@ -54,7 +56,7 @@ void PluginLoader::init(const QDBusConnection::BusType &type, const bool isResid
 void PluginLoader::loadByGroup(const QString &group)
 {
     const QString &path = QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[m_type]);
-    qInfo() << "[PluginLoader]init plugins:" << path;
+    qCInfo(dsm_PluginLoader) << "init plugins in path:" << path;
     QList<Policy *> policys;
     QFileInfoList list = QDir(path).entryInfoList();
     for (auto file : list) {
@@ -91,7 +93,7 @@ void PluginLoader::loadByGroup(const QString &group)
         });
         loop->exec();
     }
-    qDebug() << "[PluginLoader]added plugins: " << m_pluginMap.keys();
+    qCInfo(dsm_PluginLoader) << "added plugins: " << m_pluginMap.keys();
 }
 
 void PluginLoader::loadByName(const QString &name)
@@ -113,11 +115,11 @@ void PluginLoader::loadByName(const QString &name)
 
         ServiceBase *srv = createService(policy);
         if (srv == nullptr) {
+            qCWarning(dsm_PluginLoader) << "create service failed!";
             return;
         }
         if (!policy->pluginPath.isEmpty()) {
-            qInfo() << "[PluginLoader]init plugin:" << file;
-
+            qCInfo(dsm_PluginLoader) << "init plugin:" << file;
             addPlugin(srv);
         }
         break;
@@ -174,10 +176,10 @@ QList<Policy *> PluginLoader::sortPolicy(QList<Policy *> policys)
             if (Policy *dependencyPolicy = containsDependency(dependency)) {
                 edges.append(QPair<Policy *, Policy *>{ dependencyPolicy, policy });
             } else {
-                qWarning() << QString("[PluginLoader]service: %1 cannot found "
-                                      "dependency: %2!")
-                                      .arg(policy->name)
-                                      .arg(dependency);
+                qCWarning(dsm_PluginLoader) << QString("service: %1 cannot found "
+                                                       "dependency: %2!")
+                                                       .arg(policy->name)
+                                                       .arg(dependency);
             }
         }
     }
@@ -185,7 +187,7 @@ QList<Policy *> PluginLoader::sortPolicy(QList<Policy *> policys)
     QScopedPointer<Graph<Policy *>> graph(new Graph<Policy *>(policys, edges));
     QList<Policy *> result;
     graph->topologicalSort(result);
-    qDebug() << "[PluginLoader]sort result name:";
+    qCDebug(dsm_PluginLoader) << "sort result name:";
     for (auto policy : result) {
         qDebug() << "  " << policy->name;
     }

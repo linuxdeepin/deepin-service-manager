@@ -11,7 +11,9 @@
 #include <QDBusMessage>
 #include <QDebug>
 #include <QFile>
+#include <QLoggingCategory>
 #include <QTimer>
+
 #ifdef Q_DBUS_EXPORT
 extern Q_DBUS_EXPORT void qDBusAddSpyHook(void (*)(const QDBusMessage &));
 extern Q_DBUS_EXPORT void qDBusAddFilterHook(int (*)(const QString &, const QDBusMessage &));
@@ -30,7 +32,7 @@ extern QDBUS_EXPORT void qDBusAddFilterHook(int (*)(const QString &, const QDBus
 #  define HOOK_RESULT_FAILED
 #endif
 
-// TODO: hook的各种异常处理，cache提升性能
+Q_LOGGING_CATEGORY(dsm_hook_qt, "[QDBusHook]")
 
 QString getCMD(ServiceBase *obj, QString dbusService)
 {
@@ -39,13 +41,13 @@ QString getCMD(ServiceBase *obj, QString dbusService)
         return "";
     }
     const unsigned int &pid = srv->qDbusConnection().interface()->servicePid(dbusService).value();
-    qInfo() << "--pid:" << pid;
+    qCDebug(dsm_hook_qt) << "--pid:" << pid;
     QFile procCmd("/proc/" + QString::number(pid) + "/cmdline");
     QString cmd;
     if (procCmd.open(QIODevice::ReadOnly)) {
         QList<QByteArray> cmds = procCmd.readAll().split('\0');
         cmd = QString(cmds.first());
-        qInfo() << "--cmd:" << cmd;
+        qCDebug(dsm_hook_qt) << "--cmd:" << cmd;
     }
     return cmd;
 }
@@ -53,8 +55,7 @@ QString getCMD(ServiceBase *obj, QString dbusService)
 // if it is not a local message, hook exec at main thread
 void QTDBusSpyHook(const QDBusMessage &msg)
 {
-    qInfo() << "[Hook-QTDBus]";
-    qInfo() << "--msg=" << msg;
+    qCInfo(dsm_hook_qt) << "--msg=" << msg;
     //    qInfo() << "--Handler ThreadID:" << QThread::currentThreadId();
 
     ServiceBase *serviceObj = nullptr;
@@ -66,23 +67,23 @@ void QTDBusSpyHook(const QDBusMessage &msg)
                                                             isSubPath,
                                                             realPath);
     if (!findRet) {
-        qInfo() << "--can not find hook object: " << msg.path();
+        qCWarning(dsm_hook_qt) << "--can not find hook object: " << msg.path();
         return;
     }
     if (!serviceObj->isRegister()) {
-        qInfo() << "--to register dbus object: " << msg.path();
+        qCInfo(dsm_hook_qt) << "--to register dbus object: " << msg.path();
         serviceObj->registerService();
     }
 
     if (!serviceObj->policy->isResident() && !serviceObj->isLockTimer()) {
-        qInfo() << QString("--service: %1 will unregister in %2 minutes!")
-                           .arg(serviceObj->policy->name)
-                           .arg(serviceObj->policy->idleTime);
+        qCInfo(dsm_hook_qt) << QString("--service: %1 will unregister in %2 minutes!")
+                                       .arg(serviceObj->policy->name)
+                                       .arg(serviceObj->policy->idleTime);
         QTimer::singleShot(0, serviceObj, SLOT(restartTimer()));
     }
     if (msg.member() == "Introspect" && msg.interface() == "org.freedesktop.DBus.Introspectable") {
         if (serviceObj->policy->checkPathHide(realPath)) {
-            qInfo() << "--call Introspect" << msg.path() << " ,is hided!";
+            qCDebug(dsm_hook_qt) << "--call Introspect" << msg.path() << " ,is hided!";
             QList<QVariant> arguments;
             arguments << "";
             QDBusMessage reply = msg.createReply(arguments);
@@ -134,9 +135,8 @@ void QTDBusSpyHook(const QDBusMessage &msg)
 // if it is not a local message, hook exec at main thread
 int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
 {
-    qInfo() << "[Hook-QTDBus]";
-    qInfo() << "--baseService=" << baseService;
-    qInfo() << "--msg=" << msg;
+    qCInfo(dsm_hook_qt) << "--baseService=" << baseService;
+    qCInfo(dsm_hook_qt) << "--msg=" << msg;
     //    qInfo() << "--Handler ThreadID:" << QThread::currentThreadId();
 
     ServiceBase *serviceObj = nullptr;
@@ -148,22 +148,22 @@ int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
                                                             isSubPath,
                                                             realPath);
     if (!findRet) {
-        qInfo() << "--can not find hook object:" << msg.path();
+        qCWarning(dsm_hook_qt) << "--can not find hook object:" << msg.path();
         return 0;
     }
     if (!serviceObj->isRegister()) {
-        qInfo() << "--to register dbus object: " << msg.path();
+        qCInfo(dsm_hook_qt) << "--to register dbus object: " << msg.path();
         serviceObj->registerService();
     }
 
     if (!serviceObj->policy->isResident() && !serviceObj->isLockTimer()) {
-        qInfo() << QString("--service: %1 will unregister in 10 minutes!")
-                           .arg(serviceObj->policy->name);
+        qCInfo(dsm_hook_qt) << QString("--service: %1 will unregister in 10 minutes!")
+                                       .arg(serviceObj->policy->name);
         QTimer::singleShot(0, serviceObj, SLOT(restartTimer()));
     }
     if (msg.member() == "Introspect" && msg.interface() == "org.freedesktop.DBus.Introspectable") {
         if (serviceObj->policy->checkPathHide(realPath)) {
-            qInfo() << "--call Introspect" << msg.path() << " ,is hided!";
+            qCDebug(dsm_hook_qt) << "--call Introspect" << msg.path() << " ,is hided!";
             QList<QVariant> arguments;
             arguments << "";
             QDBusMessage reply = msg.createReply(arguments);
@@ -226,7 +226,7 @@ Q_GLOBAL_STATIC(QTDbusHook, qtDBusHook)
 
 QTDbusHook::QTDbusHook()
 {
-    qInfo() << "[QTDBusHook]qt hook register.";
+    qCDebug(dsm_hook_qt) << "qt hook register.";
 #ifdef Q_DBUS_HOOK_FILTER
     qDBusAddFilterHook(QTDBusHook);
 #else
@@ -267,7 +267,7 @@ bool QTDbusHook::setServiceObject(ServiceBase *obj)
     for (auto path : paths) {
         ServiceObjectMap::iterator iterService = m_serviceMap.find(path);
         if (iterService != m_serviceMap.end()) {
-            qWarning() << "[QTDbusHook]set service path failed, the object is existed." << path;
+            qCWarning(dsm_hook_qt) << "set service path failed, the object is existed: " << path;
             continue;
         }
         m_serviceMap[path] = obj;

@@ -9,6 +9,9 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(dsm_policy, "[Policy]")
 
 Policy::Policy(QObject *parent)
     : QObject(parent)
@@ -46,9 +49,9 @@ bool Policy::checkPermission(const QString &process,
                              const QString &dest,
                              const CallDestType &type)
 {
-    qInfo() << "[Policy]check permission:"
-            << QString("process=%1, path=%2, interface=%3, dest=%4")
-                       .arg(process, path, interface, dest);
+    qCInfo(dsm_policy) << "check permission:"
+                       << QString("process=%1, path=%2, interface=%3, dest=%4")
+                                  .arg(process, path, interface, dest);
     // 时间复杂度跟权限配置复杂度正相关，简单的配置就会校验很快
     QMapPath::const_iterator iterPath = mapPath.find(path);
     if (iterPath == mapPath.end()) {
@@ -102,7 +105,7 @@ bool Policy::checkPermission(const QString &process,
         return policyProp.processes.contains(process);
     }
 
-    qWarning() << "[Policy]check permission error!";
+    qCWarning(dsm_policy) << "check permission error!";
     return false;
 }
 
@@ -170,12 +173,14 @@ void Policy::print()
 
 void Policy::parseConfig(const QString &path)
 {
-    qInfo() << "[Policy]parse config:" << path;
+    qCInfo(dsm_policy) << "parse config:" << path;
     if (path.isEmpty()) {
+        qCWarning(dsm_policy) << "path is empty!";
         return;
     }
     QJsonDocument jsonDoc;
     if (!readJsonFile(jsonDoc, path)) {
+        qCWarning(dsm_policy) << "read json file failed!";
         return;
     }
     QJsonObject rootObj = jsonDoc.object();
@@ -199,16 +204,16 @@ void Policy::parseConfig(const QString &path)
         sdkType = SDKType::SD;
 
     if (name.isEmpty()) {
-        qWarning() << "[Policy]json error, name is empty.";
+        qCWarning(dsm_policy) << "json error, name is empty.";
         return;
     }
     if (!parseWhitelist(rootObj)) {
-        qWarning() << "[Policy]json error, parse whitelist error.";
+        qCWarning(dsm_policy) << "json error, parse whitelist error.";
         return;
     }
 
     if (!parsePolicy(rootObj)) {
-        qWarning() << "[Policy]json error, parse policy error.";
+        qCWarning(dsm_policy) << "json error, parse policy error.";
         return;
     }
 }
@@ -217,7 +222,7 @@ bool Policy::readJsonFile(QJsonDocument &outDoc, const QString &fileName)
 {
     QFile jsonFIle(fileName);
     if (!jsonFIle.open(QIODevice::ReadOnly)) {
-        qWarning() << QString("[Policy]open file: %1 error!").arg(fileName);
+        qCWarning(dsm_policy) << QString("open file: %1 error!").arg(fileName);
         return false;
     }
 
@@ -225,11 +230,11 @@ bool Policy::readJsonFile(QJsonDocument &outDoc, const QString &fileName)
     outDoc = QJsonDocument::fromJson(jsonFIle.readAll(), &jsonParserError);
     jsonFIle.close();
     if (jsonParserError.error != QJsonParseError::NoError) {
-        qWarning() << "[Policy]QJsonDocument::fromJson error!";
+        qCWarning(dsm_policy) << "to json document error: " << jsonParserError.errorString();
         return false;
     }
     if (outDoc.isNull()) {
-        qWarning() << "[Policy]json document is null!";
+        qCWarning(dsm_policy) << "json document is null!";
         return false;
     }
     return true;
@@ -245,7 +250,7 @@ bool Policy::parseWhitelist(const QJsonObject &obj)
     }
     QJsonValue listsValue = obj.value("whitelists");
     if (!listsValue.isArray()) {
-        qWarning() << "[Policy]parse whitelist error, invalid format";
+        qCWarning(dsm_policy) << "parse whitelist error, must be json array!";
         return false;
     }
     QJsonArray lists = listsValue.toArray();
@@ -289,7 +294,7 @@ bool Policy::parsePolicy(const QJsonObject &obj)
     }
     QJsonValue policyValue = obj.value("policy");
     if (!policyValue.isArray()) {
-        qWarning() << "[Policy]parse policy error, invalid format";
+        qCWarning(dsm_policy) << "parse policy error, must be json array!";
         return false;
     }
     QJsonArray policyList = policyValue.toArray();
@@ -309,7 +314,7 @@ bool Policy::parsePolicyPath(const QJsonObject &obj)
     QString path;
     jsonGetString(obj, "path", path);
     if (path.isEmpty()) {
-        qWarning() << "[Policy]parse policy-path error, invalid format";
+        qCWarning(dsm_policy) << "parse policy-path error, must be a string!";
         return false;
     }
 
@@ -359,7 +364,7 @@ bool Policy::parsePolicyInterface(const QJsonObject &obj, PolicyPath &policyPath
     QString interface;
     jsonGetString(obj, "interface", interface);
     if (interface.isEmpty()) {
-        qWarning() << "[Policy]parse policy-interface error, invalid format";
+        qCWarning(dsm_policy) << "parse policy-interface error, must be a string!";
         return false;
     }
 
@@ -420,7 +425,7 @@ bool Policy::parsePolicyMethod(const QJsonObject &obj, PolicyInterface &policyIn
     QString method;
     jsonGetString(obj, "method", method);
     if (method.isEmpty()) {
-        qWarning() << "[Policy]parse policy-method error, invalid format";
+        qCWarning(dsm_policy) << "parse policy-method error, must be a string!";
         return false;
     }
 
@@ -449,7 +454,7 @@ bool Policy::parsePolicyProperties(const QJsonObject &obj, PolicyInterface &poli
     QString property;
     jsonGetString(obj, "property", property);
     if (property.isEmpty()) {
-        qWarning() << "[Policy]parse policy-property error, invalid format";
+        qCWarning(dsm_policy) << "parse policy-property error, must be a string!";
         return false;
     }
 
