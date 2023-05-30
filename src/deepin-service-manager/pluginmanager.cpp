@@ -9,6 +9,9 @@
 
 #include <QDBusInterface>
 #include <QDebug>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(dsm_PluginManager, "[PluginManager]")
 
 PluginManager::PluginManager(QObject *parent)
     : QObject(parent)
@@ -26,8 +29,8 @@ void PluginManager::init(const QDBusConnection::BusType &type)
                                    this,
                                    QDBusConnection::ExportScriptableContents
                                            | QDBusConnection::ExportAllProperties)) {
-        qWarning() << "[PluginManager]failed to register dbus object: "
-                   << connection.lastError().message();
+        qCWarning(dsm_PluginManager)
+                << "failed to register dbus object: " << connection.lastError().message();
     }
 }
 
@@ -61,7 +64,7 @@ void PluginManager::loadByName(const QString &name)
     loader->init(m_type, false);
     const QString &group = loader->getGroup(name);
     if (group.isEmpty()) {
-        qWarning() << "[PluginManager]failed to get group of plugin: " << name;
+        qCWarning(dsm_PluginManager) << "failed to get group of plugin: " << name;
         return;
     }
     QDBusConnection connection = m_type == QDBusConnection::SessionBus

@@ -11,8 +11,11 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QLibrary>
+#include <QLoggingCategory>
 #include <QMetaClassInfo>
 #include <QThread>
+
+Q_LOGGING_CATEGORY(dsm_service_qt, "[QDBusService]")
 
 ServiceQtDBus::ServiceQtDBus(QObject *parent)
     : ServiceBase(parent)
@@ -40,26 +43,27 @@ QDBusConnection ServiceQtDBus::qDbusConnection()
 
 void ServiceQtDBus::initThread()
 {
-    qInfo() << "[ServiceQtDBus]init service: " << policy->paths();
+    qCInfo(dsm_service_qt) << "init service: " << policy->name << "paths: " << policy->paths();
     qDbusConnection().registerService(policy->name);
-    qDbusConnection().registerObject(QStringLiteral("/PrivateDeclaration"), this);
 
     // TODO:无权限、隐藏、按需启动需求的service，不应该注册，避免触发hook，提高效率
     QTDbusHook::instance()->setServiceObject(this);
 
     QFileInfo fileInfo(QString(SERVICE_LIB_DIR) + policy->pluginPath);
     if (QLibrary::isLibrary(fileInfo.absoluteFilePath())) {
-        qInfo() << "[ServiceQtDBus]init library: " << fileInfo.absoluteFilePath();
+        qCInfo(dsm_service_qt) << "init library: " << fileInfo.absoluteFilePath();
         m_library = new QLibrary(fileInfo.absoluteFilePath());
     }
 
-    registerService();
+    if (!registerService()) {
+        qCWarning(dsm_service_qt) << "register service failed: " << policy->name;
+    }
     ServiceBase::initThread();
 }
 
 bool ServiceQtDBus::registerService()
 {
-    qInfo() << "[ServiceQtDBus]service register: " << policy->name;
+    qCInfo(dsm_service_qt) << "service register: " << policy->name;
 
     if (libFuncCall("DSMRegister", true)) {
         ServiceBase::registerService();
@@ -71,7 +75,7 @@ bool ServiceQtDBus::registerService()
 
 bool ServiceQtDBus::unregisterService()
 {
-    qInfo() << "[ServiceQtDBus]service unregister: " << policy->name;
+    qCInfo(dsm_service_qt) << "service unregister: " << policy->name;
 
     if (libFuncCall("DSMUnRegister", false)) {
         ServiceBase::unregisterService();
@@ -89,8 +93,8 @@ bool ServiceQtDBus::libFuncCall(const QString &funcName, bool isRegister)
     auto objFunc = isRegister ? DSMRegister(m_library->resolve(funcName.toStdString().c_str()))
                               : DSMUnRegister(m_library->resolve(funcName.toStdString().c_str()));
     if (!objFunc) {
-        qWarning() << QString("[ServiceSDBus]failed to resolve the `%1` method: ").arg(funcName)
-                   << m_library->fileName();
+        qCWarning(dsm_service_qt) << QString("failed to resolve the `%1` method: ").arg(funcName)
+                                  << m_library->fileName();
         if (m_library->isLoaded())
             m_library->unload();
         m_library->deleteLater();

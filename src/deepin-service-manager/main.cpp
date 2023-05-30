@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "pluginloader.h"
 #include "pluginmanager.h"
 #include "servicemanager.h"
 
@@ -10,8 +9,10 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QLoggingCategory>
 
 #include <unistd.h>
+Q_LOGGING_CATEGORY(dsm_Main, "[Main]")
 
 int main(int argc, char *argv[])
 {
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
     const QString &groupValue = isSetGroup ? parser.value(groupOption) : QString();
     const QString &nameValue = isSetName ? parser.value(nameOption) : QString();
 
-    qDebug() << "[main]deepin service config dir:" << QString(SERVICE_CONFIG_DIR);
+    qCDebug(dsm_Main) << "deepin service config dir:" << QString(SERVICE_CONFIG_DIR);
 
     QMap<QString, QDBusConnection::BusType> busTypeMap;
     busTypeMap["system"] = QDBusConnection::SystemBus;

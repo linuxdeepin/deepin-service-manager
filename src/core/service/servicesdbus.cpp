@@ -9,22 +9,27 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QLibrary>
+#include <QLoggingCategory>
 #include <QThread>
+
+Q_LOGGING_CATEGORY(dsm_service_sd, "[SDBusService]")
+Q_LOGGING_CATEGORY(dsm_hook_sd, "[SDBusHook]")
 
 int sd_bus_message_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
 {
     (void)ret_error;
-    qInfo() << "[Hook-SDDBus]";
     std::string path = std::string(sd_bus_message_get_path(m));
-    qInfo() << "[sd-bus hook]called path=" << QString::fromStdString(path);
-    qInfo() << "[sd-bus hook]called interface=" << sd_bus_message_get_interface(m);
-    qInfo() << "[sd-bus hook]called member=" << sd_bus_message_get_member(m);
-    // sd_bus *bus = sd_bus_message_get_bus(m);
-    qInfo() << "[sd-bus hook]called sender=" << sd_bus_message_get_sender(m);
+    qCInfo(dsm_hook_sd) << QString("--msg= (sender=%2, path=%3, interface=%4, member=%5, "
+                                   "signature=%6)")
+                                   .arg(sd_bus_message_get_sender(m))
+                                   .arg(sd_bus_message_get_path(m))
+                                   .arg(sd_bus_message_get_interface(m))
+                                   .arg(sd_bus_message_get_member(m))
+                                   .arg(sd_bus_message_get_signature(m, true));
 
     // int sd_bus_get_tid(sd_bus *bus, pid_t *tid);
 
-    ServiceBase *qobj = static_cast<ServiceBase *>(userdata); // TODO 异常处理
+    ServiceBase *qobj = static_cast<ServiceBase *>(userdata);
     if (!qobj) {
         return -1;
     }
@@ -67,58 +72,51 @@ ServiceSDBus::~ServiceSDBus()
 void ServiceSDBus::initThread()
 {
     sd_bus_slot *slot = NULL;
-    if (sd_bus_open_user(&m_bus) < 0) {
-        qWarning() << "[ServiceSDBus]sd_bus_open_user error";
+    auto ret = sd_bus_open_user(&m_bus);
+    if (ret < 0) {
+        qCWarning(dsm_service_sd) << "open dbus error: " << ret;
         return;
     }
 
     const char *unique;
     sd_bus_get_unique_name(m_bus, &unique);
-    qInfo() << "[ServiceSDBus]bus unique:" << QString(unique);
+    qCInfo(dsm_service_sd) << "bus unique:" << QString(unique);
 
-    if (sd_bus_request_name(m_bus, policy->name.toStdString().c_str(), 0) < 0) {
-        qWarning() << "[ServiceSDBus]sd_bus_request_name error";
+    ret = sd_bus_request_name(m_bus, policy->name.toStdString().c_str(), 0);
+    if (ret < 0) {
+        qCWarning(dsm_service_sd) << "request name error: " << ret;
         return;
     }
-
-    if (sd_bus_add_filter(m_bus, &slot, sd_bus_message_handler, (void *)this) < 0) {
-        qWarning() << "[ServiceSDBus]sd_bus_add_filter error";
-        return;
-    }
-
-    const sd_bus_vtable calculator_vtable[] = { SD_BUS_VTABLE_START(0), SD_BUS_VTABLE_END };
-    if (sd_bus_add_object_vtable(m_bus,
-                                 &slot,
-                                 "/PrivateDeclaration",
-                                 "c.PrivateDeclaration", // TODO
-                                 calculator_vtable,
-                                 nullptr)
-        < 0) {
-        qWarning() << "[ServiceSDBus]sd_bus_add_object_vtable error";
+    ret = sd_bus_add_filter(m_bus, &slot, sd_bus_message_handler, (void *)this);
+    if (ret < 0) {
+        qCWarning(dsm_service_sd) << "add filter error: " << ret;
         return;
     }
 
     QFileInfo fileInfo(QString(SERVICE_LIB_DIR) + policy->pluginPath);
     if (QLibrary::isLibrary(fileInfo.absoluteFilePath())) {
         m_library = new QLibrary(fileInfo.absoluteFilePath());
+        qCInfo(dsm_service_sd) << "init library:" << fileInfo.absoluteFilePath();
     }
 
-    registerService();
+    if (!registerService()) {
+        qCWarning(dsm_service_sd) << "register service failed: " << policy->name;
+    }
 
     bool quit = false;
-    while (!quit) { // TODO
+    while (!quit) {
         sd_bus_message *m = NULL;
         int r = sd_bus_process(m_bus, &m);
-        qInfo() << "[ServiceSDBus]sd_bus_process finish and result=" << r;
+        qCDebug(dsm_service_sd) << "process finish and result=" << r;
         if (r < 0) {
-            qWarning() << "[sd-bus hook]Failed to process requests: %m";
+            qCWarning(dsm_service_sd) << "failed to process requests: %m";
             break;
         }
         if (r == 0) {
             /* Wait for the next request to process */
             r = sd_bus_wait(m_bus, UINT64_MAX);
             if (r < 0) {
-                qWarning() << "[ServiceSDBus]Failed to wait: %m";
+                qCWarning(dsm_service_sd) << "failed to wait: %m";
                 break;
             }
             continue;
@@ -126,7 +124,7 @@ void ServiceSDBus::initThread()
         if (!m) {
             continue;
         }
-        qInfo() << "[ServiceSDBus]sd_bus_process Get msg=" << sd_bus_message_get_member(m);
+        qCDebug(dsm_service_sd) << "process get message member=" << sd_bus_message_get_member(m);
         sd_bus_message_unref(m);
     }
     ServiceBase::initThread();
@@ -134,9 +132,8 @@ void ServiceSDBus::initThread()
 
 bool ServiceSDBus::registerService()
 {
-    if (m_bus == nullptr) {
-        return false;
-    }
+    qCInfo(dsm_service_sd) << "service register: " << policy->name;
+
     if (libFuncCall("DSMRegister", true)) {
         ServiceBase::registerService();
         return true;
@@ -147,6 +144,8 @@ bool ServiceSDBus::registerService()
 
 bool ServiceSDBus::unregisterService()
 {
+    qCInfo(dsm_service_sd) << "service unregister: " << policy->name;
+
     if (libFuncCall("DSMUnRegister", false)) {
         ServiceBase::registerService();
         return true;
@@ -163,8 +162,8 @@ bool ServiceSDBus::libFuncCall(const QString &funcName, bool isRegister)
     auto objFunc = isRegister ? DSMRegister(m_library->resolve(funcName.toStdString().c_str()))
                               : DSMUnRegister(m_library->resolve(funcName.toStdString().c_str()));
     if (!objFunc) {
-        qWarning() << QString("[ServiceSDBus]failed to resolve the `%1` method: ").arg(funcName)
-                   << m_library->fileName();
+        qCWarning(dsm_service_sd) << QString("failed to resolve the `%1` method: ").arg(funcName)
+                                  << m_library->fileName();
         if (m_library->isLoaded())
             m_library->unload();
         m_library->deleteLater();

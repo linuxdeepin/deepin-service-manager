@@ -16,7 +16,10 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileInfoList>
+#include <QLoggingCategory>
 #include <QProcess>
+
+Q_LOGGING_CATEGORY(dsm_ServiceManager, "[ServiceManager]")
 
 static const QStringList GroupSiral{ "core", "dde", "app" };
 
@@ -38,22 +41,22 @@ void ServiceManager::init(const QDBusConnection::BusType &type)
     QDBusConnection connection = m_publicService->qDbusConnection();
 
     if (!connection.registerService(ServiceManagerName)) {
-        qWarning() << "[ServiceManager]failed to register dbus service:"
-                   << connection.lastError().message();
+        qCWarning(dsm_ServiceManager)
+                << "failed to register dbus service:" << connection.lastError().message();
     }
     if (!connection.registerObject(ServiceManagerPath,
                                    m_publicService,
                                    QDBusConnection::ExportScriptableContents
                                            | QDBusConnection::ExportAllProperties)) {
-        qWarning() << "[ServiceManager]failed to register dbus object: "
-                   << connection.lastError().message();
+        qCWarning(dsm_ServiceManager)
+                << "failed to register dbus object: " << connection.lastError().message();
     }
     if (!connection.registerObject(ServiceManagerPrivatePath,
                                    m_privateService,
                                    QDBusConnection::ExportAllSlots
                                            | QDBusConnection::ExportAllSignals)) {
-        qWarning() << "[ServiceManager]failed to register dbus object: "
-                   << connection.lastError().message();
+        qCWarning(dsm_ServiceManager)
+                << "failed to register dbus object: " << connection.lastError().message();
     }
 
     initGroup(type);
@@ -85,7 +88,7 @@ void ServiceManager::initGroup(const QDBusConnection::BusType &type)
                       return false;
                   return GroupSiral.indexOf(group1) < GroupSiral.indexOf(group2);
               });
-    qDebug() << "[ServiceManager]groups: " << groups;
+    qCDebug(dsm_ServiceManager) << "groups: " << groups;
     // launch core group
     const QString &core = "core";
     if (groups.contains(core)) {
@@ -98,7 +101,6 @@ void ServiceManager::initGroup(const QDBusConnection::BusType &type)
         plugin->loadByGroup(core);
         groups.removeOne(core);
     }
-    qDebug() << "groups:" << groups;
     for (auto &&group : groups) {
         QDBusInterface remote("org.freedesktop.systemd1",
                               "/org/freedesktop/systemd1",
@@ -125,10 +127,10 @@ GroupManager *ServiceManager::addGroup(const QString &group)
                                        groupManager,
                                        QDBusConnection::ExportScriptableContents
                                                | QDBusConnection::ExportAllProperties)) {
-            qWarning() << "[ServiceManager]failed to register dbus object: "
-                       << connection.lastError().message();
+            qCWarning(dsm_ServiceManager)
+                    << "failed to register dbus object: " << connection.lastError().message();
         }
-        qInfo() << "[ServiceManager]added group: " << groupPath;
+        qCInfo(dsm_ServiceManager) << "added group: " << groupPath;
     }
 
     return groupManager;
@@ -144,7 +146,7 @@ void ServiceManager::initConnection()
 
 void ServiceManager::onRegisterGroup(const QString &groupName, const QString &serviceName)
 {
-    qDebug() << "[ServiceManager]on register group:" << groupName << serviceName;
+    qCDebug(dsm_ServiceManager) << "on register group:" << groupName << serviceName;
     auto groupManager = addGroup(groupName);
     if (groupManager) {
         // connect plugin manager, call method
