@@ -72,7 +72,8 @@ ServiceSDBus::~ServiceSDBus()
 void ServiceSDBus::initThread()
 {
     sd_bus_slot *slot = NULL;
-    auto ret = sd_bus_open_user(&m_bus);
+    auto ret = m_sessionType == QDBusConnection::SessionBus ? sd_bus_open_user(&m_bus)
+                                                            : sd_bus_open_system(&m_bus);
     if (ret < 0) {
         qCWarning(dsm_service_sd) << "open dbus error: " << strerror(-ret);
         return;
