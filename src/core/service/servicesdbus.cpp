@@ -74,7 +74,7 @@ void ServiceSDBus::initThread()
     sd_bus_slot *slot = NULL;
     auto ret = sd_bus_open_user(&m_bus);
     if (ret < 0) {
-        qCWarning(dsm_service_sd) << "open dbus error: " << ret;
+        qCWarning(dsm_service_sd) << "open dbus error: " << strerror(-ret);
         return;
     }
 
@@ -84,12 +84,12 @@ void ServiceSDBus::initThread()
 
     ret = sd_bus_request_name(m_bus, policy->name.toStdString().c_str(), 0);
     if (ret < 0) {
-        qCWarning(dsm_service_sd) << "request name error: " << ret;
+        qCWarning(dsm_service_sd) << "request name error: " << strerror(-ret);
         return;
     }
     ret = sd_bus_add_filter(m_bus, &slot, sd_bus_message_handler, (void *)this);
     if (ret < 0) {
-        qCWarning(dsm_service_sd) << "add filter error: " << ret;
+        qCWarning(dsm_service_sd) << "add filter error: " << strerror(-ret);
         return;
     }
 
@@ -107,16 +107,15 @@ void ServiceSDBus::initThread()
     while (!quit) {
         sd_bus_message *m = NULL;
         int r = sd_bus_process(m_bus, &m);
-        qCDebug(dsm_service_sd) << "process finish and result=" << r;
         if (r < 0) {
-            qCWarning(dsm_service_sd) << "failed to process requests: %m";
+            qCWarning(dsm_service_sd) << "failed to process requests: " << strerror(-r);
             break;
         }
         if (r == 0) {
             /* Wait for the next request to process */
             r = sd_bus_wait(m_bus, UINT64_MAX);
             if (r < 0) {
-                qCWarning(dsm_service_sd) << "failed to wait: %m";
+                qCWarning(dsm_service_sd) << "failed to wait: " << strerror(-r);
                 break;
             }
             continue;
