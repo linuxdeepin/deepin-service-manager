@@ -93,8 +93,11 @@ bool ServiceQtDBus::libFuncCall(const QString &funcName, bool isRegister)
     auto objFunc = isRegister ? DSMRegister(m_library->resolve(funcName.toStdString().c_str()))
                               : DSMUnRegister(m_library->resolve(funcName.toStdString().c_str()));
     if (!objFunc) {
-        qCWarning(dsm_service_qt) << QString("failed to resolve the `%1` method: ").arg(funcName)
-                                  << m_library->fileName();
+        qCWarning(dsm_service_qt)
+                << QString("failed to resolve the method: %1\n file: %2\n error message: %3")
+                           .arg(funcName)
+                           .arg(m_library->fileName())
+                           .arg(m_library->errorString());
         if (m_library->isLoaded())
             m_library->unload();
         m_library->deleteLater();
