@@ -1,7 +1,10 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
-# TODO:C compile
 
-# add_subdirectory("xxx")
+option(ENABLE_PLUGIN_OOM "Build plugin-oom" OFF)
+
+if (ENABLE_PLUGIN_OOM)
+    add_subdirectory("plugin-oom")
+endif()
 

@@ -1,0 +1,77 @@
+{
+    "magic": "dsg.config.meta",
+    "version": "1.0",
+    "contents": {
+        "mem_term_percent": {
+            "value": 10,
+            "serial": 0,
+            "flags": [
+                "global"
+            ],
+            "name": "memory terminate percent",
+            "description": "",
+            "permissions": "readwrite",
+            "visibility": "public"
+        },
+        "mem_kill_percent": {
+            "value": 5,
+            "serial": 0,
+            "flags": [
+                "global"
+            ],
+            "name": "memory kill percent",
+            "permissions": "readwrite",
+            "visibility": "public"
+        },
+        "swap_term_percent": {
+            "value": 10,
+            "serial": 0,
+            "flags": [
+                "global"
+            ],
+            "name": "swap terminate percent",
+            "permissions": "readwrite",
+            "visibility": "public"
+        },
+        "swap_kill_percent": {
+            "value": 5,
+            "serial": 0,
+            "flags": [
+                "global"
+            ],
+            "name": "swap kill percent",
+            "permissions": "readwrite",
+            "visibility": "public"
+        },
+        "report_interval_ms": {
+            "value": 1000,
+            "serial": 0,
+            "flags": [
+                "global"
+            ],
+            "name": "report interval ms",
+            "permissions": "readwrite",
+            "visibility": "public"
+        },
+        "kill_process_group": {
+            "value": false,
+            "serial": 0,
+            "flags": [
+                "global"
+            ],
+            "name": "kill process group",
+            "permissions": "readwrite",
+            "visibility": "public"
+        },
+        "ignore_root_user": {
+            "value": false,
+            "serial": 0,
+            "flags": [
+                "global"
+            ],
+            "name": "ignore root user",
+            "permissions": "readwrite",
+            "visibility": "public"
+        }
+    }
+}

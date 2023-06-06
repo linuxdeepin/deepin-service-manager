@@ -31,3 +31,12 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends}
 Description: deepin desktop-environment - service frame
+
+Package: deepin-service-plugin-oom
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ deepin-service-manager
+Description: deepin desktop-environment - oom service
+
