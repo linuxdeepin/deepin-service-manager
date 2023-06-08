@@ -104,28 +104,15 @@ void ServiceSDBus::initThread()
         qCWarning(dsm_service_sd) << "register service failed: " << policy->name;
     }
 
-    bool quit = false;
-    while (!quit) {
-        sd_bus_message *m = NULL;
-        int r = sd_bus_process(m_bus, &m);
-        if (r < 0) {
-            qCWarning(dsm_service_sd) << "failed to process requests: " << strerror(-r);
-            break;
-        }
-        if (r == 0) {
-            /* Wait for the next request to process */
-            r = sd_bus_wait(m_bus, UINT64_MAX);
-            if (r < 0) {
-                qCWarning(dsm_service_sd) << "failed to wait: " << strerror(-r);
-                break;
-            }
-            continue;
-        }
-        if (!m) {
-            continue;
-        }
-        qCDebug(dsm_service_sd) << "process get message member=" << sd_bus_message_get_member(m);
-        sd_bus_message_unref(m);
+    sd_event *event = NULL;
+    ret = sd_event_new(&event);
+    ret = sd_bus_attach_event(m_bus, event, SD_EVENT_PRIORITY_NORMAL);
+    if (ret < 0) {
+        qCWarning(dsm_service_sd) << "failed to attach event: " << strerror(-ret);
+    }
+    ret = sd_event_loop(event);
+    if (ret < 0) {
+        qCWarning(dsm_service_sd) << "failed to loop event: " << strerror(-ret);
     }
     ServiceBase::initThread();
 }
