@@ -27,8 +27,8 @@ void parse_config(sd_bus *bus, poll_loop_args_t *args)
                            &error,                          /* object to return error in */
                            &m,                              /* return message on success */
                            "sss",                           /* input signature */
-                           "deepin-service-plugin-oom",     /* first argument */
-                           "dconfig-plugin-oom",            /* second argument */
+                           "org.deepin.oom",                /* first argument */
+                           "org.deepin.oom",                /* second argument */
                            "");
     if (r < 0) {
         warn("Failed to issue method call: %s\n", error.message);

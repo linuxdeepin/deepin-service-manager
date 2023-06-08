@@ -40,6 +40,6 @@ install(FILES org.deepin.oom1.conf
     DESTINATION share/dbus-1/system.d/
 )
 
-install(FILES dconfig-plugin-oom.json 
-    DESTINATION share/dsg/configs/deepin-service-plugin-oom/
+install(FILES org.deepin.oom.json 
+    DESTINATION share/dsg/configs/org.deepin.oom/
 )
