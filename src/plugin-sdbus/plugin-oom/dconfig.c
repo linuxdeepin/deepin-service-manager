@@ -50,6 +50,9 @@ void parse_config(sd_bus *bus, poll_loop_args_t *args)
     get_config_value(bus, path, "report_interval_ms", "x", &args->report_interval_ms);
     get_config_value(bus, path, "kill_process_group", "b", &args->kill_process_group);
     get_config_value(bus, path, "ignore_root_user", "b", &args->ignore_root_user);
+    get_config_value(bus, path, "prefer_regex", "s", &args->prefer_regex);
+    get_config_value(bus, path, "avoid_regex", "s", &args->avoid_regex);
+    get_config_value(bus, path, "ignore_regex", "s", &args->ignore_regex);
 
     /* connect signal */
     r = sd_bus_match_signal(bus,
@@ -119,6 +122,9 @@ int match_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
         { "report_interval_ms", "x", &args->report_interval_ms },
         { "kill_process_group", "b", &args->kill_process_group },
         { "ignore_root_user", "b", &args->ignore_root_user },
+        { "prefer_regex", "s", &args->prefer_regex },
+        { "avoid_regex", "s", &args->avoid_regex },
+        { "ignore_regex", "s", &args->ignore_regex },
     };
     int r;
     r = sd_bus_message_read(m, "s", &value);
