@@ -16,8 +16,7 @@ static char *dbus_path = "/org/deepin/oom1";
 static char *dbus_interface = "org.deepin.oom1";
 static const sd_bus_vtable oom_vtable[] = {
     SD_BUS_VTABLE_START(0),
-    SD_BUS_SIGNAL_WITH_ARGS(
-        "Killed", SD_BUS_ARGS("i", pid, "i", uid, "s", name, "i", badness, "t", rss), 0),
+    SD_BUS_SIGNAL("Killed", "iisit", 0),
     SD_BUS_VTABLE_END
 };
 

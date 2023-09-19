@@ -276,13 +276,13 @@ bool is_larger(const poll_loop_args_t *args, const procinfo_t *victim, procinfo_
             debug("pid %d: error reading process name: %s\n", cur->pid, strerror(-res));
             return false;
         }
-        if (args->prefer_regex && regexec(args->prefer_regex, cur->name, (size_t)0, NULL, 0) == 0) {
+        if (args->prefer_regex && args->prefer_regex->re_nsub > 0 && regexec(args->prefer_regex, cur->name, (size_t)0, NULL, 0) == 0) {
             cur->badness += BADNESS_PREFER;
         }
-        if (args->avoid_regex && regexec(args->avoid_regex, cur->name, (size_t)0, NULL, 0) == 0) {
+        if (args->avoid_regex && args->avoid_regex->re_nsub > 0 && regexec(args->avoid_regex, cur->name, (size_t)0, NULL, 0) == 0) {
             cur->badness += BADNESS_AVOID;
         }
-        if (args->ignore_regex && regexec(args->ignore_regex, cur->name, (size_t)0, NULL, 0) == 0) {
+        if (args->ignore_regex && args->ignore_regex->re_nsub > 0 && regexec(args->ignore_regex, cur->name, (size_t)0, NULL, 0) == 0) {
             return false;
         }
     }
