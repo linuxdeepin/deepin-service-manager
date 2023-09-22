@@ -8,10 +8,15 @@ set(Plugin_NAME "plugin-oom")
 project(${Plugin_NAME})
 
 find_package(PkgConfig REQUIRED)
+find_package(Qt5 COMPONENTS LinguistTools REQUIRED)
 pkg_check_modules(Systemd REQUIRED IMPORTED_TARGET libsystemd)
 
 # Sources files
 file(GLOB_RECURSE SRCS "*.c" "*.h")
+
+file(GLOB TS_FILES "translations/*.ts")
+qt5_add_translation(QM_FILES ${TS_FILES})
+add_custom_target(oomtranslations ALL DEPENDS ${QM_FILES})
 
 add_library(${Plugin_NAME} MODULE
     ${SRCS}
@@ -40,6 +45,14 @@ install(FILES org.deepin.oom1.conf
     DESTINATION share/dbus-1/system.d/
 )
 
-install(FILES org.deepin.oom.json 
+install(FILES org.deepin.oom.json
     DESTINATION share/dsg/configs/org.deepin.oom/
 )
+
+install(FILES earlyoom.service.json
+    DESTINATION lib/deepin-daemon/service-trigger/)
+
+# 安装.qm文件
+install(FILES ${QM_FILES} DESTINATION share/deepin-service-manager/oom/translations)
+# 安装getfromqm脚本
+install(FILES getfromqm DESTINATION bin)
