@@ -2,3 +2,6 @@
 /usr/share/deepin-service-manager/*/*oom*.json
 /usr/share/dbus-1/system.d/org.deepin.oom1.conf
 /usr/share/dsg/configs/org.deepin.oom/org.deepin.oom.json
+/usr/lib/deepin-daemon/service-trigger/earlyoom.service.json
+/usr/share/deepin-service-manager/oom/translations/*.qm
+/usr/bin/getfromqm
