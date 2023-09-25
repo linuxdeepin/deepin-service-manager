@@ -3,11 +3,11 @@
     <name>oom</name>
     <message>
         <source>%s process consuming too much memory has been terminated to ensure system stability and performance</source>
-        <translation type="unfinished"/>
+        <translation>‘%s’ gebruikte teveel geheugen en is afgebroken om de systeemstabiliteit en -prestaties te waarborgen.</translation>
     </message>
     <message>
         <source>%s process terminated</source>
-        <translation type="unfinished"/>
+        <translation>‘%s’ is afgebroken</translation>
     </message>
 </context>
 </TS>

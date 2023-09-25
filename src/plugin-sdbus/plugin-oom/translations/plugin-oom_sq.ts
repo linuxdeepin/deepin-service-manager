@@ -3,11 +3,11 @@
     <name>oom</name>
     <message>
         <source>%s process consuming too much memory has been terminated to ensure system stability and performance</source>
-        <translation type="unfinished"/>
+        <translation>Procesi %s, që po zinte shumë kujtesë, është përfunduar, për të siguruar qëndrueshmërinë dhe funksionimin e sistemit</translation>
     </message>
     <message>
         <source>%s process terminated</source>
-        <translation type="unfinished"/>
+        <translation>Procesi %s u përfundua</translation>
     </message>
 </context>
 </TS>
