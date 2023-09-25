@@ -3,11 +3,11 @@
     <name>oom</name>
     <message>
         <source>%s process consuming too much memory has been terminated to ensure system stability and performance</source>
-        <translation type="unfinished"/>
+        <translation>%s پىروگرامما ئىچكى ساقلىغۇچنى بەك كۆپ ئىگىلەپ كەتكەچكە، سىستېمىنىڭ مۇقىملىقى ۋە ئىقتىدارىغا كاپالەتلىك قىلىش ئۈچۈن تاقىۋېتىلدى</translation>
     </message>
     <message>
         <source>%s process terminated</source>
-        <translation type="unfinished"/>
+        <translation>%s پىروگرامما تاقىۋېتىلدى</translation>
     </message>
 </context>
 </TS>
