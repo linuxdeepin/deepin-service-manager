@@ -3,11 +3,11 @@
     <name>oom</name>
     <message>
         <source>%s process consuming too much memory has been terminated to ensure system stability and performance</source>
-        <translation type="unfinished"/>
+        <translation>Muistia kuluttava %s prosessi on lopetettu järjestelmän vakauden ja suorituskyvyn varmistamiseksi</translation>
     </message>
     <message>
         <source>%s process terminated</source>
-        <translation type="unfinished"/>
+        <translation>%s prosessi lopetettu</translation>
     </message>
 </context>
 </TS>
