@@ -10,6 +10,7 @@ source_text=$3
 qm_file="/usr/share/$1/translations/$2_$lanugage.qm"
 
 # 使用 lconvert 命令将 .qm 文件转换为临时 .ts 文件
+export QT_SELECT=qt5
 lconvert -i "$qm_file" -o /tmp/$2_$lanugage.ts
 tmptsfile=/tmp/$2_$lanugage.ts
 
@@ -23,4 +24,9 @@ translation=$(echo "$translation" | grep -oP "(?<=$start).*?(?=$end)")
 rm $tmptsfile
 
 # 输出翻译结果
-echo $translation
+if [ -z "$translation" ]
+then
+    echo $source_text
+else
+    echo $translation
+fi
