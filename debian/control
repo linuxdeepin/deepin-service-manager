@@ -17,6 +17,8 @@ Architecture: any
 Depends:
  ${shlibs:Depends},
  ${misc:Depends}
+Recommends:
+ deepin-service-plugin-oom
 Description: deepin desktop-environment - service manager frame
  Load system plug-ins for unified management
 
