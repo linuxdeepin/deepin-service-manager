@@ -12,6 +12,20 @@ void get_config_value(
     sd_bus *bus, const char *path, const char *key, const char *outtype, void *output);
 int match_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error);
 
+void compile_regex(const char *regex_str, regex_t **reg)
+{
+    bool regex_is_empty = (regex_str == NULL || strcmp(regex_str, "") == 0);
+    if (!regex_is_empty) {
+        if (*reg == NULL) {
+            *reg = (regex_t *)malloc(sizeof(regex_t));
+        }
+        regcomp(*reg, regex_str, 0);
+    } else if (*reg != NULL) {
+        free(*reg);
+        *reg = NULL;
+    }
+}
+
 void parse_config(sd_bus *bus, poll_loop_args_t *args)
 {
     sd_bus_error error = SD_BUS_ERROR_NULL;
@@ -50,9 +64,14 @@ void parse_config(sd_bus *bus, poll_loop_args_t *args)
     get_config_value(bus, path, "report_interval_ms", "x", &args->report_interval_ms);
     get_config_value(bus, path, "kill_process_group", "b", &args->kill_process_group);
     get_config_value(bus, path, "ignore_root_user", "b", &args->ignore_root_user);
-    get_config_value(bus, path, "prefer_regex", "s", &args->prefer_regex);
-    get_config_value(bus, path, "avoid_regex", "s", &args->avoid_regex);
-    get_config_value(bus, path, "ignore_regex", "s", &args->ignore_regex);
+
+    char *regex_str = NULL;
+    get_config_value(bus, path, "prefer_regex", "s", &regex_str);
+    compile_regex(regex_str, &args->prefer_regex);
+    get_config_value(bus, path, "avoid_regex", "s", &regex_str);
+    compile_regex(regex_str, &args->avoid_regex);
+    get_config_value(bus, path, "ignore_regex", "s", &regex_str);
+    compile_regex(regex_str, &args->ignore_regex);
 
     /* connect signal */
     r = sd_bus_match_signal(bus,
@@ -108,6 +127,12 @@ typedef struct
     void *value;
 } config_value_t;
 
+typedef struct
+{
+    char *name;
+    regex_t **rex;
+} regex_value_t;
+
 int match_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
 {
     poll_loop_args_t *args = userdata;
@@ -122,9 +147,6 @@ int match_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
         { "report_interval_ms", "x", &args->report_interval_ms },
         { "kill_process_group", "b", &args->kill_process_group },
         { "ignore_root_user", "b", &args->ignore_root_user },
-        { "prefer_regex", "s", &args->prefer_regex },
-        { "avoid_regex", "s", &args->avoid_regex },
-        { "ignore_regex", "s", &args->ignore_regex },
     };
     int r;
     r = sd_bus_message_read(m, "s", &value);
@@ -132,11 +154,30 @@ int match_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
         warn("Failed to parse response message: %s\n", strerror(-r));
         return r;
     }
+    bool find = false;
     for (int i = 0; i < sizeof(configs) / sizeof(config_value_t); i++) {
         if (strcmp(configs[i].name, value) == 0) {
             get_config_value(bus, path, value, configs[i].type, configs[i].value);
+            find = true;
             printf("update config %s = %d\n", configs[i].name, *(int *)configs[i].value);
             break;
+        }
+    }
+
+    if (!find) {
+        const regex_value_t regex_configs[] = {
+            { "prefer_regex", &args->prefer_regex },
+            { "avoid_regex", &args->avoid_regex },
+            { "ignore_regex", &args->ignore_regex },
+        };
+        for (int i = 0; i < sizeof (regex_configs) / sizeof (regex_value_t); i++) {
+            if (strcmp(regex_configs[i].name, value) == 0) {
+                char *regexStr = NULL;
+                get_config_value(bus, path, value, "s", &regexStr);
+                compile_regex(regexStr, regex_configs[i].rex);
+                find = true;
+                break;
+            }
         }
     }
 
