@@ -53,11 +53,11 @@ void start_oom(poll_loop_args_t *args)
             m.UserMemTotalKiB / 1024,
             m.SwapTotalKiB / 1024);
     fprintf(stderr,
-            "sending SIGTERM when mem <= %d%% and swap <= %d%%\n",
+            "sending SIGTERM when mem <= %f%% and swap <= %f%%\n",
             args->mem_term_percent,
             args->swap_term_percent);
     fprintf(stderr,
-            "        SIGKILL when mem <= %d%% and swap <= %d%%\n",
+            "        SIGKILL when mem <= %f%% and swap <= %f%%\n",
             args->mem_kill_percent,
             args->swap_kill_percent);
     int err = mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT);
@@ -157,12 +157,12 @@ static void poll_loop(const poll_loop_args_t *args)
         int sig = lowmem_sig(args, &m);
         if (sig == SIGKILL) {
             print_mem_stats(warn, m);
-            warn("low memory! at or below SIGKILL limits: mem %d%%, swap %d%%\n",
+            warn("low memory! at or below SIGKILL limits: mem %f%%, swap %f%%\n",
                  args->mem_kill_percent,
                  args->swap_kill_percent);
         } else if (sig == SIGTERM) {
             print_mem_stats(warn, m);
-            warn("low memory! at or below SIGTERM limits: mem %d%%, swap %d%%\n",
+            warn("low memory! at or below SIGTERM limits: mem %f%%, swap %f%%\n",
                  args->mem_term_percent,
                  args->swap_term_percent);
         }

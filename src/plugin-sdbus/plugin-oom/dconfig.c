@@ -57,11 +57,11 @@ void parse_config(sd_bus *bus, poll_loop_args_t *args)
     }
 
     /* Get config value */
-    get_config_value(bus, path, "mem_term_percent", "x", &args->mem_term_percent);
-    get_config_value(bus, path, "mem_kill_percent", "x", &args->mem_kill_percent);
-    get_config_value(bus, path, "swap_term_percent", "x", &args->swap_term_percent);
-    get_config_value(bus, path, "swap_kill_percent", "x", &args->swap_kill_percent);
-    get_config_value(bus, path, "report_interval_ms", "x", &args->report_interval_ms);
+    get_config_value(bus, path, "mem_term_percent", "d", &args->mem_term_percent);
+    get_config_value(bus, path, "mem_kill_percent", "d", &args->mem_kill_percent);
+    get_config_value(bus, path, "swap_term_percent", "d", &args->swap_term_percent);
+    get_config_value(bus, path, "swap_kill_percent", "d", &args->swap_kill_percent);
+    get_config_value(bus, path, "report_interval_ms", "d", &args->report_interval_ms);
     get_config_value(bus, path, "kill_process_group", "b", &args->kill_process_group);
     get_config_value(bus, path, "ignore_root_user", "b", &args->ignore_root_user);
 
@@ -140,11 +140,11 @@ int match_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
     sd_bus *bus = sd_bus_message_get_bus(m);
     const char *path = sd_bus_message_get_path(m);
     const config_value_t configs[] = {
-        { "mem_term_percent", "x", &args->mem_term_percent },
-        { "mem_kill_percent", "x", &args->mem_kill_percent },
-        { "swap_term_percent", "x", &args->swap_term_percent },
-        { "swap_kill_percent", "x", &args->swap_kill_percent },
-        { "report_interval_ms", "x", &args->report_interval_ms },
+        { "mem_term_percent", "d", &args->mem_term_percent },
+        { "mem_kill_percent", "d", &args->mem_kill_percent },
+        { "swap_term_percent", "d", &args->swap_term_percent },
+        { "swap_kill_percent", "d", &args->swap_kill_percent },
+        { "report_interval_ms", "d", &args->report_interval_ms },
         { "kill_process_group", "b", &args->kill_process_group },
         { "ignore_root_user", "b", &args->ignore_root_user },
     };
@@ -155,7 +155,7 @@ int match_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
         return r;
     }
     bool find = false;
-    for (int i = 0; i < sizeof(configs) / sizeof(config_value_t); i++) {
+    for (unsigned long i = 0; i < sizeof(configs) / sizeof(config_value_t); i++) {
         if (strcmp(configs[i].name, value) == 0) {
             get_config_value(bus, path, value, configs[i].type, configs[i].value);
             find = true;
@@ -170,12 +170,13 @@ int match_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
             { "avoid_regex", &args->avoid_regex },
             { "ignore_regex", &args->ignore_regex },
         };
-        for (int i = 0; i < sizeof (regex_configs) / sizeof (regex_value_t); i++) {
+        for (unsigned long i = 0; i < sizeof (regex_configs) / sizeof (regex_value_t); i++) {
             if (strcmp(regex_configs[i].name, value) == 0) {
                 char *regexStr = NULL;
                 get_config_value(bus, path, value, "s", &regexStr);
                 compile_regex(regexStr, regex_configs[i].rex);
                 find = true;
+                printf("update config %s = %s\n", configs[i].name, regexStr);
                 break;
             }
         }
