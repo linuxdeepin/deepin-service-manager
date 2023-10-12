@@ -12,10 +12,10 @@ typedef struct
 {
     /* if the available memory AND swap goes below these percentages,
      * we start killing processes */
-    int mem_term_percent;
-    int mem_kill_percent;
-    int swap_term_percent;
-    int swap_kill_percent;
+    double mem_term_percent;
+    double mem_kill_percent;
+    double swap_term_percent;
+    double swap_kill_percent;
     /* send d-bus notifications? */
     char *notify_ext;
     /* kill all processes within a process group */
@@ -28,7 +28,7 @@ typedef struct
     /* will ignore these processes. NULL = no-op. */
     regex_t *ignore_regex;
     /* memory report interval, in milliseconds */
-    int report_interval_ms;
+    double report_interval_ms;
     /* Flag --dryrun was passed */
     bool dryrun;
 } poll_loop_args_t;
