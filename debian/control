@@ -41,6 +41,7 @@ Architecture: any
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
- deepin-service-manager
+ deepin-service-manager,
+ qttools5-dev-tools
 Description: deepin desktop-environment - oom service
 
