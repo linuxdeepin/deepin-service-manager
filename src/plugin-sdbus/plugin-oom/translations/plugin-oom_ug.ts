@@ -6,8 +6,8 @@
         <translation>%s پىروگرامما ئىچكى ساقلىغۇچنى بەك كۆپ ئىگىلەپ كەتكەچكە، سىستېمىنىڭ مۇقىملىقى ۋە ئىقتىدارىغا كاپالەتلىك قىلىش ئۈچۈن تاقىۋېتىلدى</translation>
     </message>
     <message>
-        <source>%s process terminated</source>
-        <translation>%s پىروگرامما تاقىۋېتىلدى</translation>
+        <source>Process terminated</source>
+        <translation>پىروگرامما تاقىۋېتىلدى</translation>
     </message>
 </context>
 </TS>

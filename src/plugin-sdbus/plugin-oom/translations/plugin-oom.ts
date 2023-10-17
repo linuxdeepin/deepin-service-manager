@@ -8,7 +8,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>%s process terminated</source>
+        <source>Process terminated</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

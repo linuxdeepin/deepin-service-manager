@@ -6,8 +6,8 @@
         <translation>%s བྱ་རིམ་གྱིས་ནང་གསོག་ཐོན་ཁུངས་བཟུང་ཚད་མང་དྲགས་པས། མ་ལག་བརྟན་པོ་དང་ནུས་ཆེར་ཁག་ཐེག་བྱ་ཆེད། བྱ་རིམ་འདི་མཚམས་འཇོག་བྱས་ཟིན།</translation>
     </message>
     <message>
-        <source>%s process terminated</source>
-        <translation>%s བྱ་རིམ་མཚམས་འཇོག་བྱས།</translation>
+        <source>Process terminated</source>
+        <translation>བྱ་རིམ་མཚམས་འཇོག་བྱས།</translation>
     </message>
 </context>
 </TS>

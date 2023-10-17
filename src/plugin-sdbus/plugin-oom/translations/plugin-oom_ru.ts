@@ -6,8 +6,8 @@
         <translation>Процесс %s, потребляющий слишком много памяти, был остановлен для обеспечения стабильности и производительности системы.</translation>
     </message>
     <message>
-        <source>%s process terminated</source>
-        <translation>Процесс %s завершен</translation>
+        <source>Process terminated</source>
+        <translation>Процесс завершен</translation>
     </message>
 </context>
 </TS>

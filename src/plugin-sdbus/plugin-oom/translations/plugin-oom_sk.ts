@@ -6,8 +6,8 @@
         <translation>%s proces využívajúci príliš veľa pamäte bol ukončený, aby sa zabezpečila stabilita a výkon systému</translation>
     </message>
     <message>
-        <source>%s process terminated</source>
-        <translation>%s proces ukončený</translation>
+        <source>Process terminated</source>
+        <translation>Proces ukončený</translation>
     </message>
 </context>
 </TS>
