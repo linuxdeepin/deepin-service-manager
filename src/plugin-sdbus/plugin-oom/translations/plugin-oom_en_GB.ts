@@ -6,7 +6,7 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>%s process terminated</source>
+        <source>Process terminated</source>
         <translation type="unfinished"/>
     </message>
 </context>

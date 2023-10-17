@@ -6,8 +6,8 @@
         <translation>El procés %s, que consumeix massa memòria, s&apos;ha acabat per garantir l&apos;estabilitat i el rendiment del sistema.</translation>
     </message>
     <message>
-        <source>%s process terminated</source>
-        <translation>S&apos;ha acabat el procés %s.</translation>
+        <source>Process terminated</source>
+        <translation>S&apos;ha acabat el procés.</translation>
     </message>
 </context>
 </TS>

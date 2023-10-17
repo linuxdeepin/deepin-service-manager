@@ -6,8 +6,8 @@
         <translation>A túl sok memóriát használó %s folyamat leállt a rendszer stabilitásának és teljesítményének biztosítása érdekében</translation>
     </message>
     <message>
-        <source>%s process terminated</source>
-        <translation>%s folyamat megszakadt</translation>
+        <source>Process terminated</source>
+        <translation>A folyamat megszakadt</translation>
     </message>
 </context>
 </TS>

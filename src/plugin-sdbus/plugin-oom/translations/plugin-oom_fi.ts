@@ -6,8 +6,8 @@
         <translation>Muistia kuluttava %s prosessi on lopetettu järjestelmän vakauden ja suorituskyvyn varmistamiseksi</translation>
     </message>
     <message>
-        <source>%s process terminated</source>
-        <translation>%s prosessi lopetettu</translation>
+        <source>Process terminated</source>
+        <translation>prosessi lopetettu</translation>
     </message>
 </context>
 </TS>

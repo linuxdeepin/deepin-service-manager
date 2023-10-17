@@ -6,8 +6,8 @@
         <translation>%s 進程佔用過多內存資源，為保障系統穩定性和性能，已終止該進程</translation>
     </message>
     <message>
-        <source>%s process terminated</source>
-        <translation>%s 進程被終止</translation>
+        <source>Process terminated</source>
+        <translation>進程被終止</translation>
     </message>
 </context>
 </TS>

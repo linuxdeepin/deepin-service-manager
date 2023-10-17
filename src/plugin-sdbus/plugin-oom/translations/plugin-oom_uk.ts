@@ -6,8 +6,8 @@
         <translation>Процес %s споживає забагато пам&apos;яті. Його роботу було перервано для забезпечення стабільності та швидкодії системи.</translation>
     </message>
     <message>
-        <source>%s process terminated</source>
-        <translation>Перервано роботу процесу %s</translation>
+        <source>Process terminated</source>
+        <translation>Перервано роботу процесу</translation>
     </message>
 </context>
 </TS>

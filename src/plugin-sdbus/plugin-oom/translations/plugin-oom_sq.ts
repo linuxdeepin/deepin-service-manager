@@ -6,8 +6,8 @@
         <translation>Procesi %s, që po zinte shumë kujtesë, është përfunduar, për të siguruar qëndrueshmërinë dhe funksionimin e sistemit</translation>
     </message>
     <message>
-        <source>%s process terminated</source>
-        <translation>Procesi %s u përfundua</translation>
+        <source>Process terminated</source>
+        <translation>Procesi u përfundua</translation>
     </message>
 </context>
 </TS>

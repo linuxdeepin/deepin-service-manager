@@ -6,8 +6,8 @@
         <translation>‘%s’ gebruikte teveel geheugen en is afgebroken om de systeemstabiliteit en -prestaties te waarborgen.</translation>
     </message>
     <message>
-        <source>%s process terminated</source>
-        <translation>‘%s’ is afgebroken</translation>
+        <source>Process terminated</source>
+        <translation>Proces afgebroken</translation>
     </message>
 </context>
 </TS>

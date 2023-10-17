@@ -6,8 +6,8 @@
         <translation>Proces %s, który zużywał za dużo pamięci został zakończony, aby utrzymać stabilną pracę systemu</translation>
     </message>
     <message>
-        <source>%s process terminated</source>
-        <translation>Proces %s zakończony</translation>
+        <source>Process terminated</source>
+        <translation>Proces zakończony</translation>
     </message>
 </context>
 </TS>
