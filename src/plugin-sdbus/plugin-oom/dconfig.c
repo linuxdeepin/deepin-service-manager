@@ -19,7 +19,7 @@ void compile_regex(const char *regex_str, regex_t **reg)
         if (*reg == NULL) {
             *reg = (regex_t *)malloc(sizeof(regex_t));
         }
-        regcomp(*reg, regex_str, 0);
+        regcomp(*reg, regex_str, REG_EXTENDED);
     } else if (*reg != NULL) {
         free(*reg);
         *reg = NULL;
