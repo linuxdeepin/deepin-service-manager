@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: MIT
+
 #判断文件夹是否存在，如果不存在，就新建文件夹
 
 if [ ! -d "translations" ]; then
