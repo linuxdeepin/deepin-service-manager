@@ -33,3 +33,8 @@ License: CC0-1.0
 Files: .obs/workflows.yml
 Copyright: None
 License: CC0-1.0
+
+# ts
+Files: *.ts .tx/*
+Copyright: None
+License: CC0-1.0

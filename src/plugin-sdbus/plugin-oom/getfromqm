@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: MIT
+
 lanugage=locale.$LANGUAGE
 lanugage=${lanugage#*.}
 
@@ -15,7 +19,7 @@ lconvert -i "$qm_file" -o /tmp/$2_$lanugage.ts
 tmptsfile=/tmp/$2_$lanugage.ts
 
 # 在临时 .ts 文件中查找并提取源文本的翻译
-translation=$(grep -A 1 "<source>$source_text</source>" $tmptsfile|grep '<translation>'|head -n 1)
+translation=$(grep -A 1 "<source>$source_text</source>" $tmptsfile | grep '<translation>' | head -n 1)
 start="\<translation\>"
 end="</translation>"
 translation=$(echo "$translation" | grep -oP "(?<=$start).*?(?=$end)")
@@ -24,9 +28,8 @@ translation=$(echo "$translation" | grep -oP "(?<=$start).*?(?=$end)")
 rm $tmptsfile
 
 # 输出翻译结果
-if [ -z "$translation" ]
-then
-    echo $source_text
+if [ -z "$translation" ]; then
+	echo $source_text
 else
-    echo $translation
+	echo $translation
 fi
