@@ -56,16 +56,12 @@ QString getCMD(ServiceBase *obj, QString dbusService)
 void QTDBusSpyHook(const QDBusMessage &msg)
 {
     qCInfo(dsm_hook_qt) << "--msg=" << msg;
-    //    qInfo() << "--Handler ThreadID:" << QThread::currentThreadId();
 
     ServiceBase *serviceObj = nullptr;
     bool isSubPath;
     QString realPath; // 子PATH可能没有配置，使用父PATH的配置
-    bool findRet = QTDbusHook::instance()->getServiceObject("",
-                                                            msg.path(),
-                                                            &serviceObj,
-                                                            isSubPath,
-                                                            realPath);
+    bool findRet =
+        QTDbusHook::instance()->getServiceObject("", msg.path(), &serviceObj, isSubPath, realPath);
     if (!findRet) {
         qCWarning(dsm_hook_qt) << "--can not find hook object: " << msg.path();
         return;
@@ -77,13 +73,13 @@ void QTDBusSpyHook(const QDBusMessage &msg)
 
     if (!serviceObj->policy->isResident() && !serviceObj->isLockTimer()) {
         qCInfo(dsm_hook_qt) << QString("--service: %1 will unregister in %2 minutes!")
-                                       .arg(serviceObj->policy->name)
-                                       .arg(serviceObj->policy->idleTime);
+                                   .arg(serviceObj->policy->name)
+                                   .arg(serviceObj->policy->idleTime);
         QTimer::singleShot(0, serviceObj, SLOT(restartTimer()));
     }
     if (msg.member() == "Introspect" && msg.interface() == "org.freedesktop.DBus.Introspectable") {
         if (serviceObj->policy->checkPathHide(realPath)) {
-            qCDebug(dsm_hook_qt) << "--call Introspect" << msg.path() << " ,is hided!";
+            qCInfo(dsm_hook_qt) << "--call Introspect " << msg.path() << " is hided!";
             QList<QVariant> arguments;
             arguments << "";
             QDBusMessage reply = msg.createReply(arguments);
@@ -91,17 +87,19 @@ void QTDBusSpyHook(const QDBusMessage &msg)
             if (srv) {
                 srv->qDbusConnection().send(reply);
             }
-            //            ((ServiceQtDBus*)serviceObj)->qDbusConnection().send(reply);
         }
     } else if (msg.member() == "Set" && msg.interface() == "org.freedesktop.DBus.Properties") {
         const QList<QVariant> &args = msg.arguments();
         if (args.size() >= 2) {
-            if (!serviceObj->policy->checkPropertyPermission(getCMD(serviceObj, msg.service()),
+            const QString &cmd = getCMD(serviceObj, msg.service());
+            if (!serviceObj->policy->checkPropertyPermission(cmd,
                                                              realPath,
                                                              args.at(0).toString(),
                                                              args.at(1).toString())) {
-                QDBusMessage reply = msg.createErrorReply("com.deepin.service.Permission.Deny",
-                                                          "The call is deny");
+                qCWarning(dsm_hook_qt)
+                    << "cmd:" << cmd << "not allowded to set property:" << args.at(1).toString();
+                QDBusMessage reply = msg.createErrorReply("org.freedesktop.DBus.Error.AccessDenied",
+                                                          "Access denied");
                 ServiceQtDBus *srv = qobject_cast<ServiceQtDBus *>(serviceObj);
                 if (srv) {
                     srv->qDbusConnection().send(reply);
@@ -112,19 +110,18 @@ void QTDBusSpyHook(const QDBusMessage &msg)
     } else if (msg.interface() != "org.freedesktop.DBus.Properties"
                && msg.interface() != "org.freedesktop.DBus.Introspectable"
                && msg.interface() != "org.freedesktop.DBus.Peer") {
-        if (!serviceObj->policy->checkMethodPermission(getCMD(serviceObj, msg.service()),
+        const QString &cmd = getCMD(serviceObj, msg.service());
+        if (!serviceObj->policy->checkMethodPermission(cmd,
                                                        realPath,
                                                        msg.interface(),
                                                        msg.member())) {
             QDBusMessage reply =
-                    msg.createErrorReply("com.deepin.service.Permission.Deny", "The call is deny2");
+                msg.createErrorReply("org.freedesktop.DBus.Error.AccessDenied", "Access denied");
+            qCWarning(dsm_hook_qt)
+                << "cmd:" << cmd << "not allowded to call method:" << msg.member();
             ServiceQtDBus *srv = qobject_cast<ServiceQtDBus *>(serviceObj);
             if (srv) {
-                // srv->qDbusConnection().send(reply);
-                // QDBusConnection::sessionBus().send(reply);
-                QDBusConnection::connectToBus(QDBusConnection::SessionBus,
-                                              QString("org.dsdsf.dsfsdf"))
-                        .send(reply);
+                srv->qDbusConnection().send(reply);
                 return;
             }
         }
@@ -137,16 +134,12 @@ int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
 {
     qCInfo(dsm_hook_qt) << "--baseService=" << baseService;
     qCInfo(dsm_hook_qt) << "--msg=" << msg;
-    //    qInfo() << "--Handler ThreadID:" << QThread::currentThreadId();
 
     ServiceBase *serviceObj = nullptr;
     bool isSubPath;
     QString realPath; // 子PATH可能没有配置，使用父PATH的配置
-    bool findRet = QTDbusHook::instance()->getServiceObject("",
-                                                            msg.path(),
-                                                            &serviceObj,
-                                                            isSubPath,
-                                                            realPath);
+    bool findRet =
+        QTDbusHook::instance()->getServiceObject("", msg.path(), &serviceObj, isSubPath, realPath);
     if (!findRet) {
         qCWarning(dsm_hook_qt) << "--can not find hook object:" << msg.path();
         return 0;
@@ -157,13 +150,14 @@ int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
     }
 
     if (!serviceObj->policy->isResident() && !serviceObj->isLockTimer()) {
-        qCInfo(dsm_hook_qt) << QString("--service: %1 will unregister in 10 minutes!")
-                                       .arg(serviceObj->policy->name);
+        qCInfo(dsm_hook_qt) << QString("--service: %1 will unregister in %2 minutes!")
+                                   .arg(serviceObj->policy->name)
+                                   .arg(serviceObj->policy->idleTime);
         QTimer::singleShot(0, serviceObj, SLOT(restartTimer()));
     }
     if (msg.member() == "Introspect" && msg.interface() == "org.freedesktop.DBus.Introspectable") {
         if (serviceObj->policy->checkPathHide(realPath)) {
-            qCDebug(dsm_hook_qt) << "--call Introspect" << msg.path() << " ,is hided!";
+            qCInfo(dsm_hook_qt) << "--call Introspect " << msg.path() << " is hided!";
             QList<QVariant> arguments;
             arguments << "";
             QDBusMessage reply = msg.createReply(arguments);
@@ -176,12 +170,15 @@ int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
     } else if (msg.member() == "Set" && msg.interface() == "org.freedesktop.DBus.Properties") {
         const QList<QVariant> &args = msg.arguments();
         if (args.size() >= 2) {
-            if (!serviceObj->policy->checkPropertyPermission(getCMD(serviceObj, msg.service()),
+            const QString &cmd = getCMD(serviceObj, msg.service());
+            if (!serviceObj->policy->checkPropertyPermission(cmd,
                                                              realPath,
                                                              args.at(0).toString(),
                                                              args.at(1).toString())) {
-                QDBusMessage reply = msg.createErrorReply("com.deepin.service.Permission.Deny",
-                                                          "The call is deny");
+                qCWarning(dsm_hook_qt)
+                    << "cmd:" << cmd << "not allowded to set property:" << args.at(1).toString();
+                QDBusMessage reply = msg.createErrorReply("org.freedesktop.DBus.Error.AccessDenied",
+                                                          "Access denied");
                 ServiceQtDBus *srv = qobject_cast<ServiceQtDBus *>(serviceObj);
                 if (srv) {
                     srv->qDbusConnection().send(reply);
@@ -192,12 +189,15 @@ int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
     } else if (msg.interface() != "org.freedesktop.DBus.Properties"
                && msg.interface() != "org.freedesktop.DBus.Introspectable"
                && msg.interface() != "org.freedesktop.DBus.Peer") {
-        if (!serviceObj->policy->checkMethodPermission(getCMD(serviceObj, msg.service()),
+        const QString &cmd = getCMD(serviceObj, msg.service());
+        if (!serviceObj->policy->checkMethodPermission(cmd,
                                                        realPath,
                                                        msg.interface(),
                                                        msg.member())) {
+            qCWarning(dsm_hook_qt)
+                << "cmd:" << cmd << "not allowded to call method:" << msg.member();
             QDBusMessage reply =
-                    msg.createErrorReply("com.deepin.service.Permission.Deny", "The call is deny2");
+                msg.createErrorReply("org.freedesktop.DBus.Error.AccessDenied", "Access denied");
             ServiceQtDBus *srv = qobject_cast<ServiceQtDBus *>(serviceObj);
             if (srv) {
                 srv->qDbusConnection().send(reply);
@@ -240,7 +240,7 @@ QTDbusHook *QTDbusHook::instance()
 }
 
 bool QTDbusHook::getServiceObject(
-        QString name, QString path, ServiceBase **service, bool &isSubPath, QString &realPath)
+    QString name, QString path, ServiceBase **service, bool &isSubPath, QString &realPath)
 {
     Q_UNUSED(name) // TODO:QtDBus Hook 无法获取到name
     ServiceObjectMap::iterator iterService = m_serviceMap.find(path);
