@@ -15,17 +15,44 @@
 Q_LOGGING_CATEGORY(dsm_service_sd, "[SDBusService]")
 Q_LOGGING_CATEGORY(dsm_hook_sd, "[SDBusHook]")
 
+QString getCMD(ServiceBase *obj, sd_bus_message *m)
+{
+    __attribute__((cleanup(sd_bus_creds_unrefp))) sd_bus_creds *creds = NULL;
+    ServiceSDBus *srv = qobject_cast<ServiceSDBus *>(obj);
+    if (!srv) {
+        return "";
+    }
+    int r;
+    pid_t pid;
+    r = sd_bus_query_sender_creds(m, SD_BUS_CREDS_PID, &creds);
+    if (r < 0)
+        return "";
+
+    r = sd_bus_creds_get_pid(creds, &pid);
+    if (r < 0)
+        return "";
+    qCDebug(dsm_hook_sd) << "--pid:" << pid;
+    QFile procCmd("/proc/" + QString::number(pid) + "/cmdline");
+    QString cmd;
+    if (procCmd.open(QIODevice::ReadOnly)) {
+        QList<QByteArray> cmds = procCmd.readAll().split('\0');
+        cmd = QString(cmds.first());
+        qCDebug(dsm_hook_sd) << "--cmd:" << cmd;
+    }
+    return cmd;
+}
+
 int sd_bus_message_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
 {
     (void)ret_error;
-    std::string path = std::string(sd_bus_message_get_path(m));
+    const QString &path = sd_bus_message_get_path(m);
     qCInfo(dsm_hook_sd) << QString("--msg= (sender=%2, path=%3, interface=%4, member=%5, "
                                    "signature=%6)")
-                                   .arg(sd_bus_message_get_sender(m))
-                                   .arg(sd_bus_message_get_path(m))
-                                   .arg(sd_bus_message_get_interface(m))
-                                   .arg(sd_bus_message_get_member(m))
-                                   .arg(sd_bus_message_get_signature(m, true));
+                               .arg(sd_bus_message_get_sender(m))
+                               .arg(sd_bus_message_get_path(m))
+                               .arg(sd_bus_message_get_interface(m))
+                               .arg(sd_bus_message_get_member(m))
+                               .arg(sd_bus_message_get_signature(m, true));
 
     // int sd_bus_get_tid(sd_bus *bus, pid_t *tid);
 
@@ -37,18 +64,37 @@ int sd_bus_message_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_
     if (!qobj->isRegister()) {
         qobj->registerService();
     }
-    if (!qobj->policy->isResident()) {
-        qInfo() << QString("--service: %1 will unregister in %2 minutes!")
-                           .arg(qobj->policy->name)
-                           .arg(qobj->policy->idleTime);
+    if (!qobj->policy->isResident() && !qobj->isLockTimer()) {
+        qCInfo(dsm_hook_sd) << QString("--service: %1 will unregister in %2 minutes!")
+                                   .arg(qobj->policy->name)
+                                   .arg(qobj->policy->idleTime);
         qobj->restartTimer();
     }
-    QString mem = sd_bus_message_get_member(m);
-    if (mem == "Hello") {
-        return sd_bus_reply_method_return(m, "s", "123");
-        //        return -2; // -2: org.freedesktop.DBus.Error.FileNotFound:
-    } else if (mem == "Introspect" && path == "/org/deepin/service/sdbus/demo1") {
-        return sd_bus_reply_method_return(m, "s", "");
+    const QString &mem = sd_bus_message_get_member(m);
+    const QString &interface = sd_bus_message_get_interface(m);
+    if (mem == "Introspect" && interface == "org.freedesktop.DBus.Introspectable") {
+        if (qobj->policy->checkPathHide(path)) {
+            qCDebug(dsm_hook_sd) << "--call Introspect" << path << " ,is hided!";
+            return sd_bus_reply_method_return(m, "s", "");
+        }
+    } else if (mem == "Set" && interface == "org.freedesktop.DBus.Properties") {
+        char *interface = nullptr;
+        char *propertyName = nullptr;
+        sd_bus_message_read(m, "ss", &interface, &propertyName);
+        const QString &cmd = getCMD(qobj, m);
+        if (!qobj->policy->checkPropertyPermission(cmd, path, interface, propertyName)) {
+            qCWarning(dsm_hook_sd)
+                << "cmd:" << cmd << "not allowded to set property:" << propertyName;
+            return sd_bus_reply_method_errorf(m, SD_BUS_ERROR_ACCESS_DENIED, "Access denied");
+        }
+    } else if (interface != "org.freedesktop.DBus.Properties"
+               && interface != "org.freedesktop.DBus.Introspectable"
+               && interface != "org.freedesktop.DBus.Peer") {
+        const QString &cmd = getCMD(qobj, m);
+        if (!qobj->policy->checkMethodPermission(cmd, path, interface, mem)) {
+            qCWarning(dsm_hook_sd) << "cmd:" << cmd << "not allowded to call method:" << mem;
+            return sd_bus_reply_method_errorf(m, SD_BUS_ERROR_ACCESS_DENIED, "Access denied");
+        }
     }
 
     return 0;
@@ -150,10 +196,10 @@ bool ServiceSDBus::libFuncCall(const QString &funcName, bool isRegister)
                               : DSMUnRegister(m_library->resolve(funcName.toStdString().c_str()));
     if (!objFunc) {
         qCWarning(dsm_service_sd)
-                << QString("failed to resolve the method: %1\n file: %2\n error message: %3")
-                           .arg(funcName)
-                           .arg(m_library->fileName())
-                           .arg(m_library->errorString());
+            << QString("failed to resolve the method: %1\n file: %2\n error message: %3")
+                   .arg(funcName)
+                   .arg(m_library->fileName())
+                   .arg(m_library->errorString());
         if (m_library->isLoaded())
             m_library->unload();
         m_library->deleteLater();
