@@ -110,8 +110,6 @@ void PluginLoader::loadByName(const QString &name)
             policy->deleteLater();
             continue;
         }
-        if (m_isResident != policy->isResident())
-            continue;
 
         ServiceBase *srv = createService(policy);
         if (srv == nullptr) {
@@ -178,8 +176,8 @@ QList<Policy *> PluginLoader::sortPolicy(QList<Policy *> policys)
             } else {
                 qCWarning(dsm_PluginLoader) << QString("service: %1 cannot found "
                                                        "dependency: %2!")
-                                                       .arg(policy->name)
-                                                       .arg(dependency);
+                                                   .arg(policy->name)
+                                                   .arg(dependency);
             }
         }
     }
