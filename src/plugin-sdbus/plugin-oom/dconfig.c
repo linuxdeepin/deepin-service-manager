@@ -32,7 +32,7 @@ void parse_config(sd_bus *bus, poll_loop_args_t *args)
     sd_bus_message *m = NULL;
     const char *path;
     int r;
-    /* Issue the method call and store the respons message in m */
+    /* Issue the method call and store the response message in m */
     r = sd_bus_call_method(bus,
                            "org.desktopspec.ConfigManager", /* service to contact */
                            "/",                             /* object path */
