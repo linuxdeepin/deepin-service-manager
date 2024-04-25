@@ -28,6 +28,7 @@ Depends:
  ${misc:Depends},
  libdeepin-service-framework( =${binary:Version})
 Description: deepin desktop-environment - service frame for development
+ The functionality of service-manager is provided as a library
 
 Package: libdeepin-service-framework
 Architecture: any
@@ -35,6 +36,7 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends}
 Description: deepin desktop-environment - service frame
+ The functionality of service-manager is provided as a library
 
 Package: deepin-service-plugin-oom
 Architecture: any
@@ -44,4 +46,4 @@ Depends:
  deepin-service-manager,
  qttools5-dev-tools
 Description: deepin desktop-environment - oom service
-
+ As a plug-in for deepin-service-manager, it provides capabilities similar to earlyoom
