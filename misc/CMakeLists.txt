@@ -16,28 +16,48 @@ install(FILES org.deepin.ServiceManager1.conf
     DESTINATION share/dbus-1/system.d/
 )
 
-install(FILES deepin-service-manager.service
+set(SYSTEMD_SLICE "")
+set(SYSTEMD_INSTALL "")
+configure_file(deepin-service-group@.service.in deepin-service-group@.service.system @ONLY)
+configure_file(deepin-service-manager.service.in deepin-service-manager.service.system @ONLY)
+set(SYSTEMD_INSTALL "[Install]\nWantedBy=multi-user.target")
+configure_file(deepin-service-plugin@.service.in deepin-service-plugin@.service.system @ONLY)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/deepin-service-manager.service.system
     DESTINATION lib/systemd/system/
+    RENAME deepin-service-manager.service
 )
 
-install(FILES deepin-service-group@.service
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/deepin-service-group@.service.system
     DESTINATION lib/systemd/system/
+    RENAME deepin-service-group@.service
 )
 
-install(FILES deepin-service-plugin@.service
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/deepin-service-plugin@.service.system
     DESTINATION lib/systemd/system/
+    RENAME deepin-service-plugin@.service
 )
 
-install(FILES deepin-service-manager.service
+set(SYSTEMD_SLICE "Slice=session.slice")
+set(SYSTEMD_INSTALL "")
+configure_file(deepin-service-group@.service.in deepin-service-group@.service.user @ONLY)
+configure_file(deepin-service-manager.service.in deepin-service-manager.service.user @ONLY)
+set(SYSTEMD_INSTALL "[Install]\nWantedBy=default.target")
+configure_file(deepin-service-plugin@.service.in deepin-service-plugin@.service.user @ONLY)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/deepin-service-manager.service.user
     DESTINATION lib/systemd/user/
+    RENAME deepin-service-manager.service
 )
 
-install(FILES deepin-service-group@.service
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/deepin-service-group@.service.user
     DESTINATION lib/systemd/user/
+    RENAME deepin-service-group@.service
 )
 
-install(FILES deepin-service-plugin@.service
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/deepin-service-plugin@.service.user
     DESTINATION lib/systemd/user/
+    RENAME deepin-service-plugin@.service
 )
 
 install_symlink(deepin-service-manager.service multi-user.target.wants)

@@ -6,6 +6,6 @@ After=dbus.service
 ExecStart=/usr/bin/deepin-service-manager
 Restart=always
 RestartSec=3
+@SYSTEMD_SLICE@
 
-[Install]
-WantedBy=multi-user.target
+@SYSTEMD_INSTALL@
