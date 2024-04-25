@@ -1,12 +1,12 @@
 [Unit]
 Description=deepin-service-manager
-After=dbus.service
+After=dbus.service deepin-service-manager.service
 PartOf=deepin-service-manager.service
 
 [Service]
 ExecStart=/usr/bin/deepin-service-manager -g %i
 Restart=always
 RestartSec=3
+@SYSTEMD_SLICE@
 
-[Install]
-WantedBy=multi-user.target
+@SYSTEMD_INSTALL@
