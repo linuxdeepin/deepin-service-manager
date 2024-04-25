@@ -7,6 +7,7 @@
 
 #include <systemd/sd-bus.h>
 #include <systemd/sd-event.h>
+#include <stdlib.h>
 
 void get_config_value(
     sd_bus *bus, const char *path, const char *key, const char *outtype, void *output);
