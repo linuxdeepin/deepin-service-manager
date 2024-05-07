@@ -44,7 +44,6 @@ QDBusConnection ServiceQtDBus::qDbusConnection()
 void ServiceQtDBus::initThread()
 {
     qCInfo(dsm_service_qt) << "init service: " << policy->name << "paths: " << policy->paths();
-    qDbusConnection().registerService(policy->name);
 
     // TODO:无权限、隐藏、按需启动需求的service，不应该注册，避免触发hook，提高效率
     QTDbusHook::instance()->setServiceObject(this);
@@ -58,6 +57,7 @@ void ServiceQtDBus::initThread()
     if (!registerService()) {
         qCWarning(dsm_service_qt) << "register service failed: " << policy->name;
     }
+    qDbusConnection().registerService(policy->name);
     ServiceBase::initThread();
 }
 
