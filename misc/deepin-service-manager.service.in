@@ -9,3 +9,9 @@ RestartSec=3
 @SYSTEMD_SLICE@
 
 @SYSTEMD_INSTALL@
+
+ProtectSystem=strict
+InaccessiblePaths=/etc/shadow
+ReadWritePaths=-/usr/share/deepin-service-manager/
+ReadWritePaths=-/usr/local/lib/deepin-service-manager/
+ReadWritePaths=-/usr/local/deepin-service-manager/
