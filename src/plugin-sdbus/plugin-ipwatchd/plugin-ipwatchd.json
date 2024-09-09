@@ -1,0 +1,8 @@
+{
+    "name": "org.deepin.dde.IPWatchD1",
+    "group": "core",
+    "libPath": "libplugin-ipwatchd.so",
+    "policyVersion": "1.0",
+    "policyStartType": "Resident",
+    "pluginType": "sd"
+}

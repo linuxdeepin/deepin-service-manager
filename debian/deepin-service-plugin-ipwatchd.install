@@ -1,0 +1,4 @@
+/usr/lib/*/deepin-service-manager/*ipwatchd.so
+/usr/share/deepin-service-manager/*/*ipwatchd*.json
+/usr/share/dbus-1/system.d/org.deepin.ipwatchd.conf
+

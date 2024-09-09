@@ -45,3 +45,11 @@ Depends:
  qttools5-dev-tools
 Description: deepin desktop-environment - oom service
 
+Package: deepin-service-plugin-ipwatchd
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ deepin-service-manager,
+Description: deepin desktop-environment - ipwatchd service
+
