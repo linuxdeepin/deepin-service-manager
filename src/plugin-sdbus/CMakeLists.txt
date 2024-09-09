@@ -8,3 +8,8 @@ if (ENABLE_PLUGIN_OOM)
     add_subdirectory("plugin-oom")
 endif()
 
+option(ENABLE_PLUGIN_IPWATCHD "Build plugin-ipwatchd" ON)
+
+if (ENABLE_PLUGIN_IPWATCHD)
+    add_subdirectory("plugin-ipwatchd")
+endif()
