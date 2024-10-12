@@ -14,7 +14,7 @@ ReadOnlyPaths=/usr/lib/deepin-service-manager/
 DevicePolicy=closed
 
 ProtectSystem=full
-ProtectHome=yes
+#ProtectHome=yes
 PrivateTmp=yes
 PrivateDevices=yes
 PrivateNetwork=yes
