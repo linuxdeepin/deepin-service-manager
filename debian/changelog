@@ -1,3 +1,10 @@
+deepin-service-manager (1.0.4) unstable; urgency=medium
+
+  * fix:修复dde-appearance不能正常启动
+  * chore: systemd hardening
+
+ -- fuleyi <fuleyi@uniontech.com>  Fri, 18 Oct 2024 15:43:21 +0800
+
 deepin-service-manager (1.0.3) unstable; urgency=medium
 
   * Release 1.0.3
