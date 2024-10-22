@@ -1,3 +1,9 @@
+deepin-service-manager (1.0.5) unstable; urgency=medium
+
+  * chore: 去掉插件包，插件整合在deepin-service-plugins项目中
+
+ -- fuleyi <fuleyi@uniontech.com>  Tue, 22 Oct 2024 19:12:30 +0800
+
 deepin-service-manager (1.0.4) unstable; urgency=medium
 
   * fix:修复dde-appearance不能正常启动

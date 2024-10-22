@@ -18,7 +18,7 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends}
 Recommends:
- deepin-service-plugin-oom
+ deepin-service-plugins
 Description: deepin desktop-environment - service manager frame
  Load system plug-ins for unified management
 
@@ -35,13 +35,4 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends}
 Description: deepin desktop-environment - service frame
-
-Package: deepin-service-plugin-oom
-Architecture: any
-Depends:
- ${shlibs:Depends},
- ${misc:Depends},
- deepin-service-manager,
- qttools5-dev-tools
-Description: deepin desktop-environment - oom service
 
