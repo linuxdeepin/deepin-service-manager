@@ -15,6 +15,7 @@ Q_LOGGING_CATEGORY(dsm_policy, "[Policy]")
 
 Policy::Policy(QObject *parent)
     : QObject(parent)
+    , dbus(nullptr)
 {
 }
 

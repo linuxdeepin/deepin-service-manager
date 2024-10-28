@@ -76,6 +76,10 @@ bool ServiceQtDBus::registerService()
 bool ServiceQtDBus::unregisterService()
 {
     qCInfo(dsm_service_qt) << "service unregister: " << policy->name;
+    if (policy->dbus) {
+        delete policy->dbus;
+        policy->dbus = nullptr;
+    }
 
     if (libFuncCall("DSMUnRegister", false)) {
         ServiceBase::unregisterService();
@@ -103,8 +107,8 @@ bool ServiceQtDBus::libFuncCall(const QString &funcName, bool isRegister)
         m_library->deleteLater();
         return false;
     }
-    auto connection = qDbusConnection();
-    int ret = objFunc(policy->name.toStdString().c_str(), (void *)&connection);
+    policy->dbus = new QDBusConnection( qDbusConnection());
+    int ret = objFunc(policy->name.toStdString().c_str(), (void *)policy->dbus);
     if (ret) {
         return false;
     }
