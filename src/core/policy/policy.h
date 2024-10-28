@@ -5,6 +5,7 @@
 #ifndef POLICY_H
 #define POLICY_H
 
+#include <QDBusConnection>
 #include <QMap>
 #include <QObject>
 
@@ -140,6 +141,7 @@ public:
     SDKType sdkType;
     int startDelay;
     int idleTime;
+    QDBusConnection *dbus;
 };
 
 #endif // POLICY_H
