@@ -1,3 +1,9 @@
+deepin-service-manager (1.0.6) unstable; urgency=medium
+
+  * chore: 解决插件使用传递的dbus，处理dbus相关操作失败的问题
+
+ -- fuleyi <fuleyi@uniontech.com>  Tue, 29 Oct 2024 17:20:18 +0800
+
 deepin-service-manager (1.0.5) unstable; urgency=medium
 
   * chore: 去掉插件包，插件整合在deepin-service-plugins项目中
