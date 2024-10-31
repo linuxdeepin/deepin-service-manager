@@ -7,17 +7,27 @@
 
 #include <QCommandLineOption>
 #include <QCommandLineParser>
-#include <QCoreApplication>
+#include <QGuiApplication>
 #include <QDebug>
 #include <QLoggingCategory>
+#include <QProcess>
 
 #include <unistd.h>
 Q_LOGGING_CATEGORY(dsm_Main, "[Main]")
 
+
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
-    a.setApplicationVersion(VERSION);
+    // 声明一个指向 QCoreApplication 或 QGuiApplication 的指针
+    QCoreApplication *a;
+    uid_t euid = geteuid();
+    if (euid != 0) {
+        a = new QGuiApplication(argc, argv);
+    } else {
+        a = new QCoreApplication(argc, argv);
+    }
+
+    a->setApplicationVersion(VERSION);
 
     QCommandLineOption groupOption({ { "g", "group" }, "eg:core", "group name" });
     QCommandLineOption nameOption({ { "n", "name" }, "eg:org.deepin.demo", "service name" });
@@ -27,7 +37,7 @@ int main(int argc, char *argv[])
     parser.addVersionOption();
     parser.addOption(groupOption);
     parser.addOption(nameOption);
-    parser.process(a);
+    parser.process(*a);
 
     const bool isSetGroup = parser.isSet(groupOption);
     const bool isSetName = parser.isSet(nameOption);
@@ -54,5 +64,5 @@ int main(int argc, char *argv[])
         srv->init(busTypeMap[typeValue]);
     }
 
-    return a.exec();
+    return a->exec();
 }
