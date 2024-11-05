@@ -8,7 +8,5 @@ ExecStart=/usr/bin/deepin-service-manager -g %i
 Restart=always
 RestartSec=3
 @SYSTEMD_SLICE@
-# 由于服务区分root和user，安全加固在CMakelist.txt中区分设置
-@SYSTEMD_HARDENING@
 
 @SYSTEMD_INSTALL@
