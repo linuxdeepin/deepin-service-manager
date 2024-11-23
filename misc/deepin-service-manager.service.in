@@ -1,10 +1,12 @@
 [Unit]
 Description=deepin-service-manager
 After=dbus.service
+StartLimitBurst=5
+StartLimitIntervalSec=60
 
 [Service]
 ExecStart=/usr/bin/deepin-service-manager
-Restart=always
+Restart=on-failure
 RestartSec=3
 @SYSTEMD_SLICE@
 # 由于服务区分root和user，安全加固在CMakelist.txt中区分设置
