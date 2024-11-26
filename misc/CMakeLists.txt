@@ -18,32 +18,7 @@ install(FILES org.deepin.ServiceManager1.conf
 
 set(SYSTEMD_SLICE "")
 set(SYSTEMD_INSTALL "")
-set(SYSTEMD_HARDENING "
-ReadOnlyPaths=/usr/share/deepin-service-manager/
-ReadOnlyPaths=/usr/lib/deepin-service-manager/
-
-DevicePolicy=closed
-ProtectSystem=full
-PrivateTmp=yes
-PrivateDevices=yes
-PrivateNetwork=yes
-ProtectHostname=yes
-ProtectClock=yes
-ProtectKernelTunables=yes
-ProtectKernelModules=yes
-ProtectKernelLogs=yes
-ProtectControlGroups=yes
-RestrictAddressFamilies=AF_UNIX
-RestrictNamespaces=yes
-LockPersonality=yes
-RestrictRealtime=yes
-RestrictSUIDSGID=yes
-RemoveIPC=yes
-")
 configure_file(deepin-service-manager.service.in deepin-service-manager.service.system @ONLY)
-set(SYSTEMD_HARDENING "${SYSTEMD_HARDENING}
-ProtectHome=yes
-")
 configure_file(deepin-service-group@.service.in deepin-service-group@.service.system @ONLY)
 set(SYSTEMD_INSTALL "[Install]\nWantedBy=multi-user.target")
 configure_file(deepin-service-plugin@.service.in deepin-service-plugin@.service.system @ONLY)
@@ -65,7 +40,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/deepin-service-plugin@.service.system
 
 set(SYSTEMD_SLICE "Slice=session.slice")
 set(SYSTEMD_INSTALL "")
-set(SYSTEMD_HARDENING "")
 configure_file(deepin-service-group@.service.in deepin-service-group@.service.user @ONLY)
 configure_file(deepin-service-manager.service.in deepin-service-manager.service.user @ONLY)
 set(SYSTEMD_INSTALL "[Install]\nWantedBy=default.target")
