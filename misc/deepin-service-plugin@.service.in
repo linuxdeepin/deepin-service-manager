@@ -1,6 +1,6 @@
 [Unit]
 Description=deepin-service-manager
-After=dbus.service
+After=dbus.service @EXTRA_AFTER@
 
 [Service]
 ExecStart=/usr/bin/deepin-service-manager -n %i
