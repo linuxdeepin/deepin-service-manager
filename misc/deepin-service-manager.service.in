@@ -1,6 +1,10 @@
 [Unit]
 Description=deepin-service-manager
-After=dbus.service
+@REQUISITE@
+@PARTOF@
+@BEFORE@
+
+After=dbus.service @EXTRA_AFTER@
 StartLimitBurst=5
 StartLimitIntervalSec=60
 
