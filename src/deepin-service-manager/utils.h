@@ -22,4 +22,6 @@ static const QString &PluginManagerPath = QStringLiteral("/org/deepin/ServiceMan
 static const QMap<QDBusConnection::BusType, QString> typeMap{
     { QDBusConnection::SystemBus, "system" }, { QDBusConnection::SessionBus, "user" }
 };
+
+void setProcessName(int argc, char **argv, const char *title);
 #endif // MANAGER_UTILS_H
