@@ -4,6 +4,7 @@
 
 #include "pluginmanager.h"
 #include "servicemanager.h"
+#include "utils.h"
 
 #include <QCommandLineOption>
 #include <QCommandLineParser>
@@ -55,10 +56,14 @@ int main(int argc, char *argv[])
         PluginManager *srv = new PluginManager();
         srv->init(busTypeMap[typeValue]);
         srv->loadByName(nameValue);
+        QString newName = QString("service-manager: %1").arg(nameValue);
+        setProcessName(argc, argv, newName.toStdString().c_str());
     } else if (isSetGroup) {
         PluginManager *srv = new PluginManager();
         srv->init(busTypeMap[typeValue]);
         srv->loadByGroup(groupValue);
+        QString newName = QString("service-manager: %1").arg(groupValue);
+        setProcessName(argc, argv, newName.toStdString().c_str());
     } else {
         ServiceManager *srv = new ServiceManager();
         srv->init(busTypeMap[typeValue]);
