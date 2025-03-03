@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.16)
 
 set(BIN_NAME dde_service_manager_ut)
 
@@ -23,9 +23,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/tests/cmake/modules)
 
 # 查找依赖库
 find_package(PkgConfig REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5DBus REQUIRED)
-find_package(Qt5 COMPONENTS Test REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS Widgets DBus Test)
 find_package(GTest REQUIRED)
 find_package(GMock REQUIRED)
 
@@ -43,9 +41,9 @@ target_include_directories(${BIN_NAME} PUBLIC
 
 # 链接库
 target_link_libraries(${BIN_NAME} PRIVATE
-    ${Qt5Test_LIBRARIES}
-    ${Qt5Widgets_LIBRARIES}
-    ${Qt5DBus_LIBRARIES}
+    Qt${QT_VERSION_MAJOR}::Test
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::DBus
     ${GTEST_LIBRARIES}
     ${GMOCK_LIBRARIES}
     -lpthread

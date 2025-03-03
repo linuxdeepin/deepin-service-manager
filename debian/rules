@@ -2,7 +2,7 @@
 
 include /usr/share/dpkg/default.mk
 
-export QT_SELECT = qt5
+export QT_SELECT = qt6
 
 PACK_VER = $(shell echo $(DEB_VERSION_UPSTREAM) | awk -F'[+_~-]' '{print $$1}')
 

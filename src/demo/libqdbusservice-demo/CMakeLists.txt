@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.16)
 
 set(BIN_NAME "qdbus-service-demo")
 
@@ -12,12 +12,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 project(${BIN_NAME})
 
 include(GNUInstallDirs)
-find_package(Qt5 COMPONENTS Core DBus REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS Core DBus)
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug") # delete this judgement in your project
   find_package(deepin-qdbus-service REQUIRED) # just need this in your project
 endif()
 
-qt5_add_dbus_adaptor(ADAPTER_SOURCES
+qt_add_dbus_adaptor(ADAPTER_SOURCES
                      org.deepin.service.sdk.demo.xml
                      service.h
                      Service)
@@ -45,14 +45,14 @@ else()
 endif()
 
 target_include_directories(${BIN_NAME} PUBLIC
-  Qt5::Core
-  Qt5::DBus
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::DBus
   ${Service_INCLUDE_DIR}
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE
-  Qt5::Core
-  Qt5::DBus
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::DBus
   ${Service_LIBRARIES}
 )
 

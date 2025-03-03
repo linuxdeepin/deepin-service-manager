@@ -4,7 +4,7 @@
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt5 COMPONENTS Core DBus REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS Core DBus)
 
 set(SERVER_NAME "demo-server")
 add_executable(${SERVER_NAME}
@@ -19,14 +19,14 @@ add_executable(${CLIENT_NAME}
 )
 
 target_link_libraries(${SERVER_NAME} PRIVATE
-  Qt5::Core
-  Qt5::DBus
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::DBus
 )
 
 
 target_link_libraries(${CLIENT_NAME} PRIVATE
-  Qt5::Core
-  Qt5::DBus
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::DBus
 )
 
 ADD_DEFINITIONS(-DNEW_QT)

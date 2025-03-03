@@ -8,7 +8,7 @@ project(${LIB_NAME})
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt5 COMPONENTS Core DBus REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS Core DBus)
 
 file(GLOB_RECURSE LIB_SRCS
   "*.h"
@@ -23,14 +23,14 @@ target_link_directories(${LIB_NAME} PRIVATE
 )
 
 target_include_directories(${LIB_NAME} PUBLIC
-  Qt5::Core
-  Qt5::DBus
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::DBus
   ${SRC_BASE_DIR}/core
 )
 
 target_link_libraries(${LIB_NAME} PRIVATE
-  Qt5::Core
-  Qt5::DBus
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::DBus
   core-service
 )
 ADD_DEFINITIONS(-DEXPORT_LIBRARY)
