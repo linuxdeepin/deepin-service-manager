@@ -6,7 +6,7 @@ set(BIN_NAME "deepin-service-manager")
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt5 COMPONENTS Gui Core DBus REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS Gui Core DBus)
 
 # Sources files
 file(GLOB_RECURSE SRCS
@@ -27,17 +27,17 @@ target_link_directories(${BIN_NAME} PRIVATE
 )
 
 target_include_directories(${BIN_NAME} PUBLIC
-  Qt5::Gui
-  Qt5::Core
-  Qt5::DBus
+  Qt${QT_VERSION_MAJOR}::Gui
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::DBus
   ${SRC_BASE_DIR}/core
   ${SRC_BASE_DIR}/libqdbusservice
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE
-  Qt5::Gui
-  Qt5::Core
-  Qt5::DBus
+  Qt${QT_VERSION_MAJOR}::Gui
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::DBus
   core-service
 )
 

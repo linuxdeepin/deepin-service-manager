@@ -5,9 +5,9 @@ Maintainer: Deepin Sysdev <sysdev@deepin.com>
 Build-Depends:  debhelper (>= 11),
  pkg-config,
  cmake,
- qtbase5-dev,
- qttools5-dev-tools,
- qttools5-dev,
+ qt6-base-dev,
+ qt6-tools-dev-tools,
+ qt6-tools-dev,
  libsystemd-dev
 Standards-Version: 4.1.3
 Homepage: https://github.com/linuxdeepin
