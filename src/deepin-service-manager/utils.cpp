@@ -3,8 +3,12 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include  "utils.h"
+
 #include <cstring>
 #include <sys/prctl.h>
+#include <iostream>
+#include <string>
+#include <dlfcn.h>
 
 void setProcessName(int argc, char **argv, const char *title)
 {
@@ -19,4 +23,38 @@ void setProcessName(int argc, char **argv, const char *title)
     }
 
     prctl(PR_SET_NAME, title, 0, 0, 0);
+}
+
+bool checkLibraryQtVersion(const QString &soPath)
+{
+    void *handle = dlopen(soPath.toStdString().c_str(), RTLD_LAZY);
+    if (!handle) {
+        qWarning() << "Error opening library: " << soPath << dlerror();
+        return false;
+    }
+
+    // 尝试解析Qt版本相关的符号
+    void *qtVersionSymbol = dlsym(handle, "qVersion");
+    if (!qtVersionSymbol) {
+        qWarning() << "This library does not appear to link against Qt.";
+        dlclose(handle);
+        return false;
+    }
+
+    // 如果找到了qVersion符号，那么这个库确实链接了Qt
+    using QVersionFunc = const char* (*)();
+    auto qVersionFunc = reinterpret_cast<QVersionFunc>(qtVersionSymbol);
+
+    const char *qtVersion = qVersionFunc();
+    std::cout << "Qt version: " << qtVersion << std::endl;
+
+    // 检查主版本号
+    if (qtVersion[0] == USE_QT_VERSION_MAJOR) {
+        dlclose(handle);
+        return true;
+    }
+
+    qWarning() << "This library links against a Qt version other than " << USE_QT_VERSION_MAJOR << ".";
+    dlclose(handle);
+    return false;
 }
