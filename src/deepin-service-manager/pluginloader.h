@@ -36,6 +36,7 @@ private:
     QList<Policy *> sortPolicy(QList<Policy *> policys);
 
     QStringList plugins() const;
+    bool checkPluginQtVersion(const QString &pluginPath);
 
 private:
     PluginMap m_pluginMap;

@@ -70,8 +70,16 @@ void PluginLoader::loadByGroup(const QString &group)
             continue;
         }
         if (m_isResident != policy->isResident()) {
+            policy->deleteLater();
             continue;
         }
+
+        if (policy->sdkType == SDKType::QT && !checkPluginQtVersion(policy->pluginPath)) {
+            qCWarning(dsm_PluginLoader) << "plugin Qt version not match: " << USE_QT_VERSION_MAJOR;
+            policy->deleteLater();
+            continue;
+        }
+
         policys.append(policy);
     }
     // sort policy
@@ -111,9 +119,16 @@ void PluginLoader::loadByName(const QString &name)
             continue;
         }
 
+        if (policy->sdkType == SDKType::QT && !checkPluginQtVersion(policy->pluginPath)) {
+            qCWarning(dsm_PluginLoader) << "plugin Qt version not match: " << USE_QT_VERSION_MAJOR;
+            policy->deleteLater();
+            continue;
+        }
+
         ServiceBase *srv = createService(policy);
         if (srv == nullptr) {
             qCWarning(dsm_PluginLoader) << "create service failed!";
+            policy->deleteLater();
             return;
         }
         if (!policy->pluginPath.isEmpty()) {
@@ -195,4 +210,14 @@ QList<Policy *> PluginLoader::sortPolicy(QList<Policy *> policys)
 QStringList PluginLoader::plugins() const
 {
     return m_pluginMap.keys();
+}
+
+bool PluginLoader::checkPluginQtVersion(const QString &pluginPath)
+{
+    QFileInfo pluginFileInfo(QString(SERVICE_LIB_DIR) + pluginPath);
+    if (!checkLibraryQtVersion(pluginFileInfo.absoluteFilePath())) {
+        return false;
+    }
+
+    return true;
 }

@@ -23,5 +23,9 @@ static const QMap<QDBusConnection::BusType, QString> typeMap{
     { QDBusConnection::SystemBus, "system" }, { QDBusConnection::SessionBus, "user" }
 };
 
+static const char USE_QT_VERSION_MAJOR = '6';
+
 void setProcessName(int argc, char **argv, const char *title);
+bool checkLibraryQtVersion(const QString &soPath);
+
 #endif // MANAGER_UTILS_H
