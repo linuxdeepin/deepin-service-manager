@@ -18,7 +18,7 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends}
 Recommends:
- deepin-service-plugins
+ dde-services
 Description: deepin desktop-environment - service manager frame
  Load system plug-ins for unified management
 
