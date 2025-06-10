@@ -1,0 +1,14 @@
+{
+  "name": "org.deepin.OOMScoreAdjust",
+  "libPath": "libOOMScoreAdjust.so",
+  "group": "core",
+  "policyStartType": "OnDemand",
+  "pluginType": "qt",
+  "startDelay": 0,
+  "idleTime": 5,
+  "policy": [
+    {
+      "path": "/org/deepin/OOMScoreAdjust"
+    }
+  ]
+}

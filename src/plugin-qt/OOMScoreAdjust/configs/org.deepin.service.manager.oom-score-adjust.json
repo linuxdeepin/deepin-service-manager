@@ -1,0 +1,28 @@
+{
+    "magic":"dsg.config.meta",
+    "version":"1.0",
+    "contents":{
+        "protectionProcess":{
+            "value": ["/usr/bin/dde-session", "/usr/bin/kwin_x11", "/usr/sbin/lightdm", "/usr/lib/xorg/Xorg"],
+            "serial": 0,
+            "flags":["global"],
+            "name":"ProtectionProcess",
+            "name[zh_CN]":"保护进程",
+            "description[zh_CN]":"修改adj的值，以防止被OOM机制杀掉",
+            "description":"",
+            "permissions":"readonly",
+            "visibility":"private"
+        },
+        "enabled":{
+            "value": true,
+            "serial": 0,
+            "flags":["global"],
+            "name":"Enabled",
+            "name[zh_CN]":"是否启用",
+            "description[zh_CN]":"true表示启用，false表示不启用",
+            "description":"",
+            "permissions":"readonly",
+            "visibility":"private"
+        }
+    }
+}

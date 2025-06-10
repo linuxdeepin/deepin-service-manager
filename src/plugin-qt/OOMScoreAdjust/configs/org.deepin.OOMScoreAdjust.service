@@ -1,0 +1,5 @@
+[D-BUS Service]
+Name=org.deepin.OOMScoreAdjust
+Exec=/usr/bin/deepin-service-manager -n org.deepin.OOMScoreAdjust
+user=root
+SystemdService=deepin-service-plugin@org.deepin.OOMScoreAdjust.service

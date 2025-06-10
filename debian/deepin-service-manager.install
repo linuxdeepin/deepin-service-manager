@@ -3,3 +3,9 @@
 /usr/share/dbus-1/system.d/org.deepin.ServiceManager1.conf
 /usr/lib/systemd/*/deepin-service-*.service
 /usr/lib/systemd/*/*.target.wants/deepin-service-*.service
+/usr/share/deepin-service-manager/*/OOM-Score-Adjust.json
+/usr/share/dbus-1/system.d/org.deepin.service.OOMScoreAdjust.conf
+/usr/share/dbus-1/system-services/org.deepin.OOMScoreAdjust.service
+/usr/lib/*/deepin-service-manager/libOOMScoreAdjust.so
+/usr/share/dsg/configs/org.deepin.service.manager/org.deepin.service.manager.oom-score-adjust.json
+/etc/xdg/autostart/oom-score-adjust.desktop
