@@ -1,3 +1,10 @@
+deepin-service-manager (1.0.12) unstable; urgency=medium
+
+  * feat: add OOMScoreAdjust plugin
+  * fix: rename deepin-service-plugins to dde-services
+
+ -- zhaoyingzhen <zhaoyingzhen@uniontech.com>  Thu, 12 Jun 2025 19:38:15 +0800
+
 deepin-service-manager (1.0.11) unstable; urgency=medium
 
   * chore: check Qt type plugin Qt-Version
