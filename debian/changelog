@@ -1,3 +1,9 @@
+deepin-service-manager (1.0.13) unstable; urgency=medium
+
+  * chore: update build dependencies dtkCore in debian/control
+
+ -- zhaoyingzhen <zhaoyingzhen@uniontech.com>  Thu, 12 Jun 2025 20:22:05 +0800
+
 deepin-service-manager (1.0.12) unstable; urgency=medium
 
   * feat: add OOMScoreAdjust plugin
