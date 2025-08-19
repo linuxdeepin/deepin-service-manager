@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=OOMScoreAdjust
-Comment=OOMScoreAdjust
-Encoding=UTF-8
-Exec=dbus-send --system --dest=org.deepin.OOMScoreAdjust --type=method_call --print-reply /org/deepin/OOMScoreAdjust org.freedesktop.DBus.Peer.Ping
-NoDisplay=true
-OnlyShowIn=Deepin
-Type=Application
-X-Deepin-Vendor=user-custom
