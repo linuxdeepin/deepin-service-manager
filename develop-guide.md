@@ -7,9 +7,9 @@
 ### 核心功能
 
 - 插件服务，把服务以一个插件方式加载运行
-- dbus 接口私有化（接口隐藏、接口白名单）
+- dbus 路径隐藏功能
 - dbus 服务的按需启动
-- 独立应用的 dbus 接口私有化 sdk
+- 独立应用的 dbus 服务管理 sdk
 
 ### 加载流程
 
@@ -36,23 +36,25 @@ J --> K
 3. 按照分好的组通过 systemd 启动子进程实例，并传入组名；
 4. 子进程启动，按照传入的组名进行过滤，注册该组的服务，并加载服务插件。
 
-#### 接口私有化流程
+#### 路径隐藏流程
 
 ```mermaid
 graph LR
 A([process]) --> B(read json)
 B --> C(register dbus)
 C --> D(hook dbus)
-D --> E{config policy?}
-E -->|yes| F(do nothing)
+D --> E{Introspect call?}
+E -->|yes| F{pathhide=true?}
 E -->|no| G("call real dbus")
-F --> H([end])
-G --> H
+F -->|yes| H(return empty result)
+F -->|no| G
+G --> I([end])
+H --> I
 ```
 
 1. 进程在启动后会到特定目录读取 json 配置
 2. 注册 dbus 服务时，会对 dbus 进行 hook 操作
-3. 当 dbus 接口被调用时，hook 方法会进行拦截，此时根据配置文件中的 policy 配置决定是否继续调用真正的接口
+3. 当 Introspect 接口被调用时，hook 方法会进行拦截，如果配置了 pathhide=true，则返回空结果隐藏路径
 
 #### 独立应用开发流程
 
@@ -109,7 +111,7 @@ F --> K
 - <font color=DodgerBlue>idleTime</font>: [可选]若服务是按需启动，则可以设置闲时时间，超时则会退出当前进程，单位为分钟
 - <font color=DodgerBlue>dependencies</font>: [可选]若依赖其他服务，可将服务名填在此处，在依赖启动之前不会启动此服务
 - <font color=DodgerBlue>startDelay</font>: [可选]若需要延时启动，可将延时时间填在此处，单位为秒
-- <font color=DodgerBlue>policy</font>: [可选]对于按需启动的插件是**必选**项，配置了哪些 Path 可以被捕获，只有捕获了这些 Path 才会启动定时器和重置定时器。
+- <font color=DodgerBlue>policy</font>: [可选]配置路径隐藏等设置。对于按需启动的插件，需要配置 Path 用于服务发现。
 
 > 配置文件中必选字段为必须要填写字段，否则插件无法正常启动，可选字段可视情况选择填写即可！
 
@@ -347,86 +349,33 @@ QDBusService::lockTimer(bool)
 4. 主服务会根据配置对插件进行一些辅助功能添加，独立应用只需继承类，尽量不改变原有 DBus 注册方式（所以独立应用中需要自己 registerService，而插件不需要）
 5. 插件只能由配置字段来进行控制，独立应用可以通过配置+接口的方式进行控制，所以更加灵活
 
-## 给插件或应用的接口私有化
+## 路径隐藏功能
 
-在原来的配置文件增加私有化规则即可。
+框架支持隐藏 DBus 路径的功能，隐藏的路径在 Introspect 时不会显示，但仍然可以被调用。
 
 ```json
 {
   ...
-  "whitelists": [
-    {
-      "name": "w1",
-      "process": ["/usr/bin/aaa", "/usr/bin/bbb"]
-    },
-    {
-      "name": "w2",
-      "process": ["/usr/bin/aaa", "/usr/bin/ccc", "/usr/bin/python3"]
-    },
-    {
-      "name": "all",
-      "description": "No configuration is required, which means no restrictions"
-    }
-  ],
   "policy": [
     {
       "path": "/qdbus/demo1",
       "pathhide": true,
-      "permission": true,
-      "subpath": true,
-      "whitelist": "w1",
-      "interfaces": [
-        {
-          "interface": "org.deepin.service.demo",
-          "whitelist": "w1",
-          // "permission":true,
-          "methods": [
-            {
-              "method": "Multiply",
-              "whitelist": "w2"
-            }
-          ],
-          "properties": [
-            {
-              "property": "Age",
-              "permission": false
-            }
-          ]
-        }
-      ]
+      "subpath": true
     },
     {
-      "path": "/qdbus/demo2",
-      "pathhide": true
+      "path": "/qdbus/demo2", 
+      "pathhide": false
     }
   ]
 }
 ```
 
-- <font color=DodgerBlue>whitelists</font>: 白名单规则，给下面 policy 做接口访问规则配置，单独存在无意义
-  - <font color=DodgerBlue>name</font>: 白名单名称
-  - <font color=DodgerBlue>process</font>: 允许访问接口的程序列表
-  - <font color=DodgerBlue>description</font>: 该条规则的描述，无实际意义
-- <font color=DodgerBlue>policy</font>: 若需要访问控制，则应在此进行配置
+- <font color=DodgerBlue>policy</font>: 路径配置
   - <font color=DodgerBlue>path</font>: object path，指定哪个 path 要进行配置
   - <font color=DodgerBlue>pathhide</font>: 隐藏该 path，但可调用。可选，默认 false
-  - <font color=DodgerBlue>permission</font>: 开启权限。可选，默认 false。注意该功能在 V20 上不可用，V23 可正常使用，原因是 Qt 的 DBus 实现有问题。
-  - <font color=DodgerBlue>subpath</font>: 子 path 也应用该权限（针对动态生成的子路径）。可选，默认 false
-  - <font color=DodgerBlue>whitelist</font>: 开启权限后，调用上方的白名单规则
-  - <font color=DodgerBlue>interfaces</font>: path->interfaces->methods，权限层级，未指定的下级继承上级的权限配置，指定了的覆盖上级配置
-    - <font color=DodgerBlue>interface</font>: 指定哪个 interface 要进行配置
-    - <font color=DodgerBlue>permission</font>: 不填则继承上级 PATH 的配置
-    - <font color=DodgerBlue>whitelist</font>: 开启权限后，调用上方的白名单规则
-    - <font color=DodgerBlue>methods</font>: 指定方法配置
-      - <font color=DodgerBlue>method</font>: 指定哪个方法配置
-      - <font color=DodgerBlue>whitelist</font>: 指定白名单
-    - <font color=DodgerBlue>properties</font>: 指定属性配置
-      - <font color=DodgerBlue>property</font>: 指定哪个属性配置
-      - <font color=DodgerBlue>permission</font>: 指定不进行权限配置，任何人可以访问。
+  - <font color=DodgerBlue>subpath</font>: 子 path 也应用该设置（针对动态生成的子路径）。可选，默认 false
 
-> 在原来的配置基础上，加上上面的配置即可加上权限管控功能（配置中的省略号表示之前的配置）！
->
-> 若只需要隐藏 path，只需要配置 pathhide 字段即可，其他字段均不需要配置！
+> 注意：基于进程路径的权限管控功能已被移除，因为此机制存在安全隐患。
 
 ## 查看插件是否生效
 

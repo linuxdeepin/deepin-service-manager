@@ -15,33 +15,6 @@
 Q_LOGGING_CATEGORY(dsm_service_sd, "[SDBusService]")
 Q_LOGGING_CATEGORY(dsm_hook_sd, "[SDBusHook]")
 
-QString getCMD(ServiceBase *obj, sd_bus_message *m)
-{
-    __attribute__((cleanup(sd_bus_creds_unrefp))) sd_bus_creds *creds = NULL;
-    ServiceSDBus *srv = qobject_cast<ServiceSDBus *>(obj);
-    if (!srv) {
-        return "";
-    }
-    int r;
-    pid_t pid;
-    r = sd_bus_query_sender_creds(m, SD_BUS_CREDS_PID, &creds);
-    if (r < 0)
-        return "";
-
-    r = sd_bus_creds_get_pid(creds, &pid);
-    if (r < 0)
-        return "";
-    qCDebug(dsm_hook_sd) << "--pid:" << pid;
-    QFile procCmd("/proc/" + QString::number(pid) + "/cmdline");
-    QString cmd;
-    if (procCmd.open(QIODevice::ReadOnly)) {
-        QList<QByteArray> cmds = procCmd.readAll().split('\0');
-        cmd = QString(cmds.first());
-        qCDebug(dsm_hook_sd) << "--cmd:" << cmd;
-    }
-    return cmd;
-}
-
 int sd_bus_message_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error)
 {
     (void)ret_error;
@@ -78,23 +51,11 @@ int sd_bus_message_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_
             return sd_bus_reply_method_return(m, "s", "");
         }
     } else if (mem == "Set" && interface == "org.freedesktop.DBus.Properties") {
-        char *interface = nullptr;
-        char *propertyName = nullptr;
-        sd_bus_message_read(m, "ss", &interface, &propertyName);
-        const QString &cmd = getCMD(qobj, m);
-        if (!qobj->policy->checkPropertyPermission(cmd, path, interface, propertyName)) {
-            qCWarning(dsm_hook_sd)
-                << "cmd:" << cmd << "not allowded to set property:" << propertyName;
-            return sd_bus_reply_method_errorf(m, SD_BUS_ERROR_ACCESS_DENIED, "Access denied");
-        }
+        // Property access control removed - all property access is now allowed
     } else if (interface != "org.freedesktop.DBus.Properties"
                && interface != "org.freedesktop.DBus.Introspectable"
                && interface != "org.freedesktop.DBus.Peer") {
-        const QString &cmd = getCMD(qobj, m);
-        if (!qobj->policy->checkMethodPermission(cmd, path, interface, mem)) {
-            qCWarning(dsm_hook_sd) << "cmd:" << cmd << "not allowded to call method:" << mem;
-            return sd_bus_reply_method_errorf(m, SD_BUS_ERROR_ACCESS_DENIED, "Access denied");
-        }
+        // Method access control removed - all method calls are now allowed
     }
 
     return 0;
