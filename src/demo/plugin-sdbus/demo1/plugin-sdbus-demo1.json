@@ -5,57 +5,15 @@
     "policyVersion": "1.0",
     "policyStartType": "Resident",
     "pluginType": "sd",
-    "whitelists": [
-        {
-            "name": "w1",
-            "process": [
-                "/usr/bin/aaa",
-                "/usr/bin/bbb"
-            ]
-        },
-        {
-            "name": "w2",
-            "process": [
-                "/usr/bin/aaa",
-                "/usr/bin/ccc",
-                "/usr/bin/python3"
-            ]
-        },
-        {
-            "name": "all",
-            "description": "No configuration is required, which means no restrictions"
-        }
-    ],
     "policy": [
         {
             "path": "/org/deepin/service/sdbus/demo1",
             "pathhide": false,
-            "permission": true,
-            "subpath": true,
-            "whitelist": "w1",
-            "interfaces": [
-                {
-                    "interface": "org.deepin.service.sdbus.demo1",
-                    "whitelist": "w1",
-                    "methods": [
-                        {
-                            "method": "Multiply",
-                            "whitelist": "w2"
-                        }
-                    ],
-                    "properties": [
-                        {
-                            "property": "Age",
-                            "permission": false
-                        }
-                    ]
-                }
-            ]
+            "subpath": true
         },
         {
             "path": "/org/deepin/services/sdbus/test1",
-            "pathhide": true,
-            "permission": false
+            "pathhide": true
         }
     ]
 }

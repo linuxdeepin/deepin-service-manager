@@ -34,24 +34,6 @@ extern QDBUS_EXPORT void qDBusAddFilterHook(int (*)(const QString &, const QDBus
 
 Q_LOGGING_CATEGORY(dsm_hook_qt, "[QDBusHook]")
 
-QString getCMD(ServiceBase *obj, QString dbusService)
-{
-    ServiceQtDBus *srv = qobject_cast<ServiceQtDBus *>(obj);
-    if (!srv) {
-        return "";
-    }
-    const unsigned int &pid = srv->qDbusConnection().interface()->servicePid(dbusService).value();
-    qCDebug(dsm_hook_qt) << "--pid:" << pid;
-    QFile procCmd("/proc/" + QString::number(pid) + "/cmdline");
-    QString cmd;
-    if (procCmd.open(QIODevice::ReadOnly)) {
-        QList<QByteArray> cmds = procCmd.readAll().split('\0');
-        cmd = QString(cmds.first());
-        qCDebug(dsm_hook_qt) << "--cmd:" << cmd;
-    }
-    return cmd;
-}
-
 // if it is not a local message, hook exec at main thread
 void QTDBusSpyHook(const QDBusMessage &msg)
 {
@@ -89,42 +71,11 @@ void QTDBusSpyHook(const QDBusMessage &msg)
             }
         }
     } else if (msg.member() == "Set" && msg.interface() == "org.freedesktop.DBus.Properties") {
-        const QList<QVariant> &args = msg.arguments();
-        if (args.size() >= 2) {
-            const QString &cmd = getCMD(serviceObj, msg.service());
-            if (!serviceObj->policy->checkPropertyPermission(cmd,
-                                                             realPath,
-                                                             args.at(0).toString(),
-                                                             args.at(1).toString())) {
-                qCWarning(dsm_hook_qt)
-                    << "cmd:" << cmd << "not allowded to set property:" << args.at(1).toString();
-                QDBusMessage reply = msg.createErrorReply("org.freedesktop.DBus.Error.AccessDenied",
-                                                          "Access denied");
-                ServiceQtDBus *srv = qobject_cast<ServiceQtDBus *>(serviceObj);
-                if (srv) {
-                    srv->qDbusConnection().send(reply);
-                    return;
-                }
-            }
-        }
+        // Property access control removed - all property access is now allowed
     } else if (msg.interface() != "org.freedesktop.DBus.Properties"
                && msg.interface() != "org.freedesktop.DBus.Introspectable"
                && msg.interface() != "org.freedesktop.DBus.Peer") {
-        const QString &cmd = getCMD(serviceObj, msg.service());
-        if (!serviceObj->policy->checkMethodPermission(cmd,
-                                                       realPath,
-                                                       msg.interface(),
-                                                       msg.member())) {
-            QDBusMessage reply =
-                msg.createErrorReply("org.freedesktop.DBus.Error.AccessDenied", "Access denied");
-            qCWarning(dsm_hook_qt)
-                << "cmd:" << cmd << "not allowded to call method:" << msg.member();
-            ServiceQtDBus *srv = qobject_cast<ServiceQtDBus *>(serviceObj);
-            if (srv) {
-                srv->qDbusConnection().send(reply);
-                return;
-            }
-        }
+        // Method access control removed - all method calls are now allowed
     }
     return;
 }
@@ -168,42 +119,11 @@ int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
             //            ((ServiceQtDBus*)serviceObj)->qDbusConnection().send(reply);
         }
     } else if (msg.member() == "Set" && msg.interface() == "org.freedesktop.DBus.Properties") {
-        const QList<QVariant> &args = msg.arguments();
-        if (args.size() >= 2) {
-            const QString &cmd = getCMD(serviceObj, msg.service());
-            if (!serviceObj->policy->checkPropertyPermission(cmd,
-                                                             realPath,
-                                                             args.at(0).toString(),
-                                                             args.at(1).toString())) {
-                qCWarning(dsm_hook_qt)
-                    << "cmd:" << cmd << "not allowded to set property:" << args.at(1).toString();
-                QDBusMessage reply = msg.createErrorReply("org.freedesktop.DBus.Error.AccessDenied",
-                                                          "Access denied");
-                ServiceQtDBus *srv = qobject_cast<ServiceQtDBus *>(serviceObj);
-                if (srv) {
-                    srv->qDbusConnection().send(reply);
-                    return -1;
-                }
-            }
-        }
+        // Property access control removed - all property access is now allowed
     } else if (msg.interface() != "org.freedesktop.DBus.Properties"
                && msg.interface() != "org.freedesktop.DBus.Introspectable"
                && msg.interface() != "org.freedesktop.DBus.Peer") {
-        const QString &cmd = getCMD(serviceObj, msg.service());
-        if (!serviceObj->policy->checkMethodPermission(cmd,
-                                                       realPath,
-                                                       msg.interface(),
-                                                       msg.member())) {
-            qCWarning(dsm_hook_qt)
-                << "cmd:" << cmd << "not allowded to call method:" << msg.member();
-            QDBusMessage reply =
-                msg.createErrorReply("org.freedesktop.DBus.Error.AccessDenied", "Access denied");
-            ServiceQtDBus *srv = qobject_cast<ServiceQtDBus *>(serviceObj);
-            if (srv) {
-                srv->qDbusConnection().send(reply);
-                return -1;
-            }
-        }
+        // Method access control removed - all method calls are now allowed
     }
     return 0;
 
