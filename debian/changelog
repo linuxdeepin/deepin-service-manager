@@ -1,3 +1,10 @@
+deepin-service-manager (1.0.15) unstable; urgency=medium
+
+  * Chore: Remove insecure and ineffective authority control
+  * Chore: romve oom-adjust-score plugin to dde-services
+
+ -- zyz <zhaoyingzhen@uniontech.com>  Thu, 21 Aug 2025 21:48:05 +0800
+
 deepin-service-manager (1.0.14) unstable; urgency=medium
 
   * refactor: update Debian build hardening flags
