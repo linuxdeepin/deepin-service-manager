@@ -37,7 +37,7 @@ Q_LOGGING_CATEGORY(dsm_hook_qt, "[QDBusHook]")
 // if it is not a local message, hook exec at main thread
 void QTDBusSpyHook(const QDBusMessage &msg)
 {
-    qCInfo(dsm_hook_qt) << "--msg=" << msg;
+    qCDebug(dsm_hook_qt) << "--msg=" << msg;
 
     ServiceBase *serviceObj = nullptr;
     bool isSubPath;
@@ -49,12 +49,12 @@ void QTDBusSpyHook(const QDBusMessage &msg)
         return;
     }
     if (!serviceObj->isRegister()) {
-        qCInfo(dsm_hook_qt) << "--to register dbus object: " << msg.path();
+        qCDebug(dsm_hook_qt) << "--to register dbus object: " << msg.path();
         serviceObj->registerService();
     }
 
     if (!serviceObj->policy->isResident() && !serviceObj->isLockTimer()) {
-        qCInfo(dsm_hook_qt) << QString("--service: %1 will unregister in %2 minutes!")
+        qCDebug(dsm_hook_qt) << QString("--service: %1 will unregister in %2 minutes!")
                                    .arg(serviceObj->policy->name)
                                    .arg(serviceObj->policy->idleTime);
         QTimer::singleShot(0, serviceObj, SLOT(restartTimer()));
@@ -83,8 +83,8 @@ void QTDBusSpyHook(const QDBusMessage &msg)
 // if it is not a local message, hook exec at main thread
 int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
 {
-    qCInfo(dsm_hook_qt) << "--baseService=" << baseService;
-    qCInfo(dsm_hook_qt) << "--msg=" << msg;
+    qCDebug(dsm_hook_qt) << "--baseService=" << baseService;
+    qCDebug(dsm_hook_qt) << "--msg=" << msg;
 
     ServiceBase *serviceObj = nullptr;
     bool isSubPath;
@@ -96,12 +96,12 @@ int QTDBusHook(const QString &baseService, const QDBusMessage &msg)
         return 0;
     }
     if (!serviceObj->isRegister()) {
-        qCInfo(dsm_hook_qt) << "--to register dbus object: " << msg.path();
+        qCDebug(dsm_hook_qt) << "--to register dbus object: " << msg.path();
         serviceObj->registerService();
     }
 
     if (!serviceObj->policy->isResident() && !serviceObj->isLockTimer()) {
-        qCInfo(dsm_hook_qt) << QString("--service: %1 will unregister in %2 minutes!")
+        qCDebug(dsm_hook_qt) << QString("--service: %1 will unregister in %2 minutes!")
                                    .arg(serviceObj->policy->name)
                                    .arg(serviceObj->policy->idleTime);
         QTimer::singleShot(0, serviceObj, SLOT(restartTimer()));

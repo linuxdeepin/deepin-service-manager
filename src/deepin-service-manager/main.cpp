@@ -12,6 +12,7 @@
 #include <QDebug>
 #include <QLoggingCategory>
 #include <QProcess>
+#include <DLog>
 
 #include <unistd.h>
 Q_LOGGING_CATEGORY(dsm_Main, "[Main]")
@@ -27,7 +28,9 @@ int main(int argc, char *argv[])
     } else {
         a = new QCoreApplication(argc, argv);
     }
-
+    
+    Dtk::Core::DLogManager::registerConsoleAppender();
+    Dtk::Core::DLogManager::registerJournalAppender();
     a->setApplicationVersion(VERSION);
 
     QCommandLineOption groupOption({ { "g", "group" }, "eg:core", "group name" });

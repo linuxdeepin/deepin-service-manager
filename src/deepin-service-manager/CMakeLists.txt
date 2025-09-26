@@ -7,6 +7,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS Gui Core DBus)
+find_package(Dtk6 COMPONENTS Core)
 
 # Sources files
 file(GLOB_RECURSE SRCS
@@ -38,6 +39,7 @@ target_link_libraries(${BIN_NAME} PRIVATE
   Qt${QT_VERSION_MAJOR}::Gui
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::DBus
+  Dtk6::Core
   core-service
 )
 
