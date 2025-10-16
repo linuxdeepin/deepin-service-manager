@@ -1,3 +1,13 @@
+deepin-service-manager (1.0.16) unstable; urgency=medium
+
+  * chore: update license from GPL-3+ to LGPL-3+
+  * refactor: reduce log level from info to debug
+  * chore: Sync by
+    https://github.com/linuxdeepin/.github/commit/ae0f54a002362031e7e012
+    f4be2d79cfb370a57e
+
+ -- zhangkun <zhangkun2@uniontech.com>  Thu, 16 Oct 2025 20:46:29 +0800
+
 deepin-service-manager (1.0.15) unstable; urgency=medium
 
   * Chore: Remove insecure and ineffective authority control
