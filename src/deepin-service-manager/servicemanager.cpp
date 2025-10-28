@@ -156,7 +156,7 @@ void ServiceManager::onRegisterGroup(const QString &groupName, const QString &se
                            "org.freedesktop.DBus",
                            "NameOwnerChanged",
                            groupManager,
-                           SLOT(removePlugin(const QString &, const QString &, const QString &)));
+                           SLOT(onNameOwnerChanged(const QString &, const QString &, const QString &)));
         connection.connect(serviceName,
                            PluginManagerPath,
                            PluginManagerInterface,
