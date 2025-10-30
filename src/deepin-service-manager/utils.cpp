@@ -4,17 +4,24 @@
 
 #include  "utils.h"
 
+#include <QPluginLoader>
+#include <QLibrary>
+#include <QVersionNumber>
+#include <QLoggingCategory>
+
 #include <cstring>
 #include <sys/prctl.h>
-#include <iostream>
-#include <string>
-#include <dlfcn.h>
+
+Q_LOGGING_CATEGORY(dsm_utils, "[Utils]")
 
 void setProcessName(int argc, char **argv, const char *title)
 {
+    qCDebug(dsm_utils) << "Setting process name to:" << title;
+
     size_t titleLen = strlen(title);
     size_t argvMaxLen = argv[argc - 1] + strlen(argv[argc - 1]) - argv[0];
     if (titleLen >= argvMaxLen) {
+        qCWarning(dsm_utils) << "Process name too long, truncating:" << titleLen << ">" << (argvMaxLen - 1);
         strncpy(argv[0], title, argvMaxLen - 1);
         argv[0][argvMaxLen - 1] = '\0';
     } else {
@@ -22,39 +29,42 @@ void setProcessName(int argc, char **argv, const char *title)
         memset(argv[0] + titleLen, '\0', argvMaxLen - titleLen);
     }
 
-    prctl(PR_SET_NAME, title, 0, 0, 0);
+    if (prctl(PR_SET_NAME, title, 0, 0, 0) != 0) {
+        qCWarning(dsm_utils) << "Failed to set process name via prctl:" << strerror(errno);
+    } else {
+        qCDebug(dsm_utils) << "Process name set successfully to:" << title;
+    }
 }
 
 bool checkLibraryQtVersion(const QString &soPath)
 {
-    void *handle = dlopen(soPath.toStdString().c_str(), RTLD_LAZY);
-    if (!handle) {
-        qWarning() << "Error opening library: " << soPath << dlerror();
+    QLibrary library(soPath);
+    if (!library.load()) {
+        qCWarning(dsm_utils) << "Error opening library:" << soPath << library.errorString();
         return false;
     }
 
     // 尝试解析Qt版本相关的符号
-    void *qtVersionSymbol = dlsym(handle, "qVersion");
-    if (!qtVersionSymbol) {
-        qWarning() << "This library does not appear to link against Qt.";
-        dlclose(handle);
+    using QVersionFunc = const char* (*)();
+    auto qVersionFunc = reinterpret_cast<QVersionFunc>(library.resolve("qVersion"));
+    if (!qVersionFunc) {
+        qCWarning(dsm_utils) << "This library does not appear to link against Qt.";
         return false;
     }
 
     // 如果找到了qVersion符号，那么这个库确实链接了Qt
-    using QVersionFunc = const char* (*)();
-    auto qVersionFunc = reinterpret_cast<QVersionFunc>(qtVersionSymbol);
-
     const char *qtVersion = qVersionFunc();
-    std::cout << "Qt version: " << qtVersion << std::endl;
+    qCInfo(dsm_utils) << "Library Qt version:" << qtVersion;
+
+    QVersionNumber libraryQtVersion = QVersionNumber::fromString(QString::fromUtf8(qtVersion));
+    QVersionNumber expectedQtVersion = QVersionNumber::fromString(QString::fromUtf8(&USE_QT_VERSION_MAJOR));
 
     // 检查主版本号
-    if (qtVersion[0] == USE_QT_VERSION_MAJOR) {
-        dlclose(handle);
+    if (libraryQtVersion.majorVersion() == expectedQtVersion.majorVersion()) {
         return true;
     }
 
-    qWarning() << "This library links against a Qt version other than " << USE_QT_VERSION_MAJOR << ".";
-    dlclose(handle);
+    qCWarning(dsm_utils) << "This library links against Qt" << libraryQtVersion.toString()
+                         << "but expected Qt" << expectedQtVersion.majorVersion();
     return false;
 }
