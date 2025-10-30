@@ -1,3 +1,10 @@
+deepin-service-manager (1.0.17) unstable; urgency=medium
+
+  * fix: use QLibrary to load and check library version
+  * fix: incorrect slot name in ServiceManager
+
+ -- lvpeilong <lvpeilong@uniontech.com>  Thu, 30 Oct 2025 20:17:16 +0800
+
 deepin-service-manager (1.0.16) unstable; urgency=medium
 
   * chore: update license from GPL-3+ to LGPL-3+
