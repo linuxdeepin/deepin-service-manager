@@ -17,7 +17,6 @@
 #include <unistd.h>
 Q_LOGGING_CATEGORY(dsm_Main, "[Main]")
 
-
 int main(int argc, char *argv[])
 {
     // 声明一个指向 QCoreApplication 或 QGuiApplication 的指针
@@ -28,20 +27,30 @@ int main(int argc, char *argv[])
     } else {
         a = new QCoreApplication(argc, argv);
     }
-    
+
     Dtk::Core::DLogManager::registerConsoleAppender();
     Dtk::Core::DLogManager::registerJournalAppender();
     a->setApplicationVersion(VERSION);
 
     QCommandLineOption groupOption({ { "g", "group" }, "eg:core", "group name" });
     QCommandLineOption nameOption({ { "n", "name" }, "eg:org.deepin.demo", "service name" });
+    QCommandLineOption elfQtVerCheckOption("elf-qt-version-check", "service manager plugin so <path>", "path");
     QCommandLineParser parser;
     parser.setApplicationDescription("deepin service plugin loader");
     parser.addHelpOption();
     parser.addVersionOption();
     parser.addOption(groupOption);
     parser.addOption(nameOption);
+    parser.addOption(elfQtVerCheckOption);
+    parser.addHelpOption();
     parser.process(*a);
+
+    if (parser.isSet(elfQtVerCheckOption)) {
+        QString filePath(parser.value(elfQtVerCheckOption));
+        qCDebug(dsm_Main) << "Checking Qt version from ELF header of" << filePath;
+        qCDebug(dsm_Main) << qtVersionFromSo(filePath);
+        return 0;
+    }
 
     const bool isSetGroup = parser.isSet(groupOption);
     const bool isSetName = parser.isSet(nameOption);
