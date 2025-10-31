@@ -11,6 +11,8 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX /usr)
 endif()
 
+option(DISABLE_ELF_QT_CHECK "Disable ELF-header-based Qt version check" OFF)
+
 include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
@@ -27,4 +29,3 @@ add_subdirectory("misc")
 
 # TODO:tests, 目前的tests是以前的，后续删掉，补充新的test
 # add_subdirectory("tests")
-
