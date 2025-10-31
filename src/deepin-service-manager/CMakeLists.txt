@@ -9,6 +9,8 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS Gui Core DBus)
 find_package(Dtk6 COMPONENTS Core)
 
+check_include_file("elf.h" HAVE_ELF_H)
+
 # Sources files
 file(GLOB_RECURSE SRCS
   "*.h"
@@ -22,6 +24,12 @@ add_executable(${BIN_NAME}  ${SRCS})
 target_compile_definitions(${BIN_NAME} PRIVATE
   VERSION="${VERSION}"
 )
+
+if (HAVE_ELF_H AND NOT DISABLE_ELF_QT_CHECK)
+  target_compile_definitions(${BIN_NAME} PRIVATE
+    ELF_QT_VER_CHECK=1
+  )
+endif()
 
 target_link_directories(${BIN_NAME} PRIVATE
   ${CMAKE_BINARY_DIR}/core/
