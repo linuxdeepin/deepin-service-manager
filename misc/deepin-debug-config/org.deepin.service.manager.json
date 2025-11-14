@@ -1,0 +1,11 @@
+{
+    "name": "org.deepin.service.manager",
+    "group": "dde",
+    "submodules": [
+        {
+            "name": "org.deepin.service.manager",
+            "exec": "org.deepin.service.manager.sh"
+        }
+    ],
+    "version": "V1.0"
+}

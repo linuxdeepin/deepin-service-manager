@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     } else {
         a = new QCoreApplication(argc, argv);
     }
+    a->setApplicationName("org.deepin.service.manager");
 
     Dtk::Core::DLogManager::registerConsoleAppender();
     Dtk::Core::DLogManager::registerJournalAppender();

@@ -1,0 +1,14 @@
+{
+    "name": "org.deepin.service.manager",
+    "group": "dde",
+    "submodules": [
+        {
+            "name": "org.deepin.service.manager",
+            "filter": "",
+            "exec": "/usr/bin/deepin-service-manager",
+            "logType": "journal"
+        }
+    ],
+    "visible": 1,
+    "version": "V1.0"
+}
