@@ -3,3 +3,5 @@
 /usr/share/dbus-1/system.d/org.deepin.ServiceManager1.conf
 /usr/lib/systemd/*/deepin-service-*.service
 /usr/lib/systemd/*/*.target.wants/deepin-service-*.service
+/usr/share/deepin-debug-config
+/usr/share/deepin-log-viewer
