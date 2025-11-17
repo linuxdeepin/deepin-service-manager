@@ -8,10 +8,13 @@ export DEB_CFLAGS_MAINT_APPEND = -Wall
 export DEB_CXXFLAGS_MAINT_APPEND = -Wall
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -Wl,-E
 
+# reproducible编译参数
+DEB_CMAKE_EXTRA_FLAGS += -DCMAKE_SKIP_BUILD_RPATH=ON
+
 PACK_VER = $(shell echo $(DEB_VERSION_UPSTREAM) | awk -F'[+_~-]' '{print $$1}')
 
 %:
 	dh $@ --parallel
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DVERSION=$(PACK_VER)
+	dh_auto_configure -- $(DEB_CMAKE_EXTRA_FLAGS) -DVERSION=$(PACK_VER)
