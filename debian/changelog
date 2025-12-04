@@ -1,3 +1,11 @@
+deepin-service-manager (1.0.18) unstable; urgency=medium
+
+  * feat: add reproducible build parameters
+  * feat: add debug and log configuration support
+  * feat: check Qt version w/o actually loading so file
+
+ -- fuleyi <fuleyi@uniontech.com>  Thu, 04 Dec 2025 19:13:55 +0800
+
 deepin-service-manager (1.0.17) unstable; urgency=medium
 
   * fix: use QLibrary to load and check library version
