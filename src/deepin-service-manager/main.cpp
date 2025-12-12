@@ -15,6 +15,7 @@
 #include <DLog>
 
 #include <unistd.h>
+#include <pwd.h>
 Q_LOGGING_CATEGORY(dsm_Main, "[Main]")
 
 int main(int argc, char *argv[])
@@ -22,10 +23,18 @@ int main(int argc, char *argv[])
     // 声明一个指向 QCoreApplication 或 QGuiApplication 的指针
     QCoreApplication *a;
     uid_t euid = geteuid();
-    if (euid != 0) {
-        a = new QGuiApplication(argc, argv);
-    } else {
+    bool useCoreApp = (euid == 0);
+    
+    // 检查是否是deepin-daemon 用户
+    if (!useCoreApp) {
+        struct passwd *pw = getpwuid(euid);
+        useCoreApp = (pw && QString::fromUtf8(pw->pw_name) == "deepin-daemon");
+    }
+    
+    if (useCoreApp) {
         a = new QCoreApplication(argc, argv);
+    } else {
+        a = new QGuiApplication(argc, argv);
     }
     a->setApplicationName("org.deepin.service.manager");
 

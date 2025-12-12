@@ -33,6 +33,13 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/deepin-service-group@.service.system
     RENAME deepin-service-group@.service
 )
 
+# Install drop-in configuration for deepin-daemon group
+configure_file(deepin-service-group@deepin-daemon.service.d/override.conf.in 
+    deepin-service-group@deepin-daemon.service.d/override.conf @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/deepin-service-group@deepin-daemon.service.d/override.conf
+    DESTINATION lib/systemd/system/deepin-service-group@deepin-daemon.service.d/
+)
+
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/deepin-service-plugin@.service.system
     DESTINATION lib/systemd/system/
     RENAME deepin-service-plugin@.service

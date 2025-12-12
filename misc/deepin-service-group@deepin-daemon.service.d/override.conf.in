@@ -1,0 +1,5 @@
+# Override configuration for deepin-daemon group
+# This file specifies that the deepin-daemon group should run as deepin-daemon user
+[Service]
+User=deepin-daemon
+Group=deepin-daemon

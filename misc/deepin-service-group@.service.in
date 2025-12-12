@@ -10,5 +10,10 @@ ExecStart=/usr/bin/deepin-service-manager -g %i
 Restart=on-failure
 RestartSec=3
 @SYSTEMD_SLICE@
+# 如果 group 是 deepin-daemon，使用 deepin-daemon 用户启动
+# 可以通过 systemd drop-in 配置覆盖: /etc/systemd/system/deepin-service-group@deepin-daemon.service.d/override.conf
+# 内容: [Service]
+#       User=deepin-daemon
+#       Group=deepin-daemon
 
 @SYSTEMD_INSTALL@

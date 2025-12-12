@@ -21,7 +21,7 @@
 
 Q_LOGGING_CATEGORY(dsm_ServiceManager, "[ServiceManager]")
 
-static const QStringList GroupSiral{ "core", "dde", "app" };
+static const QStringList GroupSiral{ "core", "dde", "app", "deepin-daemon" };
 
 ServiceManager::ServiceManager(QObject *parent)
     : QObject(parent)
