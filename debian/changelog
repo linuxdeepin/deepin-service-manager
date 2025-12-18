@@ -1,3 +1,11 @@
+deepin-service-manager (1.0.19) unstable; urgency=medium
+
+  * fix: tighten D-Bus service security policy
+  * chore: install deepin-daemon service override file
+  * feat: add deepin-daemon service group support
+
+ -- zhangkun <zhangkun2@uniontech.com>  Thu, 18 Dec 2025 19:51:16 +0800
+
 deepin-service-manager (1.0.18) unstable; urgency=medium
 
   * feat: add reproducible build parameters
