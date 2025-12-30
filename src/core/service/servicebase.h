@@ -9,6 +9,7 @@
 
 #include <QDBusConnection>
 #include <QObject>
+#include <QMutex>
 
 typedef void *(*ServiceObject)(const char *path, const int len);
 typedef int (*DSMRegister)(const char *name, void *data);
@@ -45,6 +46,7 @@ public:
 protected:
     bool m_isRegister;
     bool m_isLockTimer;
+    mutable QMutex m_registerMutex;
 
     QDBusConnection::BusType m_sessionType;
     SDKType m_SDKType; // qdbus、sdbus
