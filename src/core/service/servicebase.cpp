@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QThread>
 #include <QTimer>
+#include <QMutexLocker>
 
 ServiceBase::ServiceBase(QObject *parent)
     : QObject(parent)
@@ -51,6 +52,7 @@ void ServiceBase::initThread() { }
 
 bool ServiceBase::isRegister() const
 {
+    QMutexLocker locker(&m_registerMutex);
     return m_isRegister;
 }
 
