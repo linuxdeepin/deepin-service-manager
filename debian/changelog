@@ -1,3 +1,9 @@
+deepin-service-manager (1.0.20) unstable; urgency=medium
+
+  * fix: prevent duplicate plugin registration with mutex lock
+
+ -- zhangkun <zhangkun2@uniontech.com>  Thu, 15 Jan 2026 19:25:47 +0800
+
 deepin-service-manager (1.0.19) unstable; urgency=medium
 
   * fix: tighten D-Bus service security policy
