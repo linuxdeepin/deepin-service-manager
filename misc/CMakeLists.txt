@@ -48,8 +48,8 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/deepin-service-plugin@.service.system
 set(SYSTEMD_SLICE "Slice=session.slice")
 set(SYSTEMD_INSTALL "")
 configure_file(deepin-service-group@.service.in deepin-service-group@.service.user @ONLY)
-set(EXTRA_AFTER "dde-session-pre.target")
-set(REQUISITE "Requisite=dde-session-initialized.target dde-session-pre.target")
+set(EXTRA_AFTER "dde-session-core.target")
+set(REQUISITE "Requisite=dde-session-core.target")
 set(PARTOF "PartOf=dde-session-initialized.target")
 set(BEFORE "Before=dde-session-initialized.target")
 configure_file(deepin-service-manager.service.in deepin-service-manager.service.user @ONLY)
@@ -72,7 +72,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/deepin-service-plugin@.service.user
 )
 
 install_symlink(deepin-service-manager.service multi-user.target.wants)
-install_user_symlink(deepin-service-manager.service default.target.wants)
+install_user_symlink(deepin-service-manager.service dde-session-initialized.target.wants)
 
 set(LIB_NAME "deepin-qdbus-service")
 
