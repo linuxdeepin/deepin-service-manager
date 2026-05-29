@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2023 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -12,6 +12,22 @@
 #include <QLoggingCategory>
 
 Q_LOGGING_CATEGORY(dsm_policy, "[Policy]")
+
+// Detect current session type with fallback:
+static QString currentSessionType()
+{
+    const QString fromEnv = QString::fromLocal8Bit(qgetenv("XDG_SESSION_TYPE")).toLower();
+    if (!fromEnv.isEmpty()) {
+        return fromEnv;
+    }
+    if (!qgetenv("WAYLAND_DISPLAY").isEmpty()) {
+        return QStringLiteral("wayland");
+    }
+    if (!qgetenv("DISPLAY").isEmpty()) {
+        return QStringLiteral("x11");
+    }
+    return QString();
+}
 
 Policy::Policy(QObject *parent)
     : QObject(parent)
@@ -104,6 +120,47 @@ void Policy::parseConfig(const QString &path)
         qCWarning(dsm_policy) << "json error, parse policy error.";
         return;
     }
+
+    // Optional condition. Empty preserves old JSON behavior.
+    condition = ConditionSpec();
+    if (rootObj.contains("condition")) {
+        const QJsonValue &v = rootObj.value("condition");
+        if (v.isObject()) {
+            const QJsonObject &conditionObj = v.toObject();
+            jsonGetString(conditionObj, "sessionType", condition.sessionType);
+        } else {
+            qCWarning(dsm_policy) << "condition must be an object, ignored:" << name;
+        }
+    }
+}
+
+bool Policy::matchesEnvironment() const
+{
+    // No condition → always match (back-compat).
+    if (condition.isEmpty()) {
+        return true;
+    }
+
+    if (!condition.sessionType.isEmpty()) {
+        const QString actual = currentSessionType();
+        const QString expected = condition.sessionType.toLower();
+        if (actual.isEmpty()) {
+            // No session-type signal in env (typical on system bus, or misconfigured user env).
+            // Fail open (matches "missing condition = no constraint") and log loud.
+            qCCritical(dsm_policy) << "cannot determine current sessionType "
+                                      "(XDG_SESSION_TYPE / WAYLAND_DISPLAY / DISPLAY all empty); "
+                                      "allow plugin to load:" << name;
+            return true;
+        }
+        if (actual != expected) {
+            qCInfo(dsm_policy) << "skip plugin" << name
+                               << "expected sessionType:" << expected
+                               << "actual:" << actual;
+            return false;
+        }
+    }
+
+    return true;
 }
 
 bool Policy::readJsonFile(QJsonDocument &outDoc, const QString &fileName)

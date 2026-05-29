@@ -91,6 +91,9 @@ F --> K
   "idleTime": 10,
   "dependencies": [],
   "startDelay": 0,
+  "condition": {
+    "sessionType": "wayland"
+  },
   "policy": [
     {
       "path": "/org/deepin/service/demo1"
@@ -111,6 +114,8 @@ F --> K
 - <font color=DodgerBlue>idleTime</font>: [可选]若服务是按需启动，则可以设置闲时时间，超时则会退出当前进程，单位为分钟
 - <font color=DodgerBlue>dependencies</font>: [可选]若依赖其他服务，可将服务名填在此处，在依赖启动之前不会启动此服务
 - <font color=DodgerBlue>startDelay</font>: [可选]若需要延时启动，可将延时时间填在此处，单位为秒
+- <font color=DodgerBlue>condition</font>: [可选]插件加载条件,运行环境不满足时跳过加载该插件,**不影响同组其他插件**。整个字段或其内任意子键缺省都视为不约束,保证老 JSON 行为不变。
+  - <font color=DodgerBlue>sessionType</font>: 期望的会话类型,例如 `"wayland"` / `"x11"`,通过比较 `XDG_SESSION_TYPE` 环境变量判定。**仅对用户级插件 (`user/`,SessionBus) 生效**;系统级插件 (`system/`,SystemBus) 下该子键被忽略并打 warning 日志,不影响加载。
 - <font color=DodgerBlue>policy</font>: [可选]配置路径隐藏等设置。对于按需启动的插件，需要配置 Path 用于服务发现。
 
 > 配置文件中必选字段为必须要填写字段，否则插件无法正常启动，可选字段可视情况选择填写即可！
