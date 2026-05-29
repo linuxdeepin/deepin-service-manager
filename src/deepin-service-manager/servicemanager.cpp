@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2023 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -69,17 +69,26 @@ void ServiceManager::initGroup(const QDBusConnection::BusType &type)
     const QString &configPath = QString("%1/%2/").arg(SERVICE_CONFIG_DIR).arg(typeMap[type]);
 
     QFileInfoList list = QDir(configPath).entryInfoList();
-    Policy *policy = new Policy(this);
+    // Fresh Policy per file. Reusing one instance leaks state across files
+    // when parseConfig early-returns and skips field resets.
     for (auto &&file : list) {
         if (!file.isFile() || (file.suffix().compare("json", Qt::CaseInsensitive) != 0)) {
             continue;
         }
+        Policy *policy = new Policy(this);
         policy->parseConfig(file.absoluteFilePath());
+        // Skip condition-mismatched policies before group collection, so a group
+        // with no matching plugin isn't spawned. A group is still kept as long
+        // as any of its policies matches.
+        if (!policy->matchesEnvironment()) {
+            policy->deleteLater();
+            continue;
+        }
         if (!groups.contains(policy->group) && !policy->group.isEmpty()) {
             groups.append(policy->group);
         }
+        policy->deleteLater();
     }
-    policy->deleteLater();
     // sort groups
     std::sort(groups.begin(),
               groups.end(),

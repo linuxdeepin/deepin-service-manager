@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2023 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -23,6 +23,16 @@ struct PolicyPath
 
 typedef QMap<QString, PolicyPath> QMapPath;
 
+// Plugin load condition; empty = no constraint (back-compat with old JSON).
+struct ConditionSpec
+{
+    // Expected session type, e.g. "wayland" / "x11". Empty = no constraint.
+    // Honored only on SessionBus; on SystemBus the field is logged and ignored.
+    QString sessionType;
+
+    bool isEmpty() const { return sessionType.isEmpty(); }
+};
+
 class Policy : public QObject
 {
     Q_OBJECT
@@ -35,6 +45,10 @@ public:
     QStringList paths() const;
     bool allowSubPath(const QString &path) const;
     bool isResident() const;
+
+    // Whether the current environment satisfies this plugin's condition.
+    // Empty condition always returns true (back-compat).
+    bool matchesEnvironment() const;
 
     //    void Check(); // TODO
     void print();
@@ -77,6 +91,7 @@ public:
     int startDelay;
     int idleTime;
     QDBusConnection *dbus;
+    ConditionSpec condition;
 };
 
 #endif // POLICY_H
