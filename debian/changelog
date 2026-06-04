@@ -1,3 +1,9 @@
+deepin-service-manager (1.0.22) unstable; urgency=medium
+
+  * feat: add plugin load conditions
+
+ -- zhangkun <zhangkun2@uniontech.com>  Thu, 04 Jun 2026 19:33:01 +0800
+
 deepin-service-manager (1.0.21) unstable; urgency=medium
 
   * fix: correct systemd service dependencies and install location
