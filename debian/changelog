@@ -1,3 +1,12 @@
+deepin-service-manager (1.0.23) unstable; urgency=medium
+
+  * chore: Sync by
+    https://github.com/linuxdeepin/.github/commit/88706fa723e3771211cb07
+    81d3d97fd4a6cd2a68
+  * fix(manager): detect service scope reliably
+
+ -- zhangkun <zhangkun2@uniontech.com>  Fri, 24 Jul 2026 14:49:19 +0800
+
 deepin-service-manager (1.0.22) unstable; urgency=medium
 
   * feat: add plugin load conditions
