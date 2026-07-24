@@ -3,6 +3,7 @@ Description=deepin-service-manager
 After=dbus.service @EXTRA_AFTER@
 
 [Service]
+ExecStartPre=-/usr/libexec/dde-thp-disable
 ExecStart=/usr/bin/deepin-service-manager -n %i
 @SYSTEMD_SLICE@
 
