@@ -23,6 +23,9 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 set(QT_VERSION_MAJOR 6)
 set(DTK_VERSION_MAJOR 6)
 
+set(REQUIRED_QT_VERSION 6.0.0)
+include(CheckIncludeFile)
+
 add_subdirectory("src")
 # TODO
 add_subdirectory("misc")
