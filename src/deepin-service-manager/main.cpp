@@ -8,8 +8,10 @@
 
 #include <QCommandLineOption>
 #include <QCommandLineParser>
-#include <QGuiApplication>
+#include <QCoreApplication>
 #include <QDebug>
+#include <QLibrary>
+#include <QSet>
 #include <QLoggingCategory>
 #include <QProcess>
 #include <DLog>
@@ -62,23 +64,79 @@ static QString detectScopeBySystemd()
     return processUid < 1000 ? QStringLiteral("system") : QStringLiteral("user");
 }
 
+// 在 QApp 创建前手动从 argv 取 -g/-n 参数
+// (不能用 QCommandLineParser,它需要 QCoreApplication 已存在)
+static void peekGroupAndName(int argc, char *argv[], QString &outGroup, QString &outName)
+{
+    for (int i = 1; i < argc; ++i) {
+        const QString arg = QString::fromLocal8Bit(argv[i]);
+        if ((arg == QLatin1String("-g") || arg == QLatin1String("--group")) && i + 1 < argc)
+            outGroup = QString::fromLocal8Bit(argv[++i]);
+        else if ((arg == QLatin1String("-n") || arg == QLatin1String("--name")) && i + 1 < argc)
+            outName = QString::fromLocal8Bit(argv[++i]);
+        else if (arg.startsWith(QLatin1String("--group=")))
+            outGroup = arg.mid(8);
+        else if (arg.startsWith(QLatin1String("--name=")))
+            outName = arg.mid(8);
+    }
+}
+
+// 需要 QGuiApplication 的组/插件名白名单
+// 维护规则:新增组若含直接 NEEDED libQt6Gui.so.6 的 GUI 插件
+//           (用 QScreen/QGuiApplication/QFont 等),需加入对应表
+static const QSet<QString> &guiGroups()
+{
+    static const QSet<QString> groups {
+        QStringLiteral("dde"),
+    };
+    return groups;
+}
+static const QSet<QString> &guiNames()
+{
+    // 按名加载(-n)时需要 GUI 的插件名;目前无
+    static const QSet<QString> names;
+    return names;
+}
+
 int main(int argc, char *argv[])
 {
-    // 声明一个指向 QCoreApplication 或 QGuiApplication 的指针
-    QCoreApplication *a;
+    // system 级实例(root / deepin-daemon,无桌面环境)始终用 QCoreApplication
     uid_t euid = geteuid();
     bool useCoreApp = (euid == 0);
-    
-    // 检查是否是deepin-daemon 用户
     if (!useCoreApp) {
         struct passwd *pw = getpwuid(euid);
         useCoreApp = (pw && QString::fromUtf8(pw->pw_name) == "deepin-daemon");
     }
-    
+
+    // user 级:按组/名白名单决定是否需要 GUI,而非按 euid 一刀切
+    if (!useCoreApp) {
+        QString group, name;
+        peekGroupAndName(argc, argv, group, name);
+        const bool needsGui = !name.isEmpty()
+            ? guiNames().contains(name)
+            : guiGroups().contains(group.isEmpty() ? QStringLiteral("app") : group);
+        if (!needsGui)
+            useCoreApp = true;
+    }
+
+    // 创建 QApp:全程唯一对象。GUI 路径经桥接 .so 构造 QGuiApplication,
+    // host 二进制本身不引用任何 Qt6Gui 符号 → 其 DT_NEEDED 不含 libQt6Gui.so.6
+    QCoreApplication *a = nullptr;
     if (useCoreApp) {
         a = new QCoreApplication(argc, argv);
     } else {
-        a = new QGuiApplication(argc, argv);
+        QLibrary guiShim(QStringLiteral("dsm-guiapp"));
+        using CreateGuiAppFn = QCoreApplication *(*)(int &, char **);
+        auto create = reinterpret_cast<CreateGuiAppFn>(guiShim.resolve("dsm_createGuiApplication"));
+        if (!create) {
+            qCCritical(dsm_Main) << "cannot load dsm-guiapp:" << guiShim.errorString();
+            return 1;
+        }
+        a = create(argc, argv);
+        if (!a) {
+            qCCritical(dsm_Main) << "QGuiApplication creation failed";
+            return 1;
+        }
     }
     a->setApplicationName("org.deepin.service.manager");
 
