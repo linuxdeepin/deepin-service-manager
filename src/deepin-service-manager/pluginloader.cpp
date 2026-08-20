@@ -8,6 +8,7 @@
 #include "policy/policy.h"
 #include "service/serviceqtdbus.h"
 #include "service/servicesdbus.h"
+#include "service/servicerust.h"
 #include "utils.h"
 
 #include <QCoreApplication>
@@ -40,6 +41,8 @@ ServiceBase *PluginLoader::createService(Policy *policy)
         srv = new ServiceQtDBus();
     if (policy->sdkType == SDKType::SD)
         srv = new ServiceSDBus();
+    if (policy->sdkType == SDKType::RUST)
+        srv = new ServiceRust();
     if (srv) {
         srv->init(m_type, policy);
     }
