@@ -16,6 +16,7 @@ endif()
 add_subdirectory("core")
 add_subdirectory("deepin-service-manager")
 add_subdirectory("libqdbusservice")
+add_subdirectory("guiapp")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_subdirectory("demo")
