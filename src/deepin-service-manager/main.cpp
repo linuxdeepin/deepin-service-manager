@@ -81,17 +81,8 @@ static void peekGroupAndName(int argc, char *argv[], QString &outGroup, QString 
     }
 }
 
-// 已验证无需 QGuiApplication 的组/插件 → Core 路径(反向白名单)
-// 缺省(fail-safe):不在表内的新组/新插件一律 GUI 路径,防止漏配崩溃
-//
-// 进表判据(三重验证,缺一不可):
-//   1. 插件 .so 及其完整传递闭包不含 Qt6Gui
-//      (readelf 递归 NEEDED + 修复版实例 smaps 双重确认)
-//   2. 源码级无 QPA 调用(QGuiApplication/QScreen/QPixmap/QWindow 等)
-//   3. D-Bus 功能实测零回归
-//
-// 若新插件需要进表省内存,按上述三步验证后添加;
-// 若新插件真需 GUI,无需任何动作(缺省即 GUI)。
+// 插件黑名单，已验证无需 QGuiApplication 的组/插件，后续避免加载Gui
+
 static const QSet<QString> &coreGroups()
 {
     static const QSet<QString> groups {
@@ -101,12 +92,9 @@ static const QSet<QString> &coreGroups()
 }
 static const QSet<QString> &coreNames()
 {
-    // 按名加载(-n)且已三重验证无需 GUI 的插件
+    // 按名加载
     static const QSet<QString> names {
-        // app 组:已验证闭包无 Qt6Gui(2025-08 实测)
         QStringLiteral("org.deepin.dde.XSettings1"),
-        QStringLiteral("org.deepin.Filemanager.TextIndex"),
-        QStringLiteral("org.deepin.dde.WallpaperCache"),
     };
     return names;
 }
@@ -121,8 +109,7 @@ int main(int argc, char *argv[])
         useCoreApp = (pw && QString::fromUtf8(pw->pw_name) == "deepin-daemon");
     }
 
-    // user 级:按反向白名单判定——已验证的 core 集 → Core;
-    // 其余(未知/新插件)一律 GUI,缺省安全优先
+    // user 级:黑名单内走coreapp否则加载直接避免崩溃gui
     if (!useCoreApp) {
         QString group, name;
         peekGroupAndName(argc, argv, group, name);
