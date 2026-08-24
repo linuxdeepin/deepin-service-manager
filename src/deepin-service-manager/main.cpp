@@ -107,8 +107,6 @@ static const QSet<QString> &coreNames()
         QStringLiteral("org.deepin.dde.XSettings1"),
         QStringLiteral("org.deepin.Filemanager.TextIndex"),
         QStringLiteral("org.deepin.dde.WallpaperCache"),
-        // dde 组例外:源码 0 处 GUI 调用,已单独验证
-        QStringLiteral("org.deepin.service.thememanager"),
     };
     return names;
 }
