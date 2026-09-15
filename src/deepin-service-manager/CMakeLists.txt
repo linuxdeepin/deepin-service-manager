@@ -6,7 +6,7 @@ set(BIN_NAME "deepin-service-manager")
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS Gui Core DBus)
+find_package(Qt${QT_VERSION_MAJOR} ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS Core DBus)
 find_package(Dtk6 COMPONENTS Core)
 
 check_include_file("elf.h" HAVE_ELF_H)
@@ -36,7 +36,6 @@ target_link_directories(${BIN_NAME} PRIVATE
 )
 
 target_include_directories(${BIN_NAME} PUBLIC
-  Qt${QT_VERSION_MAJOR}::Gui
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::DBus
   ${SRC_BASE_DIR}/core
@@ -44,7 +43,6 @@ target_include_directories(${BIN_NAME} PUBLIC
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE
-  Qt${QT_VERSION_MAJOR}::Gui
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::DBus
   Dtk6::Core

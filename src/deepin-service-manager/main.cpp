@@ -8,7 +8,7 @@
 
 #include <QCommandLineOption>
 #include <QCommandLineParser>
-#include <QGuiApplication>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QLoggingCategory>
 #include <QProcess>
@@ -18,7 +18,6 @@
 
 #include <cstdlib>
 #include <unistd.h>
-#include <pwd.h>
 Q_LOGGING_CATEGORY(dsm_Main, "[Main]")
 
 static QString detectScopeBySystemd()
@@ -64,22 +63,10 @@ static QString detectScopeBySystemd()
 
 int main(int argc, char *argv[])
 {
-    // 声明一个指向 QCoreApplication 或 QGuiApplication 的指针
-    QCoreApplication *a;
-    uid_t euid = geteuid();
-    bool useCoreApp = (euid == 0);
-    
-    // 检查是否是deepin-daemon 用户
-    if (!useCoreApp) {
-        struct passwd *pw = getpwuid(euid);
-        useCoreApp = (pw && QString::fromUtf8(pw->pw_name) == "deepin-daemon");
-    }
-    
-    if (useCoreApp) {
-        a = new QCoreApplication(argc, argv);
-    } else {
-        a = new QGuiApplication(argc, argv);
-    }
+    // deepin-service-manager 是纯 DBus 服务加载器，不使用任何 GUI API。
+    // 使用 QCoreApplication 而非 QGuiApplication，避免加载 Qt GUI 平台
+    // 插件（libqxcb.so / libqwayland-egl.so 等），减少约 20-30MB PSS 内存占用。
+    QCoreApplication *a = new QCoreApplication(argc, argv);
     a->setApplicationName("org.deepin.service.manager");
 
     Dtk::Core::DLogManager::registerConsoleAppender();
