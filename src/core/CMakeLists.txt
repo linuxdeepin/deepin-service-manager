@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+# SPDX-FileCopyrightText: 2023 - 2026 UnionTech Software Technology Co., Ltd.
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 set(LIB_NAME "core-service")
@@ -20,8 +20,14 @@ file(GLOB_RECURSE LIB_SRCS
   "*.h"
   "*.cpp"
 )
+if(NOT ENABLE_RUST)
+  list(FILTER LIB_SRCS EXCLUDE REGEX "/service/(rustpluginabi|servicerust)\\.(h|cpp)$")
+endif()
 add_library(${LIB_NAME} STATIC
   ${LIB_SRCS}
+)
+target_compile_definitions(${LIB_NAME} PUBLIC
+  DSM_ENABLE_RUST=$<BOOL:${ENABLE_RUST}>
 )
 target_include_directories(${LIB_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core

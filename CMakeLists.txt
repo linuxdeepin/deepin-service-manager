@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+# SPDX-FileCopyrightText: 2023 - 2026 UnionTech Software Technology Co., Ltd.
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 cmake_minimum_required(VERSION 3.16)
@@ -12,6 +12,7 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 
 option(DISABLE_ELF_QT_CHECK "Disable ELF-header-based Qt version check" OFF)
+option(ENABLE_RUST "Enable Rust plugin support" OFF)
 
 include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 17)
