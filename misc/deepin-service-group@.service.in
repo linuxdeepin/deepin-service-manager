@@ -2,6 +2,11 @@
 Description=deepin-service-manager
 After=dbus.service deepin-service-manager.service
 PartOf=deepin-service-manager.service
+# 服务组进程由主进程通过 systemd 拉起，不在任何 target 的依赖树里。
+# 不加此项时，systemctl isolate/init 3 之类切换会把这些组进程一并停掉，
+# 且主进程不会重新拉起（组进程消失后无人兜底），导致组内常驻服务
+# （如设备管理器的 org.deepin.DeviceInfo）永久缺失。
+IgnoreOnIsolate=yes
 StartLimitBurst=5
 StartLimitIntervalSec=60
 
