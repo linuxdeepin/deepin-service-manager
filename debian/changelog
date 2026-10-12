@@ -1,3 +1,9 @@
+deepin-service-manager (1.0.24) unstable; urgency=medium
+
+  * fix(manager): keep service groups alive across target isolation
+
+ -- zhangkun <zhangkun2@uniontech.com>  Mon, 12 Oct 2026 18:19:12 +0800
+
 deepin-service-manager (1.0.23) unstable; urgency=medium
 
   * chore: Sync by
