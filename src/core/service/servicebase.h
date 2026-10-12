@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2023 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -49,7 +49,7 @@ protected:
     mutable QMutex m_registerMutex;
 
     QDBusConnection::BusType m_sessionType;
-    SDKType m_SDKType; // qdbus、sdbus
+    SDKType m_SDKType; // qdbus、sdbus、rust
     QTimer *m_timer;
 };
 

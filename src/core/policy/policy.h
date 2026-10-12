@@ -9,7 +9,7 @@
 #include <QMap>
 #include <QObject>
 
-enum class SDKType { QT, SD };
+enum class SDKType { QT, SD, RUST };
 
 typedef QMap<QString, bool> QMapPathHide;
 // subpath, default:false

@@ -1,0 +1,15 @@
+{
+    "name": "org.deepin.service.rust.demo1",
+    "group": "adt",
+    "pluginPath": "libplugin_rust_demo1.so",
+    "pluginType": "rust",
+    "version": "1.0",
+    "startType": "Resident",
+    "policy": [
+        {
+            "path": "/org/deepin/service/rust/demo1",
+            "pathhide": false,
+            "subpath": false
+        }
+    ]
+}
