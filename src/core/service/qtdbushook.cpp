@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2023 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -163,6 +163,7 @@ bool QTDbusHook::getServiceObject(
     QString name, QString path, ServiceBase **service, bool &isSubPath, QString &realPath)
 {
     Q_UNUSED(name) // TODO:QtDBus Hook 无法获取到name
+    QMutexLocker locker(&m_mutex);
     ServiceObjectMap::iterator iterService = m_serviceMap.find(path);
     if (iterService != m_serviceMap.end()) {
         *service = iterService.value();
@@ -183,6 +184,7 @@ bool QTDbusHook::getServiceObject(
 
 bool QTDbusHook::setServiceObject(ServiceBase *obj)
 {
+    QMutexLocker locker(&m_mutex);
     QStringList paths = obj->policy->paths();
     for (auto path : paths) {
         ServiceObjectMap::iterator iterService = m_serviceMap.find(path);
