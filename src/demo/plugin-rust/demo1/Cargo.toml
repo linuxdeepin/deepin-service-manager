@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2026 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
+[package]
+name = "plugin-rust-demo1"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+name = "plugin_rust_demo1"
+crate-type = ["cdylib"]
+
+[dependencies]
+zbus = "5.19.0"

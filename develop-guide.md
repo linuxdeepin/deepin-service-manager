@@ -108,7 +108,7 @@ F --> K
 - <font color=DodgerBlue>name</font>: [必选]dbus name，框架中会注册该 name
 - <font color=DodgerBlue>pluginPath</font>: [必选]插件 so 名称
 - <font color=DodgerBlue>group</font>: [可选]插件按进程分组 core|dde|app，默认分组为 app
-- <font color=DodgerBlue>pluginType</font>: [可选]插件类型，暂时只有 qt 和 sd 两种，默认为 qt
+- <font color=DodgerBlue>pluginType</font>: [可选]插件类型，支持 qt、sd 和 rust，默认为 qt。rust 插件是由框架加载的 Rust `cdylib`，插件内部使用 zbus 创建并持有 D-Bus 连接。
 - <font color=DodgerBlue>version</font>: [可选]配置文件版本，预留配置，无实际用途
 - <font color=DodgerBlue>startType</font>: [可选]启动方式，Resident（常驻）、OnDemand（按需启动）。默认 Resident。
 - <font color=DodgerBlue>idleTime</font>: [可选]若服务是按需启动，则可以设置闲时时间，超时则会退出当前进程，单位为分钟
@@ -200,6 +200,32 @@ F --> K
        (void)data;
        return 0;
    }
+   ```
+
+3. rust
+
+   Rust 插件编译为 `cdylib`，框架通过稳定的 C ABI 启动和停止插件。框架传入 system/session bus 类型和配置中的服务名；插件使用 zbus 创建连接、申请服务名并注册对象。插件必须导出 `DSMRustStartV1` 和 `DSMRustStopV1`，具体 ABI 定义见 `src/core/service/rustpluginabi.h`，示例见 `src/demo/plugin-rust/demo1`。
+
+   Rust 加载后端默认启用，不依赖 rustc 或 Cargo。正式构建会编译 `ServiceRust`，用于加载由其他软件包提供的 Rust `cdylib`。如需显式关闭：
+
+   ```shell
+   cmake -B build -DENABLE_RUST=OFF
+   ```
+
+   构建仓库内的 Rust 演示插件需要本机安装 Rust 1.87 或更高版本，并同时启用 Debug、demo 和 Rust：
+
+   ```shell
+   cmake -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_DEMO=ON -DENABLE_RUST=ON
+   ```
+
+   未启用 `ENABLE_RUST` 时不会编译 Rust 加载后端，也不会检查或调用 Cargo。C++ 代码可通过值为 `0` 或 `1` 的 `DSM_ENABLE_RUST` 宏判断该能力是否启用。
+
+   ```toml
+   [lib]
+   crate-type = ["cdylib"]
+
+   [dependencies]
+   zbus = "5.19.0"
    ```
 
 **实现的 so 文件安装路径为 `${CMAKE_INSTALL_LIBDIR}/deepin-service-manager/`**

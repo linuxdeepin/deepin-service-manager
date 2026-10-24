@@ -106,10 +106,17 @@ void Policy::parseConfig(const QString &path)
     // get SDKType
     QString sdkTypeString;
     jsonGetString(rootObj, "pluginType", sdkTypeString, "qt");
-    if (sdkTypeString == "qt")
+    if (sdkTypeString == "qt") {
         sdkType = SDKType::QT;
-    if (sdkTypeString == "sd")
+    } else if (sdkTypeString == "sd") {
         sdkType = SDKType::SD;
+    } else if (sdkTypeString == "rust") {
+        sdkType = SDKType::RUST;
+    } else {
+        qCWarning(dsm_policy) << "unsupported plugin type:" << sdkTypeString
+                              << "fallback to qt:" << name;
+        sdkType = SDKType::QT;
+    }
 
     if (name.isEmpty()) {
         qCWarning(dsm_policy) << "json error, name is empty.";
