@@ -9,6 +9,7 @@ StartLimitBurst=5
 StartLimitIntervalSec=60
 
 [Service]
+ExecStartPre=-/usr/libexec/dde-thp-disable
 ExecStart=/usr/bin/deepin-service-manager
 Restart=on-failure
 RestartSec=3
