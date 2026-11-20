@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+# SPDX-FileCopyrightText: 2023-2026 UnionTech Software Technology Co., Ltd.
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -16,6 +16,7 @@ endif()
 add_subdirectory("core")
 add_subdirectory("deepin-service-manager")
 add_subdirectory("libqdbusservice")
+add_subdirectory("guiapp")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_subdirectory("demo")
